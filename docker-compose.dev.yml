@@ -1,0 +1,38 @@
+version: "3.9"
+
+# ============================================================
+# TienditaCampus - Docker Compose (Desarrollo)
+# ============================================================
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# ============================================================
+
+services:
+  frontend:
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+
+  backend:
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+      - /app/dist
+    ports:
+      - "${BACKEND_PORT:-3001}:3001"
+    environment:
+      - NODE_ENV=development
+    command: npm run start:dev
+
+  database:
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+
+  nginx:
+    volumes:
+      - ./devops/docker/nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro

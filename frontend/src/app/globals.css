@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: hsl(221.2 83.2% 53.3%);
+  --color-primary-dark: hsl(222.2 47.4% 11.2%);
+  --color-secondary: hsl(38 92% 50%);
+  --color-success: hsl(142.1 70.6% 45.3%);
+  --color-danger: hsl(0 84.2% 60.2%);
+  --color-warning: hsl(48 96% 89%);
+  --color-bg: hsl(210 40% 98%);
+  --color-surface: hsl(0 0% 100%);
+  --color-text: hsl(222.2 84% 4.9%);
+  --color-text-secondary: hsl(215.4 16.3% 46.9%);
+  --color-border: hsl(214.3 31.8% 91.4%);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --radius-lg: 0.75rem;
+  --radius-md: calc(0.75rem - 2px);
+  --radius-sm: calc(0.75rem - 4px);
+
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-slide-up: slide-up 0.4s ease-out;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+@utility border-border {
+  border-color: var(--color-border);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-bg text-text font-sans antialiased;
+  }
+}

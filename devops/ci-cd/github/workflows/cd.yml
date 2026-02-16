@@ -1,0 +1,28 @@
+# ============================================
+# TienditaCampus - CD Pipeline
+# ============================================
+
+name: CD - Deploy
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    needs: []  # Referencia al CI si se configura como workflow separado
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker images
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml build
+
+      # Agregar pasos de deploy según infraestructura elegida:
+      # - Docker Hub push
+      # - SSH deploy
+      # - Cloud provider deploy (AWS, GCP, DigitalOcean, etc.)

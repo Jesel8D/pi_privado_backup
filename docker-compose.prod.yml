@@ -1,0 +1,38 @@
+version: "3.9"
+
+# ============================================================
+# TienditaCampus - Docker Compose (Producción)
+# ============================================================
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ============================================================
+
+services:
+  frontend:
+    environment:
+      - NODE_ENV=production
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  backend:
+    environment:
+      - NODE_ENV=production
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  database:
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "1.0"
+
+  nginx:
+    volumes:
+      - ./devops/docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./devops/docker/nginx/ssl:/etc/nginx/ssl:ro

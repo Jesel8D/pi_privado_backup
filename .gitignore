@@ -1,0 +1,72 @@
+# ========================
+# ENVIRONMENT & SECRETS
+# ========================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.cert
+secrets/
+
+# ========================
+# DEPENDENCIES
+# ========================
+node_modules/
+.pnp
+.pnp.js
+
+# ========================
+# BUILD OUTPUT
+# ========================
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# ========================
+# LOGS
+# ========================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ========================
+# DATABASE
+# ========================
+database/backups/*.sql
+database/backups/*.dump
+database/backups/*.gz
+
+# ========================
+# IDE & SYSTEM
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ========================
+# DOCKER
+# ========================
+docker-compose.override.yml
+
+# ========================
+# TESTING
+# ========================
+coverage/
+.nyc_output/
+
+# ========================
+# OS
+# ========================
+*.pid
+*.seed
+*.pid.lock
