@@ -8,6 +8,10 @@ version: "3.9"
 
 services:
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../devops/docker/frontend/Dockerfile
+      target: development
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -19,10 +23,13 @@ services:
     command: npm run dev
 
   backend:
+    build:
+      context: ./backend
+      dockerfile: ../devops/docker/backend/Dockerfile
+      target: development
     volumes:
       - ./backend:/app
       - /app/node_modules
-      - /app/dist
     ports:
       - "${BACKEND_PORT:-3001}:3001"
     environment:

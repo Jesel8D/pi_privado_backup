@@ -7,7 +7,15 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+ENV NODE_ENV=development
+RUN npm install
+
+# ── Stage 2: Development ─────────────────────
+FROM node:20-alpine AS development
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# Development command is handled by docker-compose.dev.yml
 
 # ── Stage 2: Build ───────────────────────────
 FROM node:20-alpine AS builder
