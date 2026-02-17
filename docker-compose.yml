@@ -50,11 +50,11 @@ services:
       database:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:${BACKEND_PORT}/api/health" ]
+      test: [ "CMD-SHELL", "wget --spider -q http://localhost:${BACKEND_PORT}/api/health || exit 1" ]
       interval: 30s
       timeout: 10s
-      retries: 3
-      start_period: 40s
+      retries: 5
+      start_period: 60s
 
   # ─── Database (PostgreSQL 16) ──────────────────────────────
   database:

@@ -19,7 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from '../../../components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserPlus } from 'lucide-react';
 
 // Esquema de validación que coincide con el backend
 const registerSchema = z
@@ -73,6 +73,11 @@ export default function RegisterPage() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col space-y-2 text-center lg:text-left">
+                <div className="mb-2 flex justify-center lg:justify-start">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white shadow-lg shadow-primary/30">
+                        <UserPlus size={28} />
+                    </div>
+                </div>
                 <h1 className="text-3xl font-bold tracking-tight text-text">Crear Cuenta</h1>
                 <p className="text-sm text-text-secondary">
                     Únete a TienditaCampus y comienza a gestionar tus ventas universitarias.

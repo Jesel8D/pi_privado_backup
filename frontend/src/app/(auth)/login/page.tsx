@@ -19,7 +19,7 @@ import {
     CardHeader,
     CardTitle,
 } from '../../../components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldCheck } from 'lucide-react';
 
 // Esquema de validación
 const loginSchema = z.object({
@@ -57,6 +57,11 @@ export default function LoginPage() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col space-y-2 text-center lg:text-left">
+                <div className="mb-2 flex justify-center lg:justify-start">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white shadow-lg shadow-primary/30">
+                        <ShieldCheck size={28} />
+                    </div>
+                </div>
                 <h1 className="text-3xl font-bold tracking-tight text-text">Iniciar Sesión</h1>
                 <p className="text-sm text-text-secondary">
                     Ingresa tus credenciales para acceder a la gestión de tu campus.
