@@ -10,14 +10,14 @@ import {
     Loader2
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { salesService, RoiStats, DailyHistory } from '@/services/sales.service';
+import { salesService, RoiStats, DailySale } from '@/services/sales.service';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 import { CloseDayDialog } from '@/components/sales/close-day-dialog';
 
 export default function DashboardPage() {
     const [stats, setStats] = useState<RoiStats | null>(null);
-    const [history, setHistory] = useState<DailyHistory[]>([]);
+    const [history, setHistory] = useState<DailySale[]>([]);
     const [prediction, setPrediction] = useState<{ productName: string; suggested: number; confidence: number } | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -53,8 +53,8 @@ export default function DashboardPage() {
     // Preparar datos para el gráfico
     const chartData = history.map(day => ({
         date: new Date(day.saleDate).toLocaleDateString('es-MX', { day: 'numeric', month: 'short' }),
-        Ventas: parseFloat(day.totalRevenue),
-        Inversión: parseFloat(day.totalInvestment),
+        Ventas: parseFloat(String(day.totalRevenue)),
+        Inversión: parseFloat(String(day.totalInvestment)),
     }));
 
     return (
