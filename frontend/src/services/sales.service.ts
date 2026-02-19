@@ -1,58 +1,53 @@
 import { api } from './api';
-import { Product } from './products.service';
 
-export interface DailySale {
+export interface RoiStats {
+    investment: number;
+    revenue: number;
+    netProfit: number;
+    roi: number;
+}
+
+export interface DailyHistory {
     id: string;
     saleDate: string;
-    totalInvestment: number;
-    totalRevenue: number;
-    totalProfit: number;
-    profitMargin: number;
-    unitsSold: number;
-    unitsLost: number;
-    details: SaleDetail[];
-}
-
-export interface SaleDetail {
-    id: string;
-    productId: string;
-    product: Product;
-    quantityPrepared: number;
-    quantitySold: number;
-    quantityLost: number;
-    unitCost: number;
-    unitPrice: number;
-    subtotal: number;
-}
-
-export interface PrepareSaleItem {
-    productId: string;
-    quantityPrepared: number;
+    totalRevenue: string; // Decimal comes as string
+    totalInvestment: string;
+    profitMargin: string;
 }
 
 export const salesService = {
     /**
-     * Obtener el registro de ventas del día actual
+     * Obtener ROI y estadisticas financieras acumuladas
      */
-    async getToday(): Promise<DailySale | null> {
-        return api.get<DailySale | null>('/sales/today');
+    async getRoiStats(): Promise<RoiStats> {
+        return api.get<RoiStats>('/sales/roi');
     },
 
     /**
-     * Inicializar el día con los productos llevados
+     * Obtener historial de ventas diario para graficas
      */
-    async prepareDay(items: PrepareSaleItem[]): Promise<DailySale> {
-        return api.post<DailySale>('/sales/prepare', { items });
+    async getHistory(): Promise<DailyHistory[]> {
+        return api.get<DailyHistory[]>('/sales/history');
     },
 
     /**
-     * Registrar venta o merma de un producto
+     * Obtener venta del día actual (para cierre)
      */
-    async trackProduct(productId: string, quantitySold: number, quantityLost: number): Promise<DailySale> {
-        return api.post<DailySale>('/sales/track', {
-            productId,
-            quantitySold,
-            quantityLost
-        });
-    }
+    async getToday(): Promise<any> {
+        return api.get<any>('/sales/today');
+    },
+
+    /**
+     * Obtener sugerencia de preparación (IA - IQR)
+     */
+    async getPrediction(): Promise<{ productName: string; suggested: number; confidence: number } | null> {
+        return api.get<{ productName: string; suggested: number; confidence: number } | null>('/sales/prediction');
+    },
+
+    /**
+     * Cerrar el día registrando mermas
+     */
+    async closeDay(items: { productId: string; waste: number }[]): Promise<void> {
+        return api.post('/sales/close-day', { items });
+    },
 };

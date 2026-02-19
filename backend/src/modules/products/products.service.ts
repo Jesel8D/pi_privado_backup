@@ -29,6 +29,25 @@ export class ProductsService {
         });
     }
 
+    async findMarketplace(query?: string, sellerId?: string): Promise<Product[]> {
+        const qb = this.productRepository.createQueryBuilder('product')
+            .leftJoinAndSelect('product.seller', 'seller')
+            .where('product.isActive = :isActive', { isActive: true })
+            .andWhere('product.stock > :minStock', { minStock: 0 });
+
+        if (sellerId) {
+            qb.andWhere('seller.id = :sellerId', { sellerId });
+        }
+
+        if (query) {
+            qb.andWhere('(product.name ILIKE :query OR product.description ILIKE :query)', { query: `%${query}%` });
+        }
+
+        qb.orderBy('product.createdAt', 'DESC');
+
+        return await qb.getMany();
+    }
+
     async findOne(id: string, user: User): Promise<Product> {
         const product = await this.productRepository.findOne({
             where: { id, sellerId: user.id, isActive: true },

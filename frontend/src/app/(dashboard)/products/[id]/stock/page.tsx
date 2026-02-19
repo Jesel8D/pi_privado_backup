@@ -64,7 +64,7 @@ export default function StockManagementPage({ params }: { params: { id: string }
             form.setValue('unitCost', Number(productData.unitCost));
         } catch (error) {
             toast.error('Error al cargar datos');
-            router.push('/dashboard/products');
+            router.push('/products');
         } finally {
             setIsLoading(false);
         }
@@ -104,7 +104,7 @@ export default function StockManagementPage({ params }: { params: { id: string }
     return (
         <div className="max-w-5xl mx-auto p-8 space-y-8 animate-fade-in">
             <div className="flex items-center space-x-4">
-                <Link href="/dashboard/products">
+                <Link href="/products">
                     <Button variant="ghost" size="icon">
                         <ArrowLeft className="h-5 w-5" />
                     </Button>

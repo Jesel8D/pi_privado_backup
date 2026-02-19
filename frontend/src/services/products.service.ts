@@ -12,6 +12,11 @@ export interface Product {
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
+    seller?: {
+        id: string;
+        fullName: string;
+        email: string;
+    };
 }
 
 export interface CreateProductDto {
@@ -32,6 +37,20 @@ export const productsService = {
      */
     async getAll(): Promise<Product[]> {
         return api.get<Product[]>('/products');
+    },
+
+    /**
+     * Obtener catálogo público (Marketplace)
+     */
+    async getMarketplace(query?: string, sellerId?: string): Promise<Product[]> {
+        const params: Record<string, string> = {};
+        if (query) params.q = query;
+        if (sellerId) params.seller = sellerId;
+
+        return api.get<Product[]>('/products/marketplace', {
+            params,
+            requiresAuth: false
+        });
     },
 
     /**

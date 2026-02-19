@@ -30,11 +30,10 @@ function Navbar() {
 
     return (
         <nav
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-                scrolled
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
                     ? 'bg-white/80 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-border'
                     : 'bg-transparent'
-            }`}
+                }`}
         >
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
                 {/* Logo */}
@@ -49,14 +48,15 @@ function Navbar() {
 
                 {/* Desktop Links */}
                 <div className="hidden items-center gap-8 md:flex">
+                    <Link href="/marketplace" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+                        <Store size={16} />
+                        Tienda
+                    </Link>
                     <a href="#features" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
                         Funciones
                     </a>
                     <a href="#stats" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
                         Impacto
-                    </a>
-                    <a href="#cta" className="text-sm font-medium text-text-secondary hover:text-primary transition-colors">
-                        Únete
                     </a>
                 </div>
 
@@ -87,10 +87,13 @@ function Navbar() {
             {mobileOpen && (
                 <div className="md:hidden bg-white/95 backdrop-blur-xl border-t border-border animate-slide-up">
                     <div className="flex flex-col gap-1 px-6 py-4">
+                        <Link href="/marketplace" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-text-secondary hover:text-primary transition-colors flex items-center gap-2">
+                            <Store size={18} /> Tienda / Marketplace
+                        </Link>
                         <a href="#features" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
                             Funciones
                         </a>
-                        <a href="#stats"  onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
+                        <a href="#stats" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
                             Impacto
                         </a>
                         <a href="#cta" onClick={() => setMobileOpen(false)} className="py-2.5 text-sm font-medium text-text-secondary hover:text-primary transition-colors">
@@ -195,15 +198,16 @@ export default function Home() {
 
                     {/* CTAs */}
                     <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <Link href="/register">
-                            <Button size="lg" className="group gap-2 text-base font-bold shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 transition-all px-8">
-                                Comenzar Gratis
-                                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                        <Link href="/marketplace">
+                            <Button size="lg" className="group gap-2 text-base font-bold shadow-xl shadow-primary/25 hover:shadow-2xl hover:shadow-primary/30 transition-all px-8 bg-blue-600 hover:bg-blue-700">
+                                <Store size={18} />
+                                Explorar Tienda
                             </Button>
                         </Link>
-                        <Link href="/login">
-                            <Button variant="outline" size="lg" className="text-base font-semibold px-8">
-                                Ya tengo cuenta
+                        <Link href="/register">
+                            <Button variant="outline" size="lg" className="group gap-2 text-base font-bold px-8">
+                                Comenzar Gratis
+                                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
                             </Button>
                         </Link>
                     </div>
@@ -302,9 +306,9 @@ export default function Home() {
                         <div className="flex-1 grid grid-cols-1 gap-4 sm:grid-cols-2">
                             {[
                                 { icon: ShieldCheck, text: 'Autenticación JWT segura' },
-                                { icon: Store,       text: 'Datos cifrados con Argon2' },
-                                { icon: Users,       text: 'Roles y permisos granulares' },
-                                { icon: Zap,         text: 'Infraestructura Docker aislada' },
+                                { icon: Store, text: 'Datos cifrados con Argon2' },
+                                { icon: Users, text: 'Roles y permisos granulares' },
+                                { icon: Zap, text: 'Infraestructura Docker aislada' },
                             ].map(({ icon: I, text }, idx) => (
                                 <div
                                     key={idx}

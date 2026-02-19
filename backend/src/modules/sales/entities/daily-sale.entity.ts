@@ -45,6 +45,9 @@ export class DailySale {
     @Column({ type: 'int', default: 0, name: 'units_lost' })
     unitsLost: number;
 
+    @Column({ type: 'boolean', default: false, name: 'is_closed' })
+    isClosed: boolean;
+
     @Column({ type: 'text', nullable: true })
     notes: string;
 

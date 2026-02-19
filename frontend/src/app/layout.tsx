@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
+import { PwaRegister } from '@/components/pwa-register';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
         <html lang="es">
             <body className={`${inter.variable} antialiased`}>
                 {children}
+                <PwaRegister />
                 <Toaster position="top-center" richColors />
             </body>
         </html>

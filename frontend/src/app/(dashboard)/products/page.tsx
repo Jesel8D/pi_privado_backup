@@ -61,7 +61,7 @@ export default function ProductsPage() {
                     <h1 className="text-3xl font-bold tracking-tight text-foreground">Inventario</h1>
                     <p className="text-muted-foreground">Gestiona tu catálogo de productos, precios y stock.</p>
                 </div>
-                <Link href="/dashboard/products/new">
+                <Link href="/products/new">
                     <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
                         <Plus className="mr-2 h-4 w-4" /> Nuevo Producto
                     </Button>
@@ -126,12 +126,12 @@ export default function ProductsPage() {
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-2">
-                                                        <Link href={`/dashboard/products/${product.id}/stock`}>
+                                                        <Link href={`/products/${product.id}/stock`}>
                                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-green-600" title="Gestionar Stock">
                                                                 <Package className="h-4 w-4" />
                                                             </Button>
                                                         </Link>
-                                                        <Link href={`/dashboard/products/${product.id}`}>
+                                                        <Link href={`/products/${product.id}`}>
                                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-primary">
                                                                 <Edit className="h-4 w-4" />
                                                             </Button>

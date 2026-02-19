@@ -38,6 +38,19 @@ export class UsersService {
         });
     }
 
+    async getPublicProfile(id: string): Promise<Partial<User>> {
+        const user = await this.usersRepository.findOne({
+            where: { id, isActive: true },
+            select: ['id', 'firstName', 'lastName', 'email', 'avatarUrl', 'createdAt', 'role']
+        });
+
+        if (!user) {
+            throw new NotFoundException('Vendedor no encontrado');
+        }
+
+        return user;
+    }
+
     /**
      * Crea un nuevo usuario con contraseña hasheada con Argon2.
      */

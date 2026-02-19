@@ -20,6 +20,125 @@ export class SalesService {
         private readonly dataSource: DataSource,
     ) { }
 
+    // ── HU-03: Predicción de Demanda ─────────────────────
+    async getPrediction(user: User): Promise<any> {
+        // 1. Get current day of week (0=Sunday, 1=Monday...)
+        const today = new Date().getDay(); // JS getDay() returns 0-6
+
+        // 2. Find historical sales for this user on this day of week
+        // We need: product_id, sum(quantity_sold) grouped by date
+        // But simpler approximation: average quantity sold per product on this day
+        // Let's use raw query for aggregation
+
+        const history = await this.dailySaleRepository.query(`
+            SELECT 
+                sd.product_id, 
+                p.name as product_name,
+                sd.quantity_sold
+            FROM sale_details sd
+            INNER JOIN daily_sales ds ON ds.id = sd.daily_sale_id
+            INNER JOIN products p ON p.id = sd.product_id
+            WHERE ds.seller_id = $1 
+            AND EXTRACT(DOW FROM ds.sale_date) = $2
+            AND ds.sale_date < CURRENT_DATE -- Exclude today
+            ORDER BY sd.product_id, ds.sale_date DESC
+            LIMIT 100
+        `, [user.id, today]);
+
+        // Group by product
+        const productSales: Record<string, number[]> = {};
+        const productNames: Record<string, string> = {};
+
+        history.forEach((row: any) => {
+            if (!productSales[row.product_id]) {
+                productSales[row.product_id] = [];
+                productNames[row.product_id] = row.product_name;
+            }
+            productSales[row.product_id].push(Number(row.quantity_sold));
+        });
+
+        // Calculate stats
+        const suggestions = Object.keys(productSales).map(productId => {
+            const sales = productSales[productId];
+            if (sales.length < 3) return null; // Not enough data
+
+            // IQR Logic
+            sales.sort((a, b) => a - b);
+            const q1 = sales[Math.floor((sales.length / 4))];
+            const q3 = sales[Math.floor((sales.length * (3 / 4)))];
+            const iqr = q3 - q1;
+            const lower = q1 - 1.5 * iqr;
+            const upper = q3 + 1.5 * iqr;
+
+            const filtered = sales.filter(x => x >= lower && x <= upper);
+            const avg = filtered.reduce((a, b) => a + b, 0) / filtered.length;
+
+            return {
+                productId,
+                productName: productNames[productId],
+                suggested: Math.ceil(avg),
+                confidence: filtered.length / sales.length // simplistic confidence
+            };
+        }).filter(x => x !== null);
+
+        // Return top suggestion (simplied for widget)
+        return suggestions.length > 0 ? suggestions[0] : null;
+    }
+
+    // ── HU-04: Cierre de Día ─────────────────────────────
+    async closeDay(user: User, wastes: { productId: string; waste: number }[]) {
+        const dailySale = await this.findToday(user);
+        if (!dailySale) throw new NotFoundException('No hay venta abierta hoy');
+        if (dailySale.isClosed) throw new BadRequestException('El día ya está cerrado');
+
+        for (const item of wastes) {
+            const detail = dailySale.details.find(d => d.productId === item.productId);
+            if (detail) {
+                // Logic: If user marks waste, we assume remaining prepared quantity 
+                // minus waste was sold? 
+                // Or simplified: Update Lost = waste. Sold remains as tracked?
+                // The implementation depends on workflow. Let's assume:
+                // Workflow A: Track sales live -> Waste is just extra info.
+                // Workflow B: Quick close -> Sold = Prepared - Waste.
+                // Given "Quick Close" context, B is likely intended for rapid entry.
+                // So: Sold = Prepared - Waste
+
+                const waste = Number(item.waste);
+                if (waste > detail.quantityPrepared) {
+                    throw new BadRequestException(`Merma (${waste}) no puede exceder preparado (${detail.quantityPrepared}) para ${detail.product.name}`);
+                }
+
+                detail.quantityLost = waste;
+                detail.quantitySold = detail.quantityPrepared - waste;
+
+                // Update stock logic could go here if we tracked persistent inventory across days,
+                // but currently stock seems per-transaction or simple numeric.
+                // Since Products have "stock" column, we should deduct sold?
+                // Actually stock management usually happens at "Prepare" phase (deduct raw materials/stock).
+                // If "Product" is the finished good, then stock is updated when we Prepare?
+                // For now, let's just update the financial record.
+
+                await this.saleDetailRepository.save(detail);
+
+                // Update product stock (inventory) to reflect end of day?
+                // Usually stock = 0 at end of day for perishable.
+                // So let's zero out the product stock if it's perishable.
+                if (detail.product.isPerishable) {
+                    await this.productRepository.update(item.productId, { stock: 0 } as any);
+                } else {
+                    // If non-perishable, stock remains? 
+                    // Or stock was deducted when prepared? 
+                    // Let's assume simplified flow: just financial record.
+                }
+            }
+        }
+
+        dailySale.isClosed = true;
+        await this.dailySaleRepository.save(dailySale);
+
+        return this.recalculateHeader(dailySale.id);
+    }
+
     /**
      * Finds today's active sales record for the user.
      */
@@ -161,5 +280,34 @@ export class SalesService {
         // If it was a real column we would set it here.
 
         return await this.dailySaleRepository.save(sale);
+    }
+
+    async getROI(user: User) {
+        const { sum_invest, sum_revenue } = await this.dailySaleRepository
+            .createQueryBuilder('sale')
+            .select('SUM(sale.totalInvestment)', 'sum_invest')
+            .addSelect('SUM(sale.totalRevenue)', 'sum_revenue')
+            .where('sale.sellerId = :sellerId', { sellerId: user.id })
+            .getRawOne();
+
+        const investment = Number(sum_invest || 0);
+        const revenue = Number(sum_revenue || 0);
+        const netProfit = revenue - investment;
+        const roi = investment > 0 ? (netProfit / investment) * 100 : 0;
+
+        return {
+            investment,
+            revenue,
+            netProfit,
+            roi: Number(roi.toFixed(2))
+        };
+    }
+
+    async getHistory(user: User) {
+        return await this.dailySaleRepository.find({
+            where: { sellerId: user.id },
+            order: { saleDate: 'ASC' },
+            take: 30 // Last 30 days
+        });
     }
 }

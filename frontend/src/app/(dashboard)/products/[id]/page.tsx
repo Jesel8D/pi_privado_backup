@@ -64,7 +64,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             });
         } catch (error) {
             toast.error('Error al cargar el producto');
-            router.push('/dashboard/products');
+            router.push('/products');
         } finally {
             setIsLoading(false);
         }
@@ -79,7 +79,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                 imageUrl: data.imageUrl || undefined,
             });
             toast.success('Producto actualizado exitosamente');
-            router.push('/dashboard/products');
+            router.push('/products');
         } catch (error) {
             toast.error('Error al actualizar el producto');
             console.error(error);
@@ -99,7 +99,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     return (
         <div className="max-w-3xl mx-auto p-8 space-y-8 animate-fade-in">
             <div className="flex items-center space-x-4">
-                <Link href="/dashboard/products">
+                <Link href="/products">
                     <Button variant="ghost" size="icon">
                         <ArrowLeft className="h-5 w-5" />
                     </Button>

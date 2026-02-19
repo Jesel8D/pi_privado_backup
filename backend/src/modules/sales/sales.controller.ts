@@ -31,4 +31,23 @@ export class SalesController {
     trackProduct(@Body() trackDto: TrackSaleDto, @Req() req: any) {
         return this.salesService.trackProduct(trackDto, req.user as User);
     }
+    @Get('roi')
+    getROI(@Req() req: any) {
+        return this.salesService.getROI(req.user as User);
+    }
+
+    @Get('history')
+    getHistory(@Req() req: any) {
+        return this.salesService.getHistory(req.user as User);
+    }
+
+    @Get('prediction')
+    getPrediction(@Req() req: any) {
+        return this.salesService.getPrediction(req.user as User);
+    }
+
+    @Post('close-day')
+    closeDay(@Body() body: { items: { productId: string; waste: number }[] }, @Req() req: any) {
+        return this.salesService.closeDay(req.user as User, body.items);
+    }
 }

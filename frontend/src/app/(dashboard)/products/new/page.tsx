@@ -54,7 +54,7 @@ export default function NewProductPage() {
                 imageUrl: data.imageUrl || undefined,
             });
             toast.success('Producto creado exitosamente');
-            router.push('/dashboard/products');
+            router.push('/products');
         } catch (error) {
             toast.error('Error al crear el producto');
             console.error(error);
@@ -66,7 +66,7 @@ export default function NewProductPage() {
     return (
         <div className="max-w-3xl mx-auto p-8 space-y-8 animate-fade-in">
             <div className="flex items-center space-x-4">
-                <Link href="/dashboard/products">
+                <Link href="/products">
                     <Button variant="ghost" size="icon">
                         <ArrowLeft className="h-5 w-5" />
                     </Button>
