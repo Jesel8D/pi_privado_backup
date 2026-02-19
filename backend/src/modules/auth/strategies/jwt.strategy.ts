@@ -45,10 +45,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
             throw new UnauthorizedException('Cuenta bloqueada temporalmente');
         }
 
-        return {
-            userId: payload.sub,
-            email: payload.email,
-            role: payload.role,
-        };
+        return user;
     }
 }

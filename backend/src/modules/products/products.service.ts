@@ -32,8 +32,8 @@ export class ProductsService {
     async findMarketplace(query?: string, sellerId?: string): Promise<Product[]> {
         const qb = this.productRepository.createQueryBuilder('product')
             .leftJoinAndSelect('product.seller', 'seller')
-            .where('product.isActive = :isActive', { isActive: true })
-            .andWhere('product.stock > :minStock', { minStock: 0 });
+            .where('product.isActive = :isActive', { isActive: true });
+        // .andWhere('product.stock > :minStock', { minStock: 0 }); // TODO: Integrar con inventario real
 
         if (sellerId) {
             qb.andWhere('seller.id = :sellerId', { sellerId });
