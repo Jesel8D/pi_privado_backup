@@ -62,8 +62,8 @@ export default function LoginPage() {
                         <ShieldCheck size={28} />
                     </div>
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight text-text">Iniciar Sesión</h1>
-                <p className="text-sm text-text-secondary">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Iniciar Sesión</h1>
+                <p className="text-sm text-muted-foreground">
                     Ingresa tus credenciales para acceder a la gestión de tu campus.
                 </p>
             </div>
@@ -72,24 +72,24 @@ export default function LoginPage() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                            <Label htmlFor="email" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                 Email Corporativo
                             </Label>
                             <Input
                                 id="email"
                                 type="email"
                                 placeholder="nombre@ejemplo.com"
-                                className="h-12 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                className="h-12 border-input bg-background focus:ring-primary/20 transition-all"
                                 {...register('email')}
                                 disabled={isLoading}
                             />
                             {errors.email && (
-                                <p className="text-xs font-medium text-danger animate-fade-in">{errors.email.message}</p>
+                                <p className="text-xs font-medium text-destructive animate-fade-in">{errors.email.message}</p>
                             )}
                         </div>
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                                <Label htmlFor="password" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                     Contraseña
                                 </Label>
                                 <Link
@@ -102,12 +102,12 @@ export default function LoginPage() {
                             <Input
                                 id="password"
                                 type="password"
-                                className="h-12 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                className="h-12 border-input bg-background focus:ring-primary/20 transition-all"
                                 {...register('password')}
                                 disabled={isLoading}
                             />
                             {errors.password && (
-                                <p className="text-xs font-medium text-danger animate-fade-in">{errors.password.message}</p>
+                                <p className="text-xs font-medium text-destructive animate-fade-in">{errors.password.message}</p>
                             )}
                         </div>
                     </div>
@@ -125,7 +125,7 @@ export default function LoginPage() {
                     </Button>
                 </form>
 
-                <div className="mt-8 text-center text-sm text-text-secondary">
+                <div className="mt-8 text-center text-sm text-muted-foreground">
                     ¿Nuevo en la plataforma?{' '}
                     <Link href="/register" className="font-bold text-primary hover:text-primary-dark transition-colors">
                         Crea una cuenta ahora

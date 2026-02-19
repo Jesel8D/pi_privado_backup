@@ -42,7 +42,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             </div>
 
             {/* Lado Derecho: Contenido (Login/Register) */}
-            <div className="flex w-full items-center justify-center p-8 lg:w-1/2 bg-bg">
+            <div className="flex w-full items-center justify-center p-8 lg:w-1/2 bg-background">
                 <div className="w-full max-w-md animate-slide-up">
                     <div className="lg:hidden mb-8 flex items-center justify-center text-2xl font-bold text-primary">
                         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-bold text-sm">

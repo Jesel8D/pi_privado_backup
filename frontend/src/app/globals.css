@@ -1,28 +1,44 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: hsl(221.2 83.2% 53.3%);
-  --color-primary-dark: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(38 92% 50%);
-  --color-success: hsl(142.1 70.6% 45.3%);
-  --color-danger: hsl(0 84.2% 60.2%);
-  --color-warning: hsl(48 96% 89%);
-  --color-bg: hsl(210 40% 98%);
-  --color-surface: hsl(0 0% 100%);
-  --color-text: hsl(222.2 84% 4.9%);
-  --color-text-secondary: hsl(215.4 16.3% 46.9%);
-  --color-border: hsl(214.3 31.8% 91.4%);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-  --radius-lg: 0.75rem;
-  --radius-md: calc(0.75rem - 2px);
-  --radius-sm: calc(0.75rem - 4px);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-  --animate-fade-in: fade-in 0.3s ease-out;
-  --animate-slide-up: slide-up 0.4s ease-out;
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-  @keyframes fade-in {
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --animate-fade-in: fadeIn 0.5s ease-out forwards;
+  --animate-slide-up: slideUp 0.5s ease-out forwards;
+
+  @keyframes fadeIn {
     from {
       opacity: 0;
     }
@@ -32,46 +48,117 @@
     }
   }
 
-  @keyframes slide-up {
+  @keyframes slideUp {
     from {
-      transform: translateY(10px);
       opacity: 0;
+      transform: translateY(20px);
     }
 
     to {
+      opacity: 1;
       transform: translateY(0);
-      opacity: 1;
     }
   }
 }
 
-@utility border-border {
-  border-color: var(--color-border);
+/* 
+  Utility Classes 
+  We add these here so they can be used with @apply or simple classes 
+*/
+@utility glass {
+  @apply bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl;
 }
 
+@utility glass-dark {
+  @apply bg-black/30 backdrop-blur-lg border border-white/10 shadow-xl;
+}
+
+@utility text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[var(--primary)] via-[var(--accent)] to-pink-500;
+}
+
+@utility hover-card {
+  @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-[var(--primary)]/50;
+}
+
+:root {
+  /* Clean & Minimal Light Mode */
+  --background: #ffffff;
+  --foreground: #171717;
+
+  --card: #ffffff;
+  --card-foreground: #171717;
+
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+
+  --primary: #6366f1;
+  /* Indigo-500 */
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #111827;
+
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  --accent: #7c3aed;
+  /* Violet-600 */
+  --accent-foreground: #ffffff;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #6366f1;
+
+  --radius: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark Luxury Mode */
+    --background: #0a0a0a;
+    --foreground: #fafafa;
+
+    --card: #171717;
+    --card-foreground: #fafafa;
+
+    --popover: #171717;
+    --popover-foreground: #fafafa;
+
+    --primary: #818cf8;
+    /* Indigo-400 */
+    --primary-foreground: #0a0a0a;
+
+    --secondary: #262626;
+    --secondary-foreground: #fafafa;
+
+    --muted: #262626;
+    --muted-foreground: #a3a3a3;
+
+    --accent: #8b5cf6;
+    /* Violet-500 */
+    --accent-foreground: #ffffff;
+
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafafa;
+
+    --border: #262626;
+    --input: #262626;
+    --ring: #818cf8;
+  }
+}
+
+/* Base Styles */
 @layer base {
   * {
     @apply border-border;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
-    @apply bg-bg text-text font-sans antialiased;
+    @apply bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
-
-.animate-bounce {
-  animation: bounce 2s infinite;
 }

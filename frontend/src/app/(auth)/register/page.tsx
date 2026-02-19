@@ -78,8 +78,8 @@ export default function RegisterPage() {
                         <UserPlus size={28} />
                     </div>
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight text-text">Crear Cuenta</h1>
-                <p className="text-sm text-text-secondary">
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">Crear Cuenta</h1>
+                <p className="text-sm text-muted-foreground">
                     Únete a TienditaCampus y comienza a gestionar tus ventas universitarias.
                 </p>
             </div>
@@ -89,33 +89,33 @@ export default function RegisterPage() {
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="firstName" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                                <Label htmlFor="firstName" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                     Nombre
                                 </Label>
                                 <Input
                                     id="firstName"
-                                    className="h-11 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                    className="h-11 border-input bg-background focus:ring-primary/20 transition-all"
                                     {...register('firstName')}
                                     disabled={isLoading}
                                 />
                                 {errors.firstName && (
-                                    <p className="text-xs font-medium text-danger animate-fade-in">
+                                    <p className="text-xs font-medium text-destructive animate-fade-in">
                                         {errors.firstName.message}
                                     </p>
                                 )}
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="lastName" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                                <Label htmlFor="lastName" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                     Apellidos
                                 </Label>
                                 <Input
                                     id="lastName"
-                                    className="h-11 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                    className="h-11 border-input bg-background focus:ring-primary/20 transition-all"
                                     {...register('lastName')}
                                     disabled={isLoading}
                                 />
                                 {errors.lastName && (
-                                    <p className="text-xs font-medium text-danger animate-fade-in">
+                                    <p className="text-xs font-medium text-destructive animate-fade-in">
                                         {errors.lastName.message}
                                     </p>
                                 )}
@@ -123,43 +123,43 @@ export default function RegisterPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                            <Label htmlFor="email" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                 Email Institucional
                             </Label>
                             <Input
                                 id="email"
                                 type="email"
                                 placeholder="usuario@universidad.edu"
-                                className="h-11 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                className="h-11 border-input bg-background focus:ring-primary/20 transition-all"
                                 {...register('email')}
                                 disabled={isLoading}
                             />
                             {errors.email && (
-                                <p className="text-xs font-medium text-danger animate-fade-in">{errors.email.message}</p>
+                                <p className="text-xs font-medium text-destructive animate-fade-in">{errors.email.message}</p>
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="password" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                                <Label htmlFor="password" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                     Contraseña
                                 </Label>
                                 <Input
                                     id="password"
                                     type="password"
-                                    className="h-11 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                    className="h-11 border-input bg-background focus:ring-primary/20 transition-all"
                                     {...register('password')}
                                     disabled={isLoading}
                                 />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-widest text-text-secondary/70 font-semibold">
+                                <Label htmlFor="confirmPassword" className="text-xs uppercase tracking-widest text-muted-foreground/70 font-semibold">
                                     Confirmar
                                 </Label>
                                 <Input
                                     id="confirmPassword"
                                     type="password"
-                                    className="h-11 border-slate-200 bg-white focus:ring-primary/20 transition-all"
+                                    className="h-11 border-input bg-background focus:ring-primary/20 transition-all"
                                     {...register('confirmPassword')}
                                     disabled={isLoading}
                                 />
@@ -168,12 +168,12 @@ export default function RegisterPage() {
 
                         {(errors.password || errors.confirmPassword) && (
                             <div className="space-y-1">
-                                {errors.password && <p className="text-xs font-medium text-danger animate-fade-in">{errors.password.message}</p>}
-                                {errors.confirmPassword && <p className="text-xs font-medium text-danger animate-fade-in">{errors.confirmPassword.message}</p>}
+                                {errors.password && <p className="text-xs font-medium text-destructive animate-fade-in">{errors.password.message}</p>}
+                                {errors.confirmPassword && <p className="text-xs font-medium text-destructive animate-fade-in">{errors.confirmPassword.message}</p>}
                             </div>
                         )}
 
-                        <div className="rounded-lg bg-slate-100 p-3 text-[10px] text-text-secondary/80 flex items-start space-x-2">
+                        <div className="rounded-lg bg-muted p-3 text-[10px] text-muted-foreground flex items-start space-x-2">
                             <div className="mt-0.5 h-1 w-1 rounded-full bg-primary shrink-0" />
                             <p>Mínimo 8 caracteres, incluye una mayúscula, una minúscula y un número para mayor seguridad.</p>
                         </div>
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                     </Button>
                 </form>
 
-                <div className="mt-6 text-center text-sm text-text-secondary">
+                <div className="mt-6 text-center text-sm text-muted-foreground">
                     ¿Ya eres parte de TienditaCampus?{' '}
                     <Link href="/login" className="font-bold text-primary hover:text-primary-dark transition-colors">
                         Inicia Sesión

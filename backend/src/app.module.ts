@@ -8,9 +8,9 @@ import { databaseConfig } from './config/database.config';
 // Módulos de negocio
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-// import { ProductsModule } from './modules/products/products.module';
-// import { SalesModule } from './modules/sales/sales.module';
-// import { InventoryModule } from './modules/inventory/inventory.module';
+import { ProductsModule } from './modules/products/products.module';
+import { SalesModule } from './modules/sales/sales.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
 // import { ReportsModule } from './modules/reports/reports.module';
 import { HealthController } from './common/controllers/health.controller';
 
@@ -32,11 +32,11 @@ import { HealthController } from './common/controllers/health.controller';
         // Módulos activos
         AuthModule,
         UsersModule,
+        ProductsModule,
+        InventoryModule,
+        SalesModule,
 
         // Módulos (descomentar conforme se implementen)
-        // ProductsModule,
-        // SalesModule,
-        // InventoryModule,
         // ReportsModule,
     ],
     controllers: [HealthController],

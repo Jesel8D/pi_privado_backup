@@ -21,8 +21,15 @@ async function bootstrap() {
 
     // CORS
     app.enableCors({
-        origin: configService.get<string>('FRONTEND_URL', 'http://localhost:3000'),
+        origin: [
+            configService.get<string>('FRONTEND_URL', 'http://localhost:3000'),
+            'http://localhost:8080',
+            'http://127.0.0.1:8080',
+            'http://localhost:3000',
+        ],
         credentials: true,
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        allowedHeaders: 'Content-Type, Accept, Authorization',
     });
 
     const port = configService.get<number>('BACKEND_PORT', 3001);
