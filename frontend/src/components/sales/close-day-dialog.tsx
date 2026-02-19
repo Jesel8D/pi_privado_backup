@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { salesService } from '@/services/sales.service';
 
 interface CloseDayForm {
@@ -30,7 +30,7 @@ interface CloseDayForm {
 export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
     const [open, setOpen] = useState(false);
     const [step, setStep] = useState<'loading' | 'form' | 'success' | 'no-sale'>('loading');
-    const { toast } = useToast();
+    // const { toast } = useToast(); -> Removed, using sonner direct import
 
     const { register, control, handleSubmit, setValue, watch, reset } = useForm<CloseDayForm>({
         defaultValues: { items: [] }
@@ -48,50 +48,47 @@ export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
     const totalWaste = items.reduce((sum, item) => sum + (Number(item.waste) || 0), 0);
     const projectedSales = totalPrepared - totalWaste;
 
-    const loadTodaySale = async () => {
-        setStep('loading');
-        try {
-            const today = await salesService.getToday();
-            if (!today || !today.details || today.details.length === 0) {
-                setStep('no-sale');
-                return;
-            }
-
-            if (today.isClosed) {
-                toast({
-                    title: "Día Cerrado",
-                    description: "Ya has cerrado caja hoy. ¡Descansa! 😴",
-                    variant: "default"
-                });
-                setOpen(false); // Or show specific step
-                return;
-            }
-
-            const formItems = today.details.map((d: any) => ({
-                productId: d.product.id,
-                productName: d.product.name,
-                prepared: d.quantityPrepared,
-                waste: 0
-            }));
-
-            setValue('items', formItems);
-            setStep('form');
-        } catch (error) {
-            console.error(error);
-            toast({
-                title: "Error",
-                description: "No se pudo cargar la información del día.",
-                variant: "destructive"
-            });
-            setOpen(false);
-        }
-    };
-
     useEffect(() => {
+        const loadTodaySale = async () => {
+            setStep('loading');
+            try {
+                const today = await salesService.getToday();
+                if (!today || !today.details || today.details.length === 0) {
+                    setStep('no-sale');
+                    return;
+                }
+
+                if (today.isClosed) {
+                    toast.message("Día Cerrado", {
+                        description: "Ya has cerrado caja hoy. ¡Descansa! 😴",
+                    });
+                    setOpen(false); // Or show specific step
+                    return;
+                }
+
+                const formItems = today.details.map((d: any) => ({
+                    productId: d.product.id,
+                    productName: d.product.name,
+                    prepared: d.quantityPrepared,
+                    waste: 0
+                }));
+
+                setValue('items', formItems);
+                setStep('form');
+            } catch (error) {
+                console.error(error);
+                toast.error("Error", {
+                    description: "No se pudo cargar la información del día.",
+                });
+                setOpen(false);
+            }
+        };
+
         if (open) {
             loadTodaySale();
         }
-    }, [open]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, setValue]);
 
     const onSubmit = async (data: CloseDayForm) => {
         try {
@@ -106,10 +103,8 @@ export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
                 if (onClosed) onClosed();
             }, 2000);
         } catch (error: any) {
-            toast({
-                title: "Error al cerrar",
+            toast.error("Error al cerrar", {
                 description: error.response?.data?.message || "Algo salió mal.",
-                variant: "destructive"
             });
         }
     };

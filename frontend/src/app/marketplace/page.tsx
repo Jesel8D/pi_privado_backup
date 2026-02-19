@@ -17,20 +17,20 @@ export default function MarketplacePage() {
     const [debouncedSearch] = useDebounce(searchTerm, 500);
 
     useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const data = await productsService.getMarketplace(debouncedSearch);
+                setProducts(data);
+            } catch (error) {
+                console.error('Error fetching marketplace:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchProducts();
     }, [debouncedSearch]);
-
-    const fetchProducts = async () => {
-        setLoading(true);
-        try {
-            const data = await productsService.getMarketplace(debouncedSearch);
-            setProducts(data);
-        } catch (error) {
-            console.error('Error fetching marketplace:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     return (
         <div className="min-h-screen bg-gray-50">
