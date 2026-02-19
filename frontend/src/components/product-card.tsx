@@ -56,9 +56,28 @@ export function ProductCard({ product }: { product: Product }) {
                     </p>
                 )}
 
-                <Button className="w-full gap-2 transition-transform active:scale-95">
-                    Me interesa <ExternalLink size={16} />
-                </Button>
+                {(() => {
+                    const sellerPhone = (product as any).seller?.phone;
+                    const message = encodeURIComponent(`Hola, me interesa tu producto: ${product.name}`);
+                    const whatsappUrl = sellerPhone ? `https://wa.me/${sellerPhone}?text=${message}` : '#';
+
+                    return (
+                        <Button
+                            className="w-full gap-2 transition-transform active:scale-95"
+                            disabled={!sellerPhone}
+                            onClick={() => {
+                                if (sellerPhone) {
+                                    window.open(whatsappUrl, '_blank');
+                                } else {
+                                    // Fallback if no phone: maybe show a toast or alert?
+                                    alert('El vendedor no ha registrado un número de contacto.');
+                                }
+                            }}
+                        >
+                            Me interesa <ExternalLink size={16} />
+                        </Button>
+                    );
+                })()}
             </div>
         </div>
     );

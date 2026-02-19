@@ -143,6 +143,22 @@ export default function NewProductPage() {
                             </div>
                         )}
 
+                        {/* Image URL Input */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none">URL de la Imagen (Opcional)</label>
+                            <Input
+                                placeholder="https://ejemplo.com/mi-producto.jpg"
+                                {...form.register('imageUrl')}
+                                className={form.formState.errors.imageUrl ? "border-destructive" : ""}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Pega aquí el enlace directo a la imagen de tu producto.
+                            </p>
+                            {form.formState.errors.imageUrl && (
+                                <p className="text-sm text-destructive">{form.formState.errors.imageUrl.message}</p>
+                            )}
+                        </div>
+
                         <div className="flex justify-end pt-4">
                             <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">
                                 {isSubmitting ? (
