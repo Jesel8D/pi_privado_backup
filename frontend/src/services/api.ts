@@ -2,12 +2,34 @@
  * TienditaCampus - Cliente HTTP Base
  * 
  * Configuración centralizada para todas las llamadas al backend.
- * La URL del API se lee desde las variables de entorno.
+ * Asegura que las variables de entorno estén presentes y normaliza las respuestas/errores.
  */
 
 import { useAuthStore } from '../store/auth.store';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+// 1. Validación de Entorno
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+    console.warn(
+        '⚠️ ATENCIÓN: La variable NEXT_PUBLIC_API_URL no está definida. Se usará http://localhost:3001/api como fallback. Asegúrate de configurar tu archivo .env.local',
+    );
+}
+
+const BASE_URL = API_BASE_URL || 'http://localhost:3001/api';
+
+// 2. Clase de Error Normalizada
+export class ApiError extends Error {
+    public status: number;
+    public data: any;
+
+    constructor(status: number, message: string, data?: any) {
+        super(message);
+        this.name = 'ApiError';
+        this.status = status;
+        this.data = data;
+    }
+}
 
 interface RequestOptions extends RequestInit {
     params?: Record<string, string>;
@@ -33,47 +55,65 @@ class ApiClient {
             url += `?${searchParams.toString()}`;
         }
 
-        const headers: HeadersInit = {
+        // Configuración de Headers segura
+        const headers: Record<string, string> = {
             'Content-Type': 'application/json',
-            ...fetchOptions.headers,
+            ...(fetchOptions.headers as Record<string, string>),
         };
 
-        // Inyectar token si existe
+        // Inyectar token si existe y se requiere
         if (requiresAuth) {
             const token = useAuthStore.getState().token;
             if (token) {
-                (headers as any)['Authorization'] = `Bearer ${token}`;
+                headers['Authorization'] = `Bearer ${token}`;
             }
         }
 
-        const response = await fetch(url, {
-            ...fetchOptions,
-            headers,
-        });
+        try {
+            const response = await fetch(url, {
+                ...fetchOptions,
+                headers,
+            });
 
-        if (response.status === 401) {
-            // Token expirado o inválido -> Logout
-            useAuthStore.getState().logout();
-            // Opcional: Redirigir a login, pero mejor manejarlo en la UI o middleware
-        }
+            // Manejo de 401: Sesión expirada
+            if (response.status === 401) {
+                useAuthStore.getState().logout();
+                throw new ApiError(401, 'Sesión expirada. Por favor, inicia sesión nuevamente.');
+            }
 
-        if (!response.ok) {
-            // Intentar leer mensaje de error del backend
-            let errorMessage = `API Error: ${response.status} ${response.statusText}`;
-            try {
-                const errorData = await response.json();
-                if (errorData.message) {
-                    errorMessage = Array.isArray(errorData.message)
-                        ? errorData.message.join(', ')
-                        : errorData.message;
+            // Normalización de Errores (4xx, 5xx)
+            if (!response.ok) {
+                let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+                let errorData = null;
+
+                try {
+                    errorData = await response.json();
+                    if (errorData && errorData.message) {
+                        errorMessage = Array.isArray(errorData.message)
+                            ? errorData.message.join(', ')
+                            : errorData.message;
+                    }
+                } catch (e) {
+                    // Si no es JSON, nos quedamos con el mensaje genérico
                 }
-            } catch (e) {
-                // Si no es JSON, usar texto status
-            }
-            throw new Error(errorMessage);
-        }
 
-        return response.json();
+                throw new ApiError(response.status, errorMessage, errorData);
+            }
+
+            // Respuesta exitosa (siempre intenta parsear JSON, o retorna null si está vacío)
+            if (response.status === 204) {
+                return {} as T;
+            }
+
+            return await response.json();
+
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            // Error de red o algo inesperado en el fetch
+            throw new ApiError(500, error instanceof Error ? error.message : 'Error desconocido de red');
+        }
     }
 
     get<T>(endpoint: string, options?: RequestOptions) {
@@ -109,4 +149,4 @@ class ApiClient {
     }
 }
 
-export const api = new ApiClient(API_BASE_URL);
+export const api = new ApiClient(BASE_URL);
