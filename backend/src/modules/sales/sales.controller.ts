@@ -5,21 +5,30 @@ import {
     Body,
     Req,
     UseGuards,
+    Query,
 } from '@nestjs/common';
 import { SalesService } from './sales.service';
 import { PrepareDailySaleDto } from './dto/prepare-daily-sale.dto';
 import { TrackSaleDto } from './dto/track-sale.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../users/entities/user.entity';
 
+/**
+ * SalesController — Solo accesible para sellers y admins.
+ * El guard a nivel de clase aplica JWT + Roles a todos los endpoints.
+ */
 @Controller('sales')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('seller', 'admin')
 export class SalesController {
     constructor(private readonly salesService: SalesService) { }
 
     @Get('today')
-    getToday(@Req() req: any) {
-        return this.salesService.findToday(req.user as User);
+    async getToday(@Req() req: any) {
+        const result = await this.salesService.findToday(req.user as User);
+        return result || null;
     }
 
     @Post('prepare')
@@ -31,9 +40,14 @@ export class SalesController {
     trackProduct(@Body() trackDto: TrackSaleDto, @Req() req: any) {
         return this.salesService.trackProduct(trackDto, req.user as User);
     }
+
     @Get('roi')
-    getROI(@Req() req: any) {
-        return this.salesService.getROI(req.user as User);
+    getROI(
+        @Req() req: any,
+        @Query('startDate') startDate?: string,
+        @Query('endDate') endDate?: string
+    ) {
+        return this.salesService.getROI(req.user as User, startDate, endDate);
     }
 
     @Get('history')

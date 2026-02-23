@@ -17,6 +17,7 @@ export interface Product {
         fullName: string;
         email: string;
     };
+    stock?: number;
 }
 
 export interface CreateProductDto {

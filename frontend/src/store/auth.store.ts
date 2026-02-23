@@ -16,6 +16,8 @@ interface AuthState {
     login: (token: string, user: User) => void;
     logout: () => void;
     updateUser: (user: Partial<User>) => void;
+    _hasHydrated: boolean;
+    setHasHydrated: (state: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -30,9 +32,14 @@ export const useAuthStore = create<AuthState>()(
                 set((state) => ({
                     user: state.user ? { ...state.user, ...updates } : null,
                 })),
+            _hasHydrated: false,
+            setHasHydrated: (state) => set({ _hasHydrated: state }),
         }),
         {
             name: 'tc-auth-storage', // key en localStorage
+            onRehydrateStorage: () => (state) => {
+                state?.setHasHydrated(true);
+            },
         },
     ),
 );

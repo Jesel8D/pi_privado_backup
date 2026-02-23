@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from 'sonner';
 import { PwaRegister } from '@/components/pwa-register';
+import { GoogleProvider } from '@/components/providers/google-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -20,7 +21,9 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body className={`${inter.variable} antialiased`}>
-                {children}
+                <GoogleProvider>
+                    {children}
+                </GoogleProvider>
                 <PwaRegister />
                 <Toaster position="top-center" richColors />
             </body>

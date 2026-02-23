@@ -8,6 +8,7 @@ export interface PublicUser {
     avatarUrl: string | null;
     createdAt: string;
     role: 'seller' | 'buyer' | 'admin';
+    products?: any[]; // Temporal array hasta tiparlo mejor si se requiere
 }
 
 export const usersService = {

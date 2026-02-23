@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,8 +37,8 @@ export default function StockManagementPage({ params }: { params: { id: string }
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const form = useForm({
-        resolver: zodResolver(stockSchema),
+    const form = useForm<StockFormValues>({
+        resolver: zodResolver(stockSchema) as any,
         defaultValues: {
             quantity: 0,
             unitCost: 0,
@@ -46,12 +46,7 @@ export default function StockManagementPage({ params }: { params: { id: string }
         },
     });
 
-    useEffect(() => {
-        loadData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params.id]);
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             setIsLoading(true);
             const [productData, historyData] = await Promise.all([
@@ -68,7 +63,11 @@ export default function StockManagementPage({ params }: { params: { id: string }
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [params.id, form, router]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const onSubmit = async (data: StockFormValues) => {
         setIsSubmitting(true);

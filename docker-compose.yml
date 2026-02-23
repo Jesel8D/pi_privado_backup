@@ -44,6 +44,7 @@ services:
       - ARGON2_MEMORY_COST=${ARGON2_MEMORY_COST}
       - ARGON2_TIME_COST=${ARGON2_TIME_COST}
       - ARGON2_PARALLELISM=${ARGON2_PARALLELISM}
+      - MONGO_URI=mongodb://mongodb:27017/tienditacampus_logs
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     networks:
@@ -51,6 +52,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      mongodb:
+        condition: service_started
     healthcheck:
       test: [ "CMD-SHELL", "wget --spider -q http://localhost:${BACKEND_PORT}/api/health || exit 1" ]
       interval: 30s
@@ -69,6 +72,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    command: [ "postgres", "-c", "shared_preload_libraries=pg_stat_statements" ]
     volumes:
       - tc-pgdata:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d:ro
@@ -81,6 +85,21 @@ services:
       retries: 5
       start_period: 30s
 
+  # ─── MongoDB (NoSQL — Base de datos no relacional) ─────────
+  mongodb:
+    image: mongo:7
+    container_name: tc-mongodb
+    restart: unless-stopped
+    volumes:
+      - tc-mongodata:/data/db
+    networks:
+      - tc-network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
   # ─── Nginx (Reverse Proxy) ────────────────────────────────
   nginx:
     build:
@@ -105,3 +124,5 @@ networks:
 volumes:
   tc-pgdata:
     name: tienditacampus-pgdata
+  tc-mongodata:
+    name: tienditacampus-mongodata

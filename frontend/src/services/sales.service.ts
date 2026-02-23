@@ -47,8 +47,12 @@ export const salesService = {
     /**
      * Obtener ROI y estadisticas financieras acumuladas
      */
-    async getRoiStats(): Promise<RoiStats> {
-        return api.get<RoiStats>('/sales/roi');
+    async getRoiStats(startDate?: string, endDate?: string): Promise<RoiStats> {
+        const params: Record<string, string> = {};
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+
+        return api.get<RoiStats>('/sales/roi', { params });
     },
 
     /**
@@ -83,7 +87,7 @@ export const salesService = {
      * Registrar venta/merma individual (tracking)
      */
     async trackProduct(productId: string, sold: number, lost: number): Promise<DailySale> {
-        return api.patch<DailySale>(`/sales/track/${productId}`, { quantitySold: sold, quantityLost: lost });
+        return api.post<DailySale>('/sales/track', { productId, quantitySold: sold, quantityLost: lost });
     },
 
     /**

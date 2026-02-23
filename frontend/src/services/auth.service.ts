@@ -14,6 +14,7 @@ export interface RegisterDto {
     firstName: string;
     lastName: string;
     phone?: string;
+    role?: 'seller' | 'buyer';
 }
 
 export interface User {
@@ -22,6 +23,8 @@ export interface User {
     firstName: string;
     lastName: string;
     role: 'admin' | 'seller' | 'buyer';
+    major?: string;
+    campusLocation?: string;
     lastLoginAt?: string;
     loginCount?: number;
 }

@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 
 interface AuthLayoutProps {
     children: ReactNode;
@@ -7,7 +9,16 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen relative">
+            {/* Botón Volver (Global) */}
+            <Link
+                href="/"
+                className="absolute top-6 left-6 z-50 flex items-center gap-2 text-sm font-medium text-white/80 hover:text-white transition-colors bg-black/20 hover:bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full lg:left-8 lg:top-8"
+            >
+                <ArrowLeft size={16} />
+                Volver al inicio
+            </Link>
+
             {/* Lado Izquierdo: Visual/Branding (Oculto en móvil) */}
             <div className="relative hidden w-1/2 flex-col justify-between bg-primary p-12 text-white lg:flex">
                 <div className="absolute inset-0 z-0">

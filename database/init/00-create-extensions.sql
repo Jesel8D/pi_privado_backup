@@ -1,14 +1,11 @@
--- ============================================================
--- TienditaCampus - Extensiones PostgreSQL
--- ============================================================
--- Ejecutado automáticamente al crear la BD por primera vez
--- ============================================================
+-- TienditaCampus - Extensiones de Base de Datos
+-- Este script se ejecuta al inicio para asegurar que las extensiones requeridas estén disponibles.
 
--- UUID generation
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+-- Habilitar pg_stat_statements para benchmarking
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
 
--- Funciones criptográficas (hashing de contraseñas)
+-- Habilitar pgcrypto para hashing si es necesario
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Búsqueda de texto completo mejorada
-CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+-- Habilitar uuid-ossp para IDs universales
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

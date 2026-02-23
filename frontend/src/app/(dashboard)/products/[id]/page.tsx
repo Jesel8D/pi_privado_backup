@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,8 +31,8 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
-    const form = useForm({
-        resolver: zodResolver(productSchema),
+    const form = useForm<ProductFormValues>({
+        resolver: zodResolver(productSchema) as any,
         defaultValues: {
             name: '',
             description: undefined,
@@ -44,12 +44,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         },
     });
 
-    useEffect(() => {
-        loadProduct();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [params.id]);
-
-    const loadProduct = async () => {
+    const loadProduct = useCallback(async () => {
         try {
             setIsLoading(true);
             const product = await productsService.getById(params.id);
@@ -68,7 +63,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [params.id, form, router]);
+
+    useEffect(() => {
+        loadProduct();
+    }, [loadProduct]);
 
     const onSubmit = async (data: ProductFormValues) => {
         setIsSubmitting(true);
@@ -168,6 +167,21 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
                                 <Input type="number" {...form.register('shelfLifeDays')} />
                             </div>
                         )}
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium leading-none">URL de la Imagen (Opcional)</label>
+                            <Input
+                                placeholder="https://ejemplo.com/mi-producto.jpg"
+                                {...form.register('imageUrl')}
+                                className={form.formState.errors.imageUrl ? "border-destructive" : ""}
+                            />
+                            <p className="text-xs text-muted-foreground">
+                                Pega aquí el enlace directo a la imagen de tu producto.
+                            </p>
+                            {form.formState.errors.imageUrl && (
+                                <p className="text-sm text-destructive">{form.formState.errors.imageUrl.message}</p>
+                            )}
+                        </div>
 
                         <div className="flex justify-end pt-4">
                             <Button type="submit" disabled={isSubmitting} className="w-full md:w-auto">

@@ -105,7 +105,16 @@ class ApiClient {
                 return {} as T;
             }
 
-            return await response.json();
+            const text = await response.text();
+            if (!text || text.length === 0) {
+                return null as T;
+            }
+
+            try {
+                return JSON.parse(text);
+            } catch {
+                return text as unknown as T;
+            }
 
         } catch (error) {
             if (error instanceof ApiError) {

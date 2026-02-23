@@ -23,17 +23,31 @@ export class ProductsService {
     }
 
     async findAll(user: User): Promise<Product[]> {
-        return await this.productRepository.find({
-            where: { sellerId: user.id, isActive: true },
-            order: { createdAt: 'DESC' },
+        const qb = this.productRepository.createQueryBuilder('product')
+            .where('product.sellerId = :sellerId', { sellerId: user.id })
+            .andWhere('product.isActive = :isActive', { isActive: true })
+            .leftJoin('inventory_records', 'inventory', 'inventory.product_id = product.id AND inventory.status = \'active\'')
+            .addSelect('COALESCE(SUM(inventory.quantity_remaining), 0)', 'totalStock')
+            .groupBy('product.id')
+            .orderBy('product.createdAt', 'DESC');
+
+        const { entities, raw } = await qb.getRawAndEntities();
+
+        return entities.map((entity, index) => {
+            return {
+                ...entity,
+                stock: parseInt(raw[index].totalStock, 10), // We will attach this virtual property
+            } as unknown as Product;
         });
     }
 
-    async findMarketplace(query?: string, sellerId?: string): Promise<Product[]> {
+    async findMarketplace(query?: string, sellerId?: string): Promise<any[]> {
         const qb = this.productRepository.createQueryBuilder('product')
             .leftJoinAndSelect('product.seller', 'seller')
-            .where('product.isActive = :isActive', { isActive: true });
-        // .andWhere('product.stock > :minStock', { minStock: 0 }); // TODO: Integrar con inventario real
+            .innerJoin('inventory_records', 'inventory', 'inventory.product_id = product.id AND inventory.status = \'active\'')
+            .addSelect('inventory.quantity_remaining', 'quantityRemaining')
+            .where('product.isActive = :isActive', { isActive: true })
+            .andWhere('inventory.quantity_remaining > 0');
 
         if (sellerId) {
             qb.andWhere('seller.id = :sellerId', { sellerId });
@@ -45,7 +59,14 @@ export class ProductsService {
 
         qb.orderBy('product.createdAt', 'DESC');
 
-        return await qb.getMany();
+        const { entities, raw } = await qb.getRawAndEntities();
+
+        return entities.map((entity, index) => {
+            return {
+                ...entity,
+                quantityRemaining: parseInt(raw[index].quantityRemaining, 10),
+            };
+        });
     }
 
     async findOne(id: string, user: User): Promise<Product> {

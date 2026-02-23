@@ -1,0 +1,3 @@
+ALTER TABLE public.users
+ADD COLUMN major VARCHAR(255) NULL,
+ADD COLUMN campusLocation VARCHAR(255) NULL;
