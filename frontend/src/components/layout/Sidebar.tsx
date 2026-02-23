@@ -104,15 +104,19 @@ const SidebarContent = ({ pathname, logout, user, setOpen, filteredRoutes }: Sid
         </Link>
 
         {/* User Info Brief */}
-        <div className="mb-8 p-3 border-2 border-black bg-slate-50 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-8 h-8 bg-neo-yellow/30 rotate-45 -mr-4 -mt-4"></div>
-            <div className="flex items-center gap-3 relative z-10">
-                <div className="w-10 h-10 border-2 border-black bg-black text-white flex items-center justify-center font-black text-sm uppercase">
+        <div className="mb-8 p-4 border-4 border-black bg-white relative group shadow-[4px_4px_0_0_#000]">
+            <div className="absolute -top-3 -right-3 w-10 h-10 bg-neo-yellow border-2 border-black rotate-12 -z-10 group-hover:rotate-0 transition-transform"></div>
+            <div className="flex items-center gap-4 relative z-10">
+                <div className="w-12 h-12 shrink-0 border-2 border-black bg-black text-white flex items-center justify-center font-black text-lg uppercase shadow-[2px_2px_0_0_#fff]">
                     {user?.firstName?.charAt(0) || 'U'}
                 </div>
-                <div className="overflow-hidden">
-                    <p className="font-black text-xs uppercase truncate text-black">{user?.firstName} {user?.lastName}</p>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Modo Vendedor</p>
+                <div className="flex flex-col min-w-0">
+                    <p className="font-black text-[11px] uppercase truncate text-black leading-tight">
+                        {user?.firstName} {user?.lastName}
+                    </p>
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-1">
+                        Nivel {user?.role === 'admin' ? 'Master' : 'Vendedor'}
+                    </p>
                 </div>
             </div>
         </div>
