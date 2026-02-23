@@ -38,15 +38,4 @@ export class BenchmarkingController {
         const projectId = await this.benchmarkingService.getCurrentProjectId();
         return { project_id: projectId };
     }
-
-    /**
-     * Endpoint para verificar cuántos datos hay en BigQuery.
-     */
-    @Post('verify-status')
-    async verifyStatus(@Headers('authorization') authHeader: string) {
-        if (!authHeader) {
-            throw new UnauthorizedException('Se requiere token de autenticación (Google OAuth)');
-        }
-        return this.benchmarkingService.verifyBigQueryData(authHeader);
-    }
 }

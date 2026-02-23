@@ -53,41 +53,14 @@ export class BenchmarkingService {
      * Captura el snapshot actual de pg_stat_statements y lo envía a BigQuery.
      */
     async processDailySnapshot(authHeader: string): Promise<any> {
-        // Extraer token de Bearer authHeader
         const accessToken = authHeader.replace('Bearer ', '');
         if (!accessToken) throw new BadRequestException('OAuth token is required');
 
-        const projectId = await this.getCurrentProjectId();
+        // 1. Obtener datos desde la VISTA v_daily_export (Requerimiento del profesor)
+        const metrics = await this.entityManager.query('SELECT * FROM v_daily_export');
 
-        // 1. Consultar pg_stat_statements
-        const stats = await this.entityManager.query(`
-            SELECT 
-                $1::int as project_id,
-                CURRENT_DATE as snapshot_date,
-                queryid::text as queryid,
-                dbid,
-                userid,
-                query,
-                calls,
-                total_exec_time as total_exec_time_ms,
-                mean_exec_time as mean_exec_time_ms,
-                min_exec_time as min_exec_time_ms,
-                max_exec_time as max_exec_time_ms,
-                stddev_exec_time as stddev_exec_time_ms,
-                rows as rows_returned,
-                shared_blks_hit,
-                shared_blks_read,
-                shared_blks_dirtied,
-                shared_blks_written,
-                temp_blks_read,
-                temp_blks_written
-            FROM pg_stat_statements
-            WHERE calls > 0
-            LIMIT 50;
-        `, [projectId]);
-
-        if (stats.length === 0) {
-            return { message: 'No hay métricas nuevas para enviar' };
+        if (metrics.length === 0) {
+            throw new BadRequestException('No hay métricas acumuladas (calls > 0) para exportar.');
         }
 
         // 2. Enviar a BigQuery usando el token del usuario
@@ -100,67 +73,24 @@ export class BenchmarkingService {
             const datasetId = 'benchmarking_warehouse';
             const tableId = 'daily_query_metrics';
 
-            // Insertar filas
-            await bigquery
-                .dataset(datasetId)
-                .table(tableId)
-                .insert(stats);
+            // Insertar rows directamente
+            const rows = metrics.map(m => ({
+                ...m,
+                snapshot_date: m.snapshot_date.toISOString().split('T')[0] // Asegurar formato YYYY-MM-DD
+            }));
 
-            this.logger.log(`Enviados ${stats.length} registros a BigQuery exitosamente.`);
+            await bigquery.dataset(datasetId).table(tableId).insert(rows);
 
-            // 3. Solo si el envío fue exitoso, resetear estadísticas
-            await this.entityManager.query('SELECT pg_stat_statements_reset();');
+            // 3. Solo si el envío es exitoso, reiniciar estadísticas (Requerimiento del profesor)
+            await this.entityManager.query('SELECT pg_stat_statements_reset()');
 
             return {
-                success: true,
-                count: stats.length,
-                message: 'Snapshot enviado y estadísticas reiniciadas'
+                message: 'Snapshot enviado exitosamente a BigQuery y estadísticas reiniciadas.',
+                count: rows.length
             };
-
         } catch (error) {
             this.logger.error(`Error al enviar a BigQuery: ${error.message}`);
             throw new BadRequestException(`Fallo en envío a BigQuery: ${error.message}`);
-        }
-    }
-
-    /**
-     * Verifica cuántos registros existen en BigQuery para el proyecto actual.
-     * Réplica de la funcionalidad del notebook de Colab.
-     */
-    async verifyBigQueryData(authHeader: string): Promise<any> {
-        const accessToken = authHeader.replace('Bearer ', '');
-        if (!accessToken) throw new BadRequestException('OAuth token is required');
-
-        const projectId = await this.getCurrentProjectId();
-
-        try {
-            const bigquery = new BigQuery({
-                projectId: 'data-from-software',
-                credentials: { access_token: accessToken }
-            } as any);
-
-            // Consulta de conteo similar a la del screenshot
-            const query = `
-                SELECT COUNT(*) as total 
-                FROM \`data-from-software.benchmarking_warehouse.daily_query_metrics\`
-                WHERE project_id = @projectId
-            `;
-
-            const options = {
-                query: query,
-                params: { projectId: projectId }
-            };
-
-            const [rows] = await bigquery.query(options);
-
-            return {
-                total: rows.length > 0 ? parseInt(rows[0].total) : 0,
-                project_id: projectId,
-                timestamp: new Date().toISOString()
-            };
-        } catch (error) {
-            this.logger.error(`Error al verificar BigQuery: ${error.message}`);
-            throw new BadRequestException(`No se pudo verificar BigQuery: ${error.message}`);
         }
     }
 }

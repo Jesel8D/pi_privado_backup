@@ -6,11 +6,9 @@ import {
     Send,
     Database,
     Play,
-    CheckCircle2,
     AlertCircle,
     Loader2,
     Globe,
-    BarChart3,
     Zap,
     History
 } from 'lucide-react';
@@ -23,7 +21,6 @@ export default function BenchmarkingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isRunningQueries, setIsRunningQueries] = useState(false);
     const [lastStatus, setLastStatus] = useState<string | null>(null);
-    const [currentAuthAction, setCurrentAuthAction] = useState<'sendSnapshot' | 'verifyStatus' | null>(null);
 
     useEffect(() => {
         loadProject();
@@ -45,7 +42,7 @@ export default function BenchmarkingPage() {
             toast.success('¡TRÁFICO GENERADO!', {
                 description: 'Las consultas de benchmarking se ejecutaron con éxito.'
             });
-            setLastStatus('Consultas ejecutadas - Métricas listas en pg_stat_statements');
+            setLastStatus('Consultas ejecutadas - Métricas listas');
         } catch (error) {
             toast.error('Error al ejecutar consultas');
         } finally {
@@ -58,26 +55,17 @@ export default function BenchmarkingPage() {
         onSuccess: async (tokenResponse) => {
             setIsLoading(true);
             try {
-                if (currentAuthAction === 'sendSnapshot') {
-                    const response = await benchmarkingService.sendSnapshot(tokenResponse.access_token) as any;
-                    toast.success('¡SNAPSHOT ENVIADO!', {
-                        description: `Se enviaron ${response.count} métricas al almacén de BigQuery.`
-                    });
-                    setLastStatus(`Exitoso: ${new Date().toLocaleTimeString()}`);
-                } else if (currentAuthAction === 'verifyStatus') {
-                    const response = await benchmarkingService.verifyStatus(tokenResponse.access_token) as any;
-                    toast.info('VERIFICACIÓN EXITOSA', {
-                        description: `Total de registros de tu proyecto en BigQuery: ${response.total}`
-                    });
-                    setLastStatus(`Verificado: ${response.total} registros en Warehouse`);
-                }
+                const response = await benchmarkingService.sendSnapshot(tokenResponse.access_token) as any;
+                toast.success('¡SNAPSHOT ENVIADO!', {
+                    description: `Se enviaron ${response.count} métricas al almacén de BigQuery.`
+                });
+                setLastStatus(`Exitoso: ${new Date().toLocaleTimeString()}`);
             } catch (error: any) {
-                toast.error('Error en operación de BigQuery', {
+                toast.error('Error al enviar snapshot', {
                     description: error.response?.data?.message || error.message
                 });
             } finally {
                 setIsLoading(false);
-                setCurrentAuthAction(null);
             }
         },
         onError: () => {
@@ -87,7 +75,7 @@ export default function BenchmarkingPage() {
     });
 
     return (
-        <div className="p-4 md:p-10 space-y-10 font-display min-h-screen bg-neo-white selection:bg-neo-red selection:text-white pb-24">
+        <div className="p-4 md:p-10 space-y-10 font-display min-h-screen bg-neo-white pb-24">
             {/* Header Neo-Brutalista */}
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b-4 border-black pb-8">
                 <div className="space-y-4">
@@ -98,7 +86,7 @@ export default function BenchmarkingPage() {
                         METRICS <span className="text-neo-red">LAB</span>
                     </h1>
                     <p className="text-lg font-bold text-slate-500 uppercase tracking-tight max-w-md border-l-4 border-black pl-4">
-                        Centro de control para ejecución de pruebas y exportación a BigQuery.
+                        Centro de control de métricas según las instrucciones de la Evaluación - Unidad 2.
                     </p>
                 </div>
                 <div className="bg-black text-white border-4 border-black p-4 rotate-2 shadow-neo-red">
@@ -106,133 +94,91 @@ export default function BenchmarkingPage() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                {/* Panel Izquierdo: Acciones principales */}
-                <div className="lg:col-span-12 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                        {/* CARD 1: Generar Tráfico */}
-                        <div className="bg-white border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform">
-                                <Zap size={120} />
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-neo-yellow border-2 border-black flex items-center justify-center -rotate-3">
-                                    <Play className="text-black" size={24} />
-                                </div>
-                                <h2 className="text-3xl font-black uppercase tracking-tighter">Estresar Sistema</h2>
-                            </div>
-                            <p className="font-bold text-slate-500 uppercase text-xs leading-relaxed">
-                                Ejecuta el catálogo formal de consultas registradas en la base de datos para acumular métricas de rendimiento en pg_stat_statements.
-                            </p>
-                            <button
-                                onClick={handleRunQueries}
-                                disabled={isRunningQueries}
-                                className="w-full py-4 bg-neo-red text-white font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                            >
-                                {isRunningQueries ? <Loader2 className="animate-spin" /> : <Play size={20} />}
-                                EJECUTAR QUERIES
-                            </button>
-                        </div>
-
-                        {/* CARD 2: Snapshot y BigQuery */}
-                        <div className="bg-neo-green/10 border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:-rotate-12 transition-transform">
-                                <Globe size={120} />
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-neo-green border-2 border-black flex items-center justify-center rotate-6">
-                                    <Send className="text-black" size={24} />
-                                </div>
-                                <h2 className="text-3xl font-black uppercase tracking-tighter">Snapshot Diario</h2>
-                            </div>
-                            <p className="font-bold text-slate-500 uppercase text-xs leading-relaxed">
-                                Captura las métricas consolidadas del periodo y envíalas al almacén central en BigQuery. Requiere autenticación con Google.
-                            </p>
-                            <button
-                                onClick={() => { setCurrentAuthAction('sendSnapshot'); login(); }}
-                                disabled={isLoading}
-                                className="w-full py-4 bg-black text-white font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#FFC72C] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                            >
-                                {isLoading && currentAuthAction === 'sendSnapshot' ? <Loader2 className="animate-spin" /> : <Globe size={20} className="text-neo-yellow" />}
-                                ENVIAR A BIGQUERY
-                            </button>
-                        </div>
-
-                        {/* CARD 3: Verificar Presencia (Screenshot Requirement) */}
-                        <div className="md:col-span-2 bg-slate-900 border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none group-hover:scale-110 transition-transform text-white">
-                                <BarChart3 size={150} />
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-neo-red border-2 border-white flex items-center justify-center -rotate-2">
-                                    <CheckCircle2 className="text-white" size={24} />
-                                </div>
-                                <h2 className="text-3xl font-black uppercase tracking-tighter text-white font-mono">Verificar en Warehouse</h2>
-                            </div>
-
-                            <div className="bg-black/50 p-4 border-2 border-white/20 font-mono text-green-400 text-sm space-y-2">
-                                <p className=""># BigQuery Verification Shell</p>
-                                <p className="text-white/60">$ query = "SELECT COUNT(*) FROM daily_query_metrics WHERE project_id = {projectId}"</p>
-                            </div>
-
-                            {/* Refactor para usar el login existente con lógica dual */}
-                            <p className="text-white/80 font-bold uppercase text-[10px] tracking-widest">
-                                Haz clic para autenticarte y consultar el conteo total de registros procesados.
-                            </p>
-
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={() => { setCurrentAuthAction('verifyStatus'); login(); }}
-                                    disabled={isLoading}
-                                    className="flex-1 py-4 bg-white text-black font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                                >
-                                    {isLoading && currentAuthAction === 'verifyStatus' ? <Loader2 className="animate-spin" /> : <Play size={20} className="text-neo-red" />}
-                                    AUTENTICAR Y CONTAR
-                                </button>
-                            </div>
-                        </div>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* CARD 1: Generar Tráfico */}
+                <div className="bg-white border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:rotate-12 transition-transform">
+                        <Zap size={120} />
                     </div>
-
-                    {/* Dashboard de Estado */}
-                    <div className="bg-white border-4 border-black p-8 shadow-neo space-y-6">
-                        <div className="flex items-center justify-between border-b-2 border-black border-dashed pb-4">
-                            <h3 className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
-                                <Activity className="text-neo-red" size={20} />
-                                Estatus Experimental
-                            </h3>
-                            <div className={`px-4 py-1 border-2 border-black font-black text-[10px] uppercase tracking-widest ${lastStatus ? 'bg-neo-green text-black' : 'bg-neo-red text-white'}`}>
-                                {lastStatus ? 'METRICS READY' : 'WAITING FOR DATA'}
-                            </div>
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-neo-yellow border-2 border-black flex items-center justify-center -rotate-3">
+                            <Play className="text-black" size={24} />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <Database size={12} /> Persistencia Local
-                                </p>
-                                <p className="text-sm font-bold text-black border-l-4 border-black pl-4">
-                                    Conectado a PostgreSQL 16 <br />
-                                    Esquema: Benchmarking v2.1
-                                </p>
-                            </div>
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                    <History size={12} /> Última Actividad
-                                </p>
-                                <p className="text-sm font-bold text-black border-l-4 border-black pl-4 uppercase">
-                                    {lastStatus || 'No hay registros en la sesión actual'}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="mt-6 p-4 bg-slate-50 border-2 border-black flex items-start gap-4 italic text-xs font-bold text-slate-500">
-                            <AlertCircle className="shrink-0 text-neo-red" size={16} />
-                            <p>
-                                IMPORTANTE: No reinicies las estadísticas manualmente antes de enviar el snapshot. El sistema ejecutará el reset automático solo tras confirmar la recepción exitosa en BigQuery.
-                            </p>
-                        </div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter">Estresar Sistema</h2>
                     </div>
+                    <p className="font-bold text-slate-500 uppercase text-xs leading-relaxed">
+                        Ejecuta las consultas registradas en la tabla 'queries' para PostgreSQL acumule datos en pg_stat_statements.
+                    </p>
+                    <button
+                        onClick={handleRunQueries}
+                        disabled={isRunningQueries}
+                        className="w-full py-4 bg-neo-red text-white font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                        {isRunningQueries ? <Loader2 className="animate-spin" /> : <Play size={20} />}
+                        EJECUTAR QUERIES
+                    </button>
+                </div>
+
+                {/* CARD 2: Snapshot y BigQuery */}
+                <div className="bg-neo-green/10 border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:-rotate-12 transition-transform">
+                        <Globe size={120} />
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-neo-green border-2 border-black flex items-center justify-center rotate-6">
+                            <Send className="text-black" size={24} />
+                        </div>
+                        <h2 className="text-3xl font-black uppercase tracking-tighter">Corte del Día</h2>
+                    </div>
+                    <p className="font-bold text-slate-500 uppercase text-xs leading-relaxed">
+                        Sube las métricas consolidadas al almacén central BigQuery y reinicia las estadísticas tras éxito.
+                    </p>
+                    <button
+                        onClick={() => login()}
+                        disabled={isLoading}
+                        className="w-full py-4 bg-black text-white font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#FFC72C] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    >
+                        {isLoading ? <Loader2 className="animate-spin" /> : <Globe size={20} className="text-neo-yellow" />}
+                        ENVIAR A BIGQUERY
+                    </button>
+                </div>
+            </div>
+
+            {/* Status Panel */}
+            <div className="bg-white border-4 border-black p-8 shadow-neo-lg space-y-6">
+                <div className="flex items-center justify-between border-b-2 border-black border-dashed pb-4">
+                    <h3 className="text-xl font-black uppercase tracking-widest flex items-center gap-3">
+                        <Activity className="text-neo-red" size={20} />
+                        Estatus Experimental
+                    </h3>
+                    <div className={`px-4 py-1 border-2 border-black font-black text-[10px] uppercase tracking-widest ${lastStatus ? 'bg-neo-green text-black' : 'bg-neo-red text-white'}`}>
+                        {lastStatus ? 'METRICS READY' : 'WAITING FOR DATA'}
+                    </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <Database size={12} /> Persistencia Local
+                        </p>
+                        <p className="text-sm font-bold text-black border-l-4 border-black pl-4">
+                            Conectado a PostgreSQL 16 <br />
+                            Esquema: Benchmarking v1.0
+                        </p>
+                    </div>
+                    <div className="space-y-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                            <History size={12} /> Última Actividad
+                        </p>
+                        <p className="text-sm font-bold text-black border-l-4 border-black pl-4 uppercase">
+                            {lastStatus || 'No hay actividad registrada'}
+                        </p>
+                    </div>
+                </div>
+                <div className="mt-6 p-4 bg-slate-50 border-2 border-black flex items-start gap-4 italic text-xs font-bold text-slate-500">
+                    <AlertCircle className="shrink-0 text-neo-red" size={16} />
+                    <p>
+                        Nota: El envío es obligatorio antes de terminar cada sesión de pruebas. Solo se permite una exportación consolidada por día.
+                    </p>
                 </div>
             </div>
         </div>
