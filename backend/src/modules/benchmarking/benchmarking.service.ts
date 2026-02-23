@@ -74,7 +74,7 @@ export class BenchmarkingService {
             const tableId = 'daily_query_metrics';
 
             // Insertar rows directamente
-            const rows = metrics.map(m => ({
+            const rows = metrics.map((m: any) => ({
                 ...m,
                 snapshot_date: m.snapshot_date.toISOString().split('T')[0] // Asegurar formato YYYY-MM-DD
             }));
