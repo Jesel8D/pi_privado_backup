@@ -93,9 +93,9 @@ export class BenchmarkingService {
         // 2. Enviar a BigQuery usando el token del usuario
         try {
             const bigquery = new BigQuery({
-                projectId: 'data-from-software', // Proyecto de destino en Google Cloud
-                token: accessToken
-            });
+                projectId: 'data-from-software',
+                credentials: { access_token: accessToken }
+            } as any);
 
             const datasetId = 'benchmarking_warehouse';
             const tableId = 'daily_query_metrics';
@@ -120,6 +120,47 @@ export class BenchmarkingService {
         } catch (error) {
             this.logger.error(`Error al enviar a BigQuery: ${error.message}`);
             throw new BadRequestException(`Fallo en envío a BigQuery: ${error.message}`);
+        }
+    }
+
+    /**
+     * Verifica cuántos registros existen en BigQuery para el proyecto actual.
+     * Réplica de la funcionalidad del notebook de Colab.
+     */
+    async verifyBigQueryData(authHeader: string): Promise<any> {
+        const accessToken = authHeader.replace('Bearer ', '');
+        if (!accessToken) throw new BadRequestException('OAuth token is required');
+
+        const projectId = await this.getCurrentProjectId();
+
+        try {
+            const bigquery = new BigQuery({
+                projectId: 'data-from-software',
+                credentials: { access_token: accessToken }
+            } as any);
+
+            // Consulta de conteo similar a la del screenshot
+            const query = `
+                SELECT COUNT(*) as total 
+                FROM \`data-from-software.benchmarking_warehouse.daily_query_metrics\`
+                WHERE project_id = @projectId
+            `;
+
+            const options = {
+                query: query,
+                params: { projectId: projectId }
+            };
+
+            const [rows] = await bigquery.query(options);
+
+            return {
+                total: rows.length > 0 ? parseInt(rows[0].total) : 0,
+                project_id: projectId,
+                timestamp: new Date().toISOString()
+            };
+        } catch (error) {
+            this.logger.error(`Error al verificar BigQuery: ${error.message}`);
+            throw new BadRequestException(`No se pudo verificar BigQuery: ${error.message}`);
         }
     }
 }

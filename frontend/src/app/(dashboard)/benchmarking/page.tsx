@@ -23,6 +23,7 @@ export default function BenchmarkingPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isRunningQueries, setIsRunningQueries] = useState(false);
     const [lastStatus, setLastStatus] = useState<string | null>(null);
+    const [currentAuthAction, setCurrentAuthAction] = useState<'sendSnapshot' | 'verifyStatus' | null>(null);
 
     useEffect(() => {
         loadProject();
@@ -57,17 +58,26 @@ export default function BenchmarkingPage() {
         onSuccess: async (tokenResponse) => {
             setIsLoading(true);
             try {
-                const response = await benchmarkingService.sendSnapshot(tokenResponse.access_token) as any;
-                toast.success('¡SNAPSHOT ENVIADO!', {
-                    description: `Se enviaron ${response.count} métricas al almacén de BigQuery.`
-                });
-                setLastStatus(`Exitoso: ${new Date().toLocaleTimeString()}`);
+                if (currentAuthAction === 'sendSnapshot') {
+                    const response = await benchmarkingService.sendSnapshot(tokenResponse.access_token) as any;
+                    toast.success('¡SNAPSHOT ENVIADO!', {
+                        description: `Se enviaron ${response.count} métricas al almacén de BigQuery.`
+                    });
+                    setLastStatus(`Exitoso: ${new Date().toLocaleTimeString()}`);
+                } else if (currentAuthAction === 'verifyStatus') {
+                    const response = await benchmarkingService.verifyStatus(tokenResponse.access_token) as any;
+                    toast.info('VERIFICACIÓN EXITOSA', {
+                        description: `Total de registros de tu proyecto en BigQuery: ${response.total}`
+                    });
+                    setLastStatus(`Verificado: ${response.total} registros en Warehouse`);
+                }
             } catch (error: any) {
-                toast.error('Error al enviar snapshot', {
+                toast.error('Error en operación de BigQuery', {
                     description: error.response?.data?.message || error.message
                 });
             } finally {
                 setIsLoading(false);
+                setCurrentAuthAction(null);
             }
         },
         onError: () => {
@@ -140,13 +150,47 @@ export default function BenchmarkingPage() {
                                 Captura las métricas consolidadas del periodo y envíalas al almacén central en BigQuery. Requiere autenticación con Google.
                             </p>
                             <button
-                                onClick={() => login()}
+                                onClick={() => { setCurrentAuthAction('sendSnapshot'); login(); }}
                                 disabled={isLoading}
                                 className="w-full py-4 bg-black text-white font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#FFC72C] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                             >
-                                {isLoading ? <Loader2 className="animate-spin" /> : <Globe size={20} className="text-neo-yellow" />}
+                                {isLoading && currentAuthAction === 'sendSnapshot' ? <Loader2 className="animate-spin" /> : <Globe size={20} className="text-neo-yellow" />}
                                 ENVIAR A BIGQUERY
                             </button>
+                        </div>
+
+                        {/* CARD 3: Verificar Presencia (Screenshot Requirement) */}
+                        <div className="md:col-span-2 bg-slate-900 border-4 border-black p-8 shadow-neo-lg space-y-6 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none group-hover:scale-110 transition-transform text-white">
+                                <BarChart3 size={150} />
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-neo-red border-2 border-white flex items-center justify-center -rotate-2">
+                                    <CheckCircle2 className="text-white" size={24} />
+                                </div>
+                                <h2 className="text-3xl font-black uppercase tracking-tighter text-white font-mono">Verificar en Warehouse</h2>
+                            </div>
+
+                            <div className="bg-black/50 p-4 border-2 border-white/20 font-mono text-green-400 text-sm space-y-2">
+                                <p className=""># BigQuery Verification Shell</p>
+                                <p className="text-white/60">$ query = "SELECT COUNT(*) FROM daily_query_metrics WHERE project_id = {projectId}"</p>
+                            </div>
+
+                            {/* Refactor para usar el login existente con lógica dual */}
+                            <p className="text-white/80 font-bold uppercase text-[10px] tracking-widest">
+                                Haz clic para autenticarte y consultar el conteo total de registros procesados.
+                            </p>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => { setCurrentAuthAction('verifyStatus'); login(); }}
+                                    disabled={isLoading}
+                                    className="flex-1 py-4 bg-white text-black font-black uppercase border-4 border-black shadow-[6px_6px_0_0_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                                >
+                                    {isLoading && currentAuthAction === 'verifyStatus' ? <Loader2 className="animate-spin" /> : <Play size={20} className="text-neo-red" />}
+                                    AUTENTICAR Y CONTAR
+                                </button>
+                            </div>
                         </div>
 
                     </div>

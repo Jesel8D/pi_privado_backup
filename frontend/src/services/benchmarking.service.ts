@@ -29,5 +29,16 @@ export const benchmarkingService = {
      */
     async getProject(): Promise<BenchmarkingProject> {
         return api.get<BenchmarkingProject>('/benchmarking/project');
+    },
+
+    /**
+     * Verifica cuántos registros existen en BigQuery para el proyecto actual.
+     */
+    async verifyStatus(googleToken: string) {
+        return api.post('/benchmarking/verify-status', {}, {
+            headers: {
+                Authorization: `Bearer ${googleToken}`
+            }
+        });
     }
 };
