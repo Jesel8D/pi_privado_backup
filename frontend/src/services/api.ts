@@ -61,8 +61,9 @@ class ApiClient {
             ...(fetchOptions.headers as Record<string, string>),
         };
 
-        // Inyectar token si existe y se requiere
-        if (requiresAuth) {
+        // Inyectar token JWT solo si no viene ya un Authorization header explícito
+        // (ej: el benchmarking envía el Google OAuth token directamente)
+        if (requiresAuth && !headers['Authorization']) {
             const token = useAuthStore.getState().token;
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;

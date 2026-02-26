@@ -1,0 +1,20 @@
+Delivery Transaction Error: QueryFailedError: null value in column "daily_sale_id" of relation "sale_details" violates not-null constraint
+    at PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:216:19)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async UpdateQueryBuilder.execute (/app/node_modules/typeorm/query-builder/UpdateQueryBuilder.js:83:33)
+    at async updateSubject (/app/node_modules/typeorm/persistence/SubjectExecutor.js:380:38)
+    at async Promise.all (index 1)
+    at async SubjectExecutor.executeUpdateOperations (/app/node_modules/typeorm/persistence/SubjectExecutor.js:416:9)
+    at async SubjectExecutor.execute (/app/node_modules/typeorm/persistence/SubjectExecutor.js:99:9)
+    at async EntityPersistExecutor.execute (/app/node_modules/typeorm/persistence/EntityPersistExecutor.js:140:21)
+    at async OrdersService.deliverOrder (/app/dist/modules/orders/orders.service.js:215:13)
+    at async /app/node_modules/@nestjs/core/router/router-execution-context.js:46:28 {
+  query: 'UPDATE "sale_details" SET "daily_sale_id" = $1 WHERE "id" = $2',
+  parameters: [ undefined, 'f4ea89bc-6cbe-40e6-a0eb-60fffbddb22a' ],
+  driverError: error: null value in column "daily_sale_id" of relation "sale_details" violates not-null constraint
+      at /app/node_modules/pg/lib/client.js:624:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async PostgresQueryRunner.query (/app/node_modules/typeorm/driver/postgres/PostgresQueryRunner.js:181:25)
+      at async UpdateQueryBuilder.execute (/app/node_modules/typeorm/query-builder/UpdateQueryBuilder.js:83:33)
+      at async updateSubject (/app/node_modules/typeorm/persistence/SubjectExecutor.js:380:38)
+      at async Promise.all (index 1)

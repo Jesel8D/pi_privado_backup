@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Headers, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Controller, Post, Get, Headers, UseGuards, UnauthorizedException, Query } from '@nestjs/common';
 import { BenchmarkingService } from './benchmarking.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -12,8 +12,6 @@ export class BenchmarkingController {
      * Requiere el token de Google del usuario en el header Authorization.
      */
     @Post('snapshot')
-    // @UseGuards(JwtAuthGuard) // Podemos comentar esto si el token de Google es el único necesario, 
-    // pero idealmente validamos que sea un usuario del sistema.
     async takeSnapshot(@Headers('authorization') authHeader: string) {
         if (!authHeader) {
             throw new UnauthorizedException('Se requiere token de autenticación (Google OAuth)');
@@ -37,5 +35,14 @@ export class BenchmarkingController {
     async getProject() {
         const projectId = await this.benchmarkingService.getCurrentProjectId();
         return { project_id: projectId };
+    }
+
+    /**
+     * GET /api/benchmarking/metrics
+     * Retorna las métricas reales de pg_stat_statements.
+     */
+    @Get('metrics')
+    async getMetrics(@Query('limit') limit?: string) {
+        return this.benchmarkingService.getQueryMetrics(limit ? parseInt(limit) : 20);
     }
 }

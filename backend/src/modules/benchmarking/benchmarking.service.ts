@@ -97,4 +97,32 @@ export class BenchmarkingService {
             throw new BadRequestException(`Fallo en envío a BigQuery: ${error.message}`);
         }
     }
+
+    /**
+     * Obtiene métricas reales directamente de pg_stat_statements.
+     */
+    async getQueryMetrics(limit = 20): Promise<any[]> {
+        try {
+            const metrics = await this.entityManager.query(`
+                SELECT 
+                    queryid::text as id,
+                    LEFT(query, 120) as query,
+                    calls,
+                    ROUND(total_exec_time::numeric, 2) as total_time_ms,
+                    ROUND(mean_exec_time::numeric, 2) as avg_time_ms,
+                    rows as rows_returned,
+                    shared_blks_hit,
+                    shared_blks_read
+                FROM pg_stat_statements
+                WHERE calls > 0
+                AND query NOT LIKE '%pg_stat_statements%'
+                ORDER BY calls DESC
+                LIMIT $1
+            `, [limit]);
+            return metrics;
+        } catch (error) {
+            this.logger.warn(`pg_stat_statements no disponible: ${error.message}`);
+            return [];
+        }
+    }
 }

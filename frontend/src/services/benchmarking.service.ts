@@ -4,6 +4,17 @@ export interface BenchmarkingProject {
     project_id: number;
 }
 
+export interface QueryMetric {
+    id: string;
+    query: string;
+    calls: number;
+    total_time_ms: number;
+    avg_time_ms: number;
+    rows_returned: number;
+    shared_blks_hit: number;
+    shared_blks_read: number;
+}
+
 export const benchmarkingService = {
     /**
      * Envía el snapshot diario a BigQuery.
@@ -29,6 +40,13 @@ export const benchmarkingService = {
      */
     async getProject(): Promise<BenchmarkingProject> {
         return api.get<BenchmarkingProject>('/benchmarking/project');
+    },
+
+    /**
+     * Obtiene métricas reales de pg_stat_statements.
+     */
+    async getMetrics(limit = 20): Promise<QueryMetric[]> {
+        return api.get<QueryMetric[]>(`/benchmarking/metrics?limit=${limit}`);
     },
 
     /**
