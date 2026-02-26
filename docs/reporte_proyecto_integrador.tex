@@ -1,0 +1,267 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{enumitem}
+
+\renewcommand{\baselinestretch}{1.5} % Interlineado de 1.5
+
+\begin{document}
+
+% =========================================================
+% 1. Portada
+% =========================================================
+\begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    
+    {\Large \textbf{UNIVERSIDAD POLITÉCNICA DE CHIAPAS}}\par
+    \vspace{1cm}
+    
+    {\large \textbf{INGENIERÍA EN TECNOLOGÍAS DE LA INFORMACIÓN E INNOVACIÓN DIGITAL}}\par
+    \vspace{2cm}
+    
+    {\Large \textbf{REPORTE DE PROYECTO INTEGRADOR II}}\par
+    \vspace{1.5cm}
+    
+    {\large \textbf{Nombre del Proyecto:}}\par
+    \vspace{0.3cm}
+    {\Large TienditaCampus: Sistema de Soporte a la Decisión para Optimización de Inventarios en Microeconomías Universitarias previendo Mermas con el Método IQR}\par
+    \vspace{1.5cm}
+    
+    {\large \textbf{Integrantes:}}\par
+    \vspace{0.3cm}
+    {\normalsize 
+    Emilio Jaras [Y tus otros apellidos/nombres] \\
+    [Nombre de compañero 2] \\
+    [Nombre de compañero 3]
+    }\par
+    \vspace{1.5cm}
+    
+    {\large \textbf{Docente:}}\par
+    \vspace{0.3cm}
+    {\normalsize [Nombre del Maestro/Asesor]}\par
+    \vspace{1.5cm}
+    
+    {\large \textbf{Fecha de entrega:}}\par
+    \vspace{0.3cm}
+    {\normalsize 26 de febrero de 2026}\par % O la fecha que indiques
+    
+    \vfill
+\end{titlepage}
+
+% =========================================================
+% Índices
+% =========================================================
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+\newpage
+% =========================================================
+% 2. Resumen
+% =========================================================
+\section{Resumen}
+El presente proyecto, denominado TienditaCampus, expone el desarrollo e implementación de un sistema integral web para la gestión de inventarios y punto de venta dirigido específicamente a estudiantes emprendedores (microeconomías universitarias). El sistema mitiga la problemática de pérdidas económicas por mermas en alimentos perecederos integrando el Método del Rango Intercuartílico (IQR) como un Sistema de Soporte a la Decisión para el cálculo eficiente del reabastecimiento. La arquitectura de la aplicación se basó en un enfoque \textit{Monorepo} utilizando Next.js para el Frontend, NestJS para el Backend, y PostgreSQL como base de datos, con orquestación en Docker y procesos de auditoría en la nube mediante Google BigQuery. El alcance de la prueba inicial demuestra la viabilidad tecnológica para reducir los desperdicios operativos y formalizar el flujo de trabajo de los comerciantes estudiantiles.
+
+% =========================================================
+% 3. Introducción
+% =========================================================
+\section{Introducción}
+El sector comercial al interior de los espacios universitarios suele desarrollarse de manera informal. Los estudiantes que venden alimentos perecederos o \textit{snacks} para solventar gastos educativos carecen, habitualmente, de herramientas para predecir la demanda, lo que desencadena sobre-compras que terminan en desperdicio de comida (mermas) o sub-compras que concluyen en pérdida de oportunidades de venta. TienditaCampus surge como una respuesta tecnológica a este déficit de gestión. Este proyecto integrador relata las fases de ingeniería de requerimientos, diseño arquitectónico del software y el despliegue técnico del sistema, demostrando cómo la introducción de modelos algorítmicos robustos bajo tecnologías de vanguardia (React, Node.js y la Nube de Google) empodera a las microeconomías escolares, alineándose además con normativas sanitarias y de protección de datos vigentes en México.
+
+% =========================================================
+% 4. Planteamiento del problema
+% =========================================================
+\section{Planteamiento del problema}
+
+\subsection{Descripción del problema en su contexto}
+En el entorno intra-universitario de la Universidad Politécnica de Chiapas (y universidades en general), existe una fuerte presencia de comercio estudiantil. Los alumnos venden sándwiches, postres y dulces. Sin embargo, su principal enemigo es la caducidad. Llevan registros manuales en libretas o anotaciones mentales, produciendo una rotación de inventarios deficiente.
+
+\subsection{Antecedentes y evidencia}
+A nivel macro, México desperdicia aproximadamente 30 millones de toneladas de alimentos por año. A nivel micro (en las facultades), el desgaste de capital ocurre cuando los estudiantes apuestan por comprar volumen sin conocer tendencias estadísticas de compra, incurriendo en mermas económicas. Aplicaciones de la competencia, como los TPV convencionales (Square, Toast), manejan altas tarifas de cobro que el estudiante no puede absorber. 
+
+\subsection{Declaración clara del problema}
+La falta de herramientas de análisis histórico preventivo provoca una gestión de inventarios ineficiente en las microeconomías universitarias, dando como resultado un alto índice de desperdicio de productos perecederos (mermas) e impactando negativamente las finanzas del estudiante emprendedor.
+
+\subsection{Consecuencias del problema}
+Pérdida de capital semilla, frustración del emprendimiento temprano, fomento del desperdicio alimentario institucional y violaciones no intencionadas a la higiene alimentaria por falta de métodos PEPS (Primeras Entradas, Primeras Salidas).
+
+\subsection{Delimitación del problema}
+El sistema está delimitado exclusivamente a generar el software de punto de venta (web responsive), con perfiles de "Administrador/Vendedor" y "Comprador". No abarca gestiones de flotillas de reparto fuera del campus y, algorítmicamente, el suavizado de la demanda está confinado al uso del paradigma IQR.
+
+\subsection{Pregunta(s) de investigación}
+¿En qué medida la adopción de un Sistema de Soporte a la Decisión (SSD) basado en la estadística (Método IQR) optimiza el almacenamiento y disminuye el número de mermas de los vendedores informales dentro del campus universitario?
+
+\subsection{Justificación del desarrollo del proyecto}
+TienditaCampus tiene una justificación dual: en lo económico, blinda la inversión del alumno; en lo pedagógico/ingenieril, permite a este equipo aplicar conceptos avanzados de Arquitectura web, Bases de Datos Relacionales (PostgreSQL), extensiones (pg\_stat\_statements) y conectividad a entornos de Big Data (BigQuery), solventando un problema real con un Stack "Enterprise".
+
+
+% =========================================================
+% 5. Objetivos
+% =========================================================
+\section{Objetivos}
+
+\subsection{OBJETIVO GENERAL}
+Desarrollar e implementar TienditaCampus, un sistema web integral de gestión de inventarios y punto de venta que integre un algoritmo de suavizado de demanda (IQR) para disminuir en un porcentaje estimado del 10\% la merma pre-caducidad en comercios informales universitarios.
+
+\subsection{OBJETIVOS ESPECÍFICOS}
+\begin{itemize}
+    \item Diseñar y construir una API RESTful escalable utilizando NestJS y TypeScript para manejar la lógica de negocio.
+    \item Implementar un Frontend reactivo y optimizado para móviles con Next.js 14 y Tailwind CSS.
+    \item Diseñar un modelo de base de datos relacional (PostgreSQL) que exija la salida mediante el formato FIFO.
+    \item Incorporar los protocolos de autorización de Google SSO (OAuth2) para facilitar la adopción rápida y proteger la privacidad.
+    \item Auditar el rendimiento de las consultas y exportar telemetría en tiempo real hacia Google BigQuery.
+\end{itemize}
+
+% =========================================================
+% 6. Marco teórico
+% =========================================================
+\section{Marco teórico}
+
+\subsection{Antecedentes teóricos y tecnológicos}
+Sistemas de Punto de Venta (POS); plataformas de rescate (Too Good To Go, Infood). Limitantes comerciales de dichos productos frente al panorama universitario.
+
+\subsection{Definición de conceptos clave}
+\begin{itemize}
+    \item \textbf{Merma:}  Pérdida material o financiera de un producto.
+    \item \textbf{Monorepo:} Estrategia de control de versiones donde múltiples componentes de un sistema se almacenan en un único repositorio.
+    \item \textbf{Método del Rango Intercuartílico (IQR):} Medida de dispersión estadística, estructurada sobre percentiles (Q3 - Q1), útil para eliminar factores inusuales y suavizar predicciones.
+\end{itemize}
+
+\subsection{Explicación de tecnologías y herramientas utilizadas}
+Next.js para SSR (Server-Side Rendering), NestJS por su arquitectura modular inspirada en Angular, PostgreSQL como RDBS, y Docker para contenerización. TypeORM empleado como sistema abstraccion relacional.
+
+\subsection{Relación entre teoría y proyecto}
+El uso del IQR funge como núcleo matemático para evaluar historiales de venta dentro de la plataforma (NestJS), aislando saltos temporales en ventas, proyectando así resúmenes de existencias sugeridas sin recurrir al gasto que requiere Inteligencia Artificial predictiva avanzada.
+
+\subsection{Referencias académicas y técnicas}
+\textit{(Espacio para citas de la metodología IQR, reportes de la FAO sobre alimentos y documentación de desarrollo de frameworks).}
+
+% =========================================================
+% 7. Normativas (Punto adaptado a tu índice)
+% =========================================================
+\section{Normativas}
+El desarrollo considera explícitamente las normativas vigentes del país:
+\begin{itemize}
+    \item \textbf{NOM-251-SSA1-2009:} Prácticas de higiene en el proceso de alimentos. Cumplido indirectamente a través del sistema forzando el despacho bajo la norma FIFO.
+    \item \textbf{LFPDPPP:} Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Solventado al erradicar el resguardo de contraseñas locales al implementar Google SSO para el inicio de sesión.
+\end{itemize}
+
+% =========================================================
+% 8. Metodología 
+% (En tu índice estaba marcado como 7.1, 7.2 pero correspondía al 8, arreglado para coherencia topológica)
+% =========================================================
+\section{Metodología}
+
+\subsection{Tipo de investigación}
+Se trata de una investigación aplicada de tipo tecnológico. 
+
+\subsection{Enfoque metodológico del desarrollo}
+Se empleó un enfoque ágil basado en Sprints cortos iterativos (Scrum-adapted), separando al equipo en roles de Frontend, Backend, y DevOps (Base de Datos). 
+
+\subsection{Fases del proyecto}
+Recolección de requisitos, Diseño UX/UI (Figma), Diseño de Arquitectura DB (ER/UML), Programación (Codificación de los Módulos Auth, Sales, Inventory en Nest), Pruebas y Despliegue con Docker.
+
+\subsection{Herramientas y tecnologías utilizadas}
+\textbf{Gestión:} Git, GitHub. \textbf{Desarrollo:} VSCode. \textbf{Stack:} Next.js, React, Tailwind, NestJS, Node.js, PostgreSQL, Docker Compose, BigQuery, OAuth2 Google API.
+
+\subsection{Técnicas de recopilación de información}
+Observación etnográfica no participante del flujo de comercio en campus, e investigación documental del problema nacional de desperdicio.
+
+\subsection{Validación y evaluación del sistema}
+Pruebas de peticiones en herramientas como Postman y pruebas de usabilidad "End to End" ejecutando flujos directos en el celular entre la ruta \textit{Checkout} y la confirmación.
+
+% =========================================================
+% 9. Análisis del sistema (Índice marcaba 8, ajustado a 9)
+% =========================================================
+\section{Análisis del sistema}
+
+\subsection{Requerimientos funcionales}
+El sistema permite dar de alta productos, marcarlos como perecederos, cargar existencias, procesar carritos de compra, validar credenciales a través de un tercero (Google), y generar un Dashboard con ventas netas e inversiones. Adicionalmente, genera telemetría de DB hacia Data Warehouse (Google Cloud).
+
+\subsection{Requerimientos no funcionales}
+Seguridad mediante JSON Web Tokens (JWT). Escalabilidad. Velocidad de respuesta imperceptible (bajo latencia por uso de SSR). Disponibilidad apoyada en contenedores.
+
+\subsection{Identificación de los actores del sistema}
+Actor Comprador y Actor Vendedor.
+
+\subsection{Diagramas de casos de uso (UML)}
+\textit{(Pegar imágenes de Casos de uso aquí)}
+
+\subsection{Narrativas de casos de uso (escenarios)}
+El estudiante (vendedor) escanea el QR o entra al sistema; el usuario añade tortas al carrito; se finaliza el pedido, y el stock baja, reportando la ganancia global.
+
+\subsection{Modelo de datos preliminar (modelo ER)}
+Conformado por \textit{Users, Products, Orders, OrderItems, InventoryRecords, DailySales, Projects y EjecucionSQL} \textit{(Incluir figura en compilación final)}.
+
+\subsection{Reglas del negocio}
+No se puede vender o reducir el stock a menor de cero. Los productos marcados como no perecederos no entran en la penalización de factor IQR estricto. Obligatoriedad de inicio de sesión de entorno cerrado universitario.
+
+% =========================================================
+% 10. Diseño del sistema (Índice 9)
+% =========================================================
+\section{Diseño del sistema}
+La arquitectura fue planificada usando el patrón Controlador-Servicio-Módulo propio de la injerencia de dependencias de NestJS. Contenedores separados para aislar el volumen de PostgresSQL y evitar pérdida de datos si NodeJS cae (Aislamiento de servicios).
+
+% =========================================================
+% 11. Implementación (Índice 10)
+% =========================================================
+\section{Implementación}
+Para desplegar la infraestructura, se construyeron los archivos \texttt{docker-compose.yml} centralizando el Runtime. Se instanció \texttt{TypeORM} para las tablas. Las pantallas fueron renderizadas del lado del servidor asegurando el tema oscuro, responsividad completa y un flujo de UX optimizado sin redundancias textuales.
+
+% =========================================================
+% 12. Pruebas (Índice 11)
+% =========================================================
+\section{Pruebas}
+Se desarrollaron \textit{troubleshootings} críticos, destacando la resolución del error 500 para la ingesta de telemetría a BigQuery a causa de la ausencia de la extensión \texttt{pg\_stat\_statements} en el contenedor inicial de Base de Datos, solventado con robustez.
+
+% =========================================================
+% 13. Resultados (Índice 12)
+% =========================================================
+\section{Resultados}
+Se alcanzó la culminación de un prototipo altamente funcional. La integración de los modelos IQR es factible, demostrando tiempos de cálculo estables. La visualización de la gráfica de "Riesgo de Inventario" y el cruce de ganancias fue mapeado satisfactoriamente al Frontend sin quiebres de reactividad.
+
+% =========================================================
+% 14. Conclusiones (Índice 13)
+% =========================================================
+\section{Conclusiones}
+TienditaCampus superó el objetivo rudimentario de ser una libreta digital, transformándose en un ecosistema robusto y formalizado para la universidad. El trabajo conjunto en un \textit{Monorepo} y el abordaje riguroso en bases de datos afianzó las bases de ingeniería de software de los integrantes y planteó un beneficio claro hacia mitigar pérdidas del comercio micro. 
+
+% =========================================================
+% 15. Recomendaciones (Índice 14)
+% =========================================================
+\section{Recomendaciones}
+Extender la lógica del algoritmo hacia una pasarela de Inteligencia Artificial formal utilizando servicios Cloud más amplios. Instaurar un esquema de pagos digitales mediante Open Banking a futuro en lugar del cobro en efectivo exclusivo. 
+
+% =========================================================
+% 16. Referencias (Índice 15)
+% =========================================================
+\section{Referencias}
+\begin{itemize}
+    \item FAO (Organización de las Naciones Unidas para la Alimentación y la Agricultura). Reporte de Mermas anual 2024.
+    \item NestJS Documentation. (2025). \textit{Providers and Dependency Injection}.
+    \item Documentación legal de la NOM-251-SSA1-2009. Diario Oficial de la Federación.
+\end{itemize}
+
+% =========================================================
+% 17. Anexos (Índice 16)
+% =========================================================
+\section{Anexos}
+\textit{Anexo 1: Repositorio en GitHub}\\
+\textit{Anexo 2: Capturas de Pantalla de la Interfaz UI/UX}\\
+\textit{Anexo 3: Reportes generados en formato JSON en Google BigQuery}\\
+
+\end{document}
