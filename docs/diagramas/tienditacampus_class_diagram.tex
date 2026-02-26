@@ -13,12 +13,16 @@
 \maketitle
 
 \begin{center}
+\renewcommand{\umltextcolor}{black}
+\renewcommand{\umldrawcolor}{black!70!blue}
+\renewcommand{\umlfillcolor}{white!95!blue}
+
 \begin{tikzpicture}
 
 % -------------------------
 % Entidad User
 % -------------------------
-\begin{class}[text width=4cm]{User}{0,0}
+\begin{class}[text width=4.5cm]{Usuario}{0,0}
   \attribute{- id : UUID}
   \attribute{- email : String}
   \attribute{- password : String}
@@ -34,7 +38,7 @@
 % -------------------------
 % Entidad Product
 % -------------------------
-\begin{class}[text width=4cm]{Product}{6,0}
+\begin{class}[text width=4.5cm]{Producto}{10,0}
   \attribute{- id : UUID}
   \attribute{- name : String}
   \attribute{- description : String}
@@ -47,33 +51,9 @@
 \end{class}
 
 % -------------------------
-% Entidad Order
-% -------------------------
-\begin{class}[text width=4.5cm]{Order}{0,-6}
-  \attribute{- id : UUID}
-  \attribute{- status : OrderStatusEnum}
-  \attribute{- totalAmount : Decimal}
-  \attribute{- pickupLocation : String}
-  \attribute{- createdAt : Date}
-  \operation{+ calculateTotal() : void}
-  \operation{+ updateStatus(newStatus : OrderStatusEnum) : void}
-\end{class}
-
-% -------------------------
-% Entidad OrderItem
-% -------------------------
-\begin{class}[text width=4cm]{OrderItem}{6,-6}
-  \attribute{- id : UUID}
-  \attribute{- quantity : Int}
-  \attribute{- unitPrice : Decimal}
-  \attribute{- subtotal : Decimal}
-  \operation{+ calculateSubtotal() : Decimal}
-\end{class}
-
-% -------------------------
 % Entidad InventoryRecord
 % -------------------------
-\begin{class}[text width=4.5cm]{InventoryRecord}{12,0}
+\begin{class}[text width=4.8cm]{RegistroInventario}{20,0}
   \attribute{- id : UUID}
   \attribute{- type : InventoryTypeEnum}
   \attribute{- quantity : Int}
@@ -83,9 +63,33 @@
 \end{class}
 
 % -------------------------
+% Entidad Order
+% -------------------------
+\begin{class}[text width=4.5cm]{Pedido}{0,-10}
+  \attribute{- id : UUID}
+  \attribute{- status : OrderStatusEnum}
+  \attribute{- totalAmount : Decimal}
+  \attribute{- pickupLocation : String}
+  \attribute{- createdAt : Date}
+  \operation{+ calculateTotal() : void}
+  \operation{+ updateStatus(newStatus) : void}
+\end{class}
+
+% -------------------------
+% Entidad OrderItem
+% -------------------------
+\begin{class}[text width=4.5cm]{DetallePedido}{10,-10}
+  \attribute{- id : UUID}
+  \attribute{- quantity : Int}
+  \attribute{- unitPrice : Decimal}
+  \attribute{- subtotal : Decimal}
+  \operation{+ calculateSubtotal() : Decimal}
+\end{class}
+
+% -------------------------
 % Entidades Benchmarking
 % -------------------------
-\begin{class}[text width=4.5cm]{DailySale}{0,-12}
+\begin{class}[text width=4.5cm]{VentaDiaria}{0,-18}
   \attribute{- id : UUID}
   \attribute{- saleDate : Date}
   \attribute{- totalRevenue : Decimal}
@@ -94,7 +98,7 @@
   \operation{+ calculateDailyMetrics() : void}
 \end{class}
 
-\begin{class}[text width=4.5cm]{Project}{6,-12}
+\begin{class}[text width=4.5cm]{ProyectoBQ}{10,-18}
   \attribute{- id : UUID}
   \attribute{- datasetId : String}
   \attribute{- tableId : String}
@@ -102,7 +106,7 @@
   \operation{+ getCredentials() : JSON}
 \end{class}
 
-\begin{class}[text width=4.5cm]{Execution}{12,-12}
+\begin{class}[text width=4.5cm]{EjecucionSQL}{20,-18}
   \attribute{- id : UUID}
   \attribute{- executionTimeMs : Decimal}
   \attribute{- bytesBilled : Int}
@@ -113,13 +117,13 @@
 % -------------------------
 % Relaciones
 % -------------------------
-\association{User}{sells}{0..*}{Product}{1}{seller}
-\association{User}{places}{0..*}{Order}{1}{buyer}
-\association{Order}{contains}{1..*}{OrderItem}{1}{order}
-\association{Product}{included in}{0..*}{OrderItem}{1}{product}
-\association{Product}{tracks}{1..*}{InventoryRecord}{1}{product}
-\association{User}{owns}{1}{DailySale}{0..*}{seller}
-\association{Project}{hosts}{1..*}{Execution}{1}{project}
+\association{Usuario}{vende}{0..*}{Producto}{1}{vendedor}
+\association{Usuario}{realiza}{0..*}{Pedido}{1}{comprador}
+\association{Pedido}{contiene}{1..*}{DetallePedido}{1}{pedido}
+\association{Producto}{incluido\_en}{0..*}{DetallePedido}{1}{producto}
+\association{Producto}{rastrea}{1..*}{RegistroInventario}{1}{producto}
+\association{Usuario}{gestiona}{1}{VentaDiaria}{0..*}{vendedor}
+\association{ProyectoBQ}{aloja}{1..*}{EjecucionSQL}{1}{proyecto}
 
 \end{tikzpicture}
 \end{center}

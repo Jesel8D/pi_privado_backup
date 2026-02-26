@@ -1,0 +1,160 @@
+\documentclass[a4paper,10pt,landscape]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.multipart, arrows.meta}
+\usepackage[margin=1in]{geometry}
+
+\title{Diagrama Entidad-Relación - TienditaCampus}
+\author{Equipo de Desarrollo}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\begin{tikzpicture}[
+  entity/.style={
+    draw=black!50!blue, very thick,
+    rectangle split, rectangle split parts=2,
+    rounded corners,
+    rectangle split part fill={blue!10, white},
+    text width=4.5cm, align=left,
+    font=\sffamily\small
+  },
+  relation/.style={
+    -Stealth, thick, draw=blue!50!black, rounded corners
+  },
+  label/.style={
+    midway, fill=white, font=\scriptsize\sffamily, inner sep=1pt
+  }
+]
+
+% =====================
+% Nodos (Entidades)
+% =====================
+
+% Fila 1
+\node[entity] (Usuario) at (0,0) {
+  \centering \textbf{USUARIO}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\[1ex]
+  email : String (UK) \\
+  password : String \\
+  firstName : String \\
+  lastName : String \\
+  role : Enum \\
+  isVerified : Boolean \\
+  googleId : String
+};
+
+\node[entity] (Producto) at (9,0) {
+  \centering \textbf{PRODUCTO}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK sellerId : UUID} \\[1ex]
+  name : String \\
+  price : Decimal \\
+  category : String \\
+  isPerishable : Boolean \\
+  currentStock : Int \\
+  isActive : Boolean
+};
+
+\node[entity] (RegistroInventario) at (18,0) {
+  \centering \textbf{REGISTRO\_INVENTARIO}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK productId : UUID} \\[1ex]
+  type : Enum \\
+  quantity : Int \\
+  reason : String \\
+  recordedAt : Date
+};
+
+% Fila 2
+\node[entity] (Pedido) at (0,-8) {
+  \centering \textbf{PEDIDO}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK buyerId : UUID} \\
+  \textbf{FK sellerId : UUID} \\[1ex]
+  status : Enum \\
+  totalAmount : Decimal \\
+  pickupLocation : String \\
+  createdAt : Date
+};
+
+\node[entity] (DetallePedido) at (9,-8) {
+  \centering \textbf{DETALLE\_PEDIDO}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK orderId : UUID} \\
+  \textbf{FK productId : UUID} \\[1ex]
+  quantity : Int \\
+  unitPrice : Decimal \\
+  subtotal : Decimal
+};
+
+% Fila 3
+\node[entity] (VentaDiaria) at (0,-16) {
+  \centering \textbf{VENTA\_DIARIA}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK sellerId : UUID} \\[1ex]
+  saleDate : Date \\
+  totalRevenue : Decimal \\
+  totalInvestment : Decimal \\
+  netProfit : Decimal \\
+  totalOrders : Int
+};
+
+\node[entity] (ProyectoBQ) at (9,-16) {
+  \centering \textbf{PROYECTO\_BQ}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\[1ex]
+  projectId : String \\
+  datasetId : String \\
+  tableId : String \\
+  clientEmail : String
+};
+
+\node[entity] (EjecucionSQL) at (18,-16) {
+  \centering \textbf{EJECUCION\_SQL}
+  \nodepart{second}
+  \textbf{PK id : UUID} \\
+  \textbf{FK projectId : UUID} \\[1ex]
+  executionTimeMs : Decimal \\
+  bytesBilled : Int \\
+  executionDate : Date
+};
+
+% =====================
+% Líneas (Relaciones)
+% =====================
+
+% Usuario a Producto (Vendedor)
+\draw[relation] (Usuario.east) -- (Producto.west) node[label] {1:N (vende)};
+
+% Usuario a Pedido (Comprador)
+\draw[relation] (Usuario.south) -- (Pedido.north) node[label] {1:N (compra)};
+
+% Producto a DetallePedido
+\draw[relation] (Producto.south) -- (DetallePedido.north) node[label] {1:N (está en)};
+
+% Pedido a DetallePedido
+\draw[relation] (Pedido.east) -- (DetallePedido.west) node[label] {1:N (contiene)};
+
+% Producto a RegistroInventario
+\draw[relation] (Producto.east) -- (RegistroInventario.west) node[label] {1:N (rastrea)};
+
+% Usuario a VentaDiaria
+\draw[relation] (Usuario.west) -- ++(-1,0) |- (VentaDiaria.west) node[label, pos=0.8] {1:N (gestiona)};
+
+% ProyectoBQ a EjecucionSQL
+\draw[relation] (ProyectoBQ.east) -- (EjecucionSQL.west) node[label] {1:N (aloja)};
+
+\end{tikzpicture}
+\end{center}
+
+\end{document}
