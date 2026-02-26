@@ -1,4 +1,6 @@
 -- Vista oficial de exportación para Benchmarking Unidad 2
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+
 CREATE OR REPLACE VIEW v_daily_export AS
 SELECT 
     (SELECT project_id FROM projects LIMIT 1) as project_id, -- Ajustar según el ID de tu equipo
