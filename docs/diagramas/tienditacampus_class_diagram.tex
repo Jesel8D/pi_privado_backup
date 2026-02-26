@@ -65,7 +65,7 @@
 % -------------------------
 % Entidad Order
 % -------------------------
-\begin{class}[text width=4.5cm]{Pedido}{0,-8}
+\begin{class}[text width=4.5cm]{Pedido}{10,-8}
   \attribute{- id : UUID}
   \attribute{- status : OrderStatusEnum}
   \attribute{- totalAmount : Decimal}
@@ -78,7 +78,7 @@
 % -------------------------
 % Entidad OrderItem
 % -------------------------
-\begin{class}[text width=4.5cm]{DetallePedido}{10,-8}
+\begin{class}[text width=4.5cm]{DetallePedido}{20,-8}
   \attribute{- id : UUID}
   \attribute{- quantity : Int}
   \attribute{- unitPrice : Decimal}
@@ -89,7 +89,7 @@
 % -------------------------
 % Entidades Benchmarking
 % -------------------------
-\begin{class}[text width=4.5cm]{VentaDiaria}{0,-15}
+\begin{class}[text width=4.5cm]{VentaDiaria}{0,-8}
   \attribute{- id : UUID}
   \attribute{- saleDate : Date}
   \attribute{- totalRevenue : Decimal}
@@ -98,7 +98,7 @@
   \operation{+ calculateDailyMetrics() : void}
 \end{class}
 
-\begin{class}[text width=4.5cm]{ProyectoBQ}{10,-15}
+\begin{class}[text width=4.5cm]{ProyectoBQ}{10,-16}
   \attribute{- id : UUID}
   \attribute{- datasetId : String}
   \attribute{- tableId : String}
@@ -106,7 +106,7 @@
   \operation{+ getCredentials() : JSON}
 \end{class}
 
-\begin{class}[text width=4.5cm]{EjecucionSQL}{20,-15}
+\begin{class}[text width=4.5cm]{EjecucionSQL}{20,-16}
   \attribute{- id : UUID}
   \attribute{- executionTimeMs : Decimal}
   \attribute{- bytesBilled : Int}
