@@ -16,6 +16,7 @@ export interface Product {
         id: string;
         fullName: string;
         email: string;
+        phone?: string;
     };
     stock?: number;
 }
@@ -58,7 +59,7 @@ export const productsService = {
      * Obtener un producto por ID
      */
     async getById(id: string): Promise<Product> {
-        return api.get<Product>(`/products/${id}`);
+        return api.get<Product>(`/products/marketplace/${id}`);
     },
 
     /**

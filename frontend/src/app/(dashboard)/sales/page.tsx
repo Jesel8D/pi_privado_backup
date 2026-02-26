@@ -65,12 +65,14 @@ export default function ManageOrdersPage() {
     const filteredOrders = orders.filter(o => {
         if (activeTab === 'all') return true;
         if (activeTab === 'completed') return ['completed', 'delivered'].includes(o.status);
+        if (activeTab === 'accepted') return ['accepted', 'pending'].includes(o.status);
         return o.status === activeTab;
     });
 
     const getStatusInfo = (status: string) => {
         switch (status) {
             case 'requested': return { bg: 'bg-neo-yellow', text: 'text-black', label: 'PENDIENTE', icon: <Clock size={16} /> };
+            case 'pending':
             case 'accepted': return { bg: 'bg-neo-red', text: 'text-white', label: 'PREPARANDO', icon: <HandPlatter size={16} /> };
             case 'completed':
             case 'delivered': return { bg: 'bg-neo-green', text: 'text-black', label: 'ENTREGADO', icon: <CheckCircle2 size={16} /> };
@@ -107,17 +109,17 @@ export default function ManageOrdersPage() {
             {/* Quick Stats Tabs */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { id: 'all', label: 'TODOS', count: orders.length, color: 'bg-white' },
-                    { id: 'requested', label: 'PENDIENTES', count: orders.filter(o => o.status === 'requested').length, color: 'bg-neo-yellow' },
-                    { id: 'accepted', label: 'PREPARANDO', count: orders.filter(o => o.status === 'accepted').length, color: 'bg-neo-red', text: 'text-white' },
-                    { id: 'completed', label: 'COMPLETADOS', count: orders.filter(o => ['completed', 'delivered'].includes(o.status)).length, color: 'bg-neo-green' }
+                    { id: 'all', label: 'TODOS', count: orders.length, color: 'bg-white', text: 'text-black' },
+                    { id: 'requested', label: 'PENDIENTES', count: orders.filter(o => o.status === 'requested').length, color: 'bg-neo-yellow', text: 'text-black' },
+                    { id: 'accepted', label: 'PREPARANDO', count: orders.filter(o => o.status === 'accepted' || o.status === 'pending').length, color: 'bg-neo-red', text: 'text-white' },
+                    { id: 'completed', label: 'COMPLETADOS', count: orders.filter(o => ['completed', 'delivered'].includes(o.status)).length, color: 'bg-neo-green', text: 'text-black' }
                 ].map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`p-6 border-4 border-black flex flex-col items-center justify-center text-center transition-all ${activeTab === tab.id
-                                ? `${tab.color} ${tab.text || 'text-black'} shadow-[6px_6px_0_0_#000] translate-x-[-4px] translate-y-[-4px]`
-                                : 'bg-white text-slate-400 border-slate-200 opacity-60 hover:opacity-100 hover:border-black'
+                            ? `${tab.color} ${tab.text || 'text-black'} shadow-[6px_6px_0_0_#000] translate-x-[-4px] translate-y-[-4px]`
+                            : 'bg-white text-slate-400 border-slate-200 opacity-60 hover:opacity-100 hover:border-black'
                             }`}
                     >
                         <span className={`text-4xl font-black tracking-tighter mb-1`}>{tab.count}</span>
@@ -209,7 +211,7 @@ export default function ManageOrdersPage() {
                                                 </button>
                                             </>
                                         )}
-                                        {order.status === 'accepted' && (
+                                        {['accepted', 'pending'].includes(order.status) && (
                                             <button
                                                 onClick={() => handleDeliver(order.id)}
                                                 className="w-full sm:w-auto px-10 py-4 bg-neo-green border-4 border-black font-black uppercase text-lg tracking-[0.1em] shadow-[6px_6px_0_0_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex items-center justify-center gap-3"

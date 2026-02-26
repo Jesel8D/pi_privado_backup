@@ -65,13 +65,6 @@ export default function BenchmarkingPage() {
     const [isRunningQueries, setIsRunningQueries] = useState(false);
     const [lastStatus, setLastStatus] = useState<string | null>(null);
 
-    useEffect(() => {
-        setIsMounted(true);
-        loadProject();
-    }, []);
-
-    if (!isMounted) return null;
-
     const loadProject = async () => {
         try {
             const data = await benchmarkingService.getProject();
@@ -80,6 +73,13 @@ export default function BenchmarkingPage() {
             console.error('Error al cargar proyecto', error);
         }
     };
+
+    useEffect(() => {
+        setIsMounted(true);
+        loadProject();
+    }, []);
+
+    if (!isMounted) return null;
 
     const handleRunQueries = async () => {
         setIsRunningQueries(true);

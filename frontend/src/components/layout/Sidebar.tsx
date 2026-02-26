@@ -122,7 +122,7 @@ const SidebarContent = ({ pathname, logout, user, setOpen, filteredRoutes }: Sid
         </div>
 
         {/* Navigation */}
-        <div className="flex-1 space-y-2">
+        <div className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-2 mb-2">Menú Principal</p>
             {filteredRoutes.map((route) => (
                 <Link

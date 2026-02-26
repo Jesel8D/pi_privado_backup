@@ -74,7 +74,7 @@ export default function ProductDetailPage() {
                                     className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-slate-100 italic font-black text-9xl text-slate-200 uppercase select-none">
+                                <div className="w-full h-full flex items-center justify-center bg-slate-100 font-black text-9xl text-black uppercase select-none">
                                     {product.name.charAt(0)}
                                 </div>
                             )}
@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
 
                             <div className="flex items-end gap-6 py-4">
                                 <span className="text-7xl font-black tracking-tighter text-neo-red border-b-8 border-black">${Number(product.salePrice).toFixed(2)}</span>
-                                <span className="text-xs font-black uppercase text-slate-400 mb-4 tracking-widest italic">PAGO CONTRA ENTREGA</span>
+                                <span className="text-xs font-black uppercase text-black/60 mb-4 tracking-widest">PAGO CONTRA ENTREGA</span>
                             </div>
 
                             {/* Seller Card Redesign */}
@@ -121,8 +121,8 @@ export default function ProductDetailPage() {
                                         {product.seller?.fullName?.charAt(0).toUpperCase() || 'V'}
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Vendedor Verificado</p>
-                                        <p className="font-black text-xl uppercase tracking-tighter">@{product.seller?.fullName?.replace(/\s/g, '').toLowerCase() || 'vendedor'}</p>
+                                        <p className="text-[10px] font-black text-black/60 uppercase tracking-widest">Vendedor Verificado</p>
+                                        <p className="font-black text-xl uppercase tracking-tighter text-black">@{product.seller?.fullName?.replace(/\s/g, '').toLowerCase() || 'vendedor'}</p>
                                     </div>
                                 </div>
                                 <button className="h-12 w-12 border-2 border-slate-300 hover:border-black flex items-center justify-center transition-colors">
@@ -134,7 +134,7 @@ export default function ProductDetailPage() {
                                 <h3 className="text-xl font-black uppercase tracking-[0.2em] flex items-center gap-2">
                                     <div className="w-3 h-3 bg-neo-red"></div> SOBRE PRODUCTO
                                 </h3>
-                                <p className="text-lg font-bold text-slate-500 leading-relaxed border-l-4 border-black pl-6">
+                                <p className="text-lg font-bold text-black leading-relaxed border-l-4 border-black pl-6">
                                     {product.description || 'Este producto es de alta calidad y está disponible hoy mismo para entrega inmediata en cualquier punto estratégico del campus universitario.'}
                                 </p>
                             </div>
@@ -186,7 +186,7 @@ export default function ProductDetailPage() {
                                 PEDIR AHORA
                             </button>
 
-                            <p className="text-[10px] font-black uppercase text-slate-400 text-center tracking-widest italic pt-2">
+                            <p className="text-[10px] font-black uppercase text-black/60 text-center tracking-widest pt-2">
                                 Garantía Tiendita: Pago contra entrega en zonas seguras
                             </p>
                         </div>

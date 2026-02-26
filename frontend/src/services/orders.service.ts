@@ -5,7 +5,7 @@ export interface Order {
     id: string;
     buyerId: string;
     sellerId: string;
-    status: 'requested' | 'accepted' | 'rejected' | 'delivered';
+    status: 'requested' | 'accepted' | 'pending' | 'rejected' | 'completed' | 'delivered';
     totalAmount: number;
     deliveryMessage?: string;
     deliveryLocation?: string;

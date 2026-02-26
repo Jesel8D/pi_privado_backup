@@ -18,8 +18,10 @@ import {
     User,
     GraduationCap,
     MapPin,
-    CheckCircle2
+    CheckCircle2,
+    Globe
 } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const registerSchema = z.object({
     firstName: z.string().min(2, { message: 'Nombre muy corto' }),
@@ -36,7 +38,31 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [selectedRole, setSelectedRole] = useState<'buyer' | 'seller'>('buyer');
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setIsGoogleLoading(true);
+            try {
+                const response = await authService.loginWithGoogle(tokenResponse.access_token);
+                toast.success('¡Registro exitoso con Google!');
+                if (response.user.role === 'buyer') {
+                    router.push('/buyer/dashboard');
+                } else {
+                    router.push('/dashboard');
+                }
+            } catch (error: any) {
+                toast.error(error.message || 'Error al registrar con Google');
+            } finally {
+                setIsGoogleLoading(false);
+            }
+        },
+        onError: () => {
+            toast.error('Ocurrió un error con el proveedor de Google');
+        },
+        scope: 'email profile'
+    });
 
     const {
         register,
@@ -186,6 +212,28 @@ export default function RegisterPage() {
                             <>
                                 CREAR MI CUENTA
                                 <CheckCircle2 className="group-hover:scale-125 transition-transform text-neo-yellow" />
+                            </>
+                        )}
+                    </button>
+
+                    <div className="relative flex items-center py-2 mt-4">
+                        <div className="flex-grow border-t-2 border-slate-200"></div>
+                        <span className="flex-shrink-0 mx-4 text-xs font-black text-slate-400 uppercase tracking-widest">O</span>
+                        <div className="flex-grow border-t-2 border-slate-200"></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => googleLogin()}
+                        disabled={isLoading || isGoogleLoading}
+                        className="group w-full h-20 bg-white text-black text-lg font-black uppercase tracking-widest border-4 border-black shadow-[8px_8px_0_0_#94A3B8] hover:bg-slate-50 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-4 disabled:opacity-70 mt-6"
+                    >
+                        {isGoogleLoading ? (
+                            <Loader2 className="h-8 w-8 animate-spin" />
+                        ) : (
+                            <>
+                                <Globe size={28} className="text-black group-hover:-rotate-12 transition-transform" />
+                                REGISTRARSE CON GOOGLE
                             </>
                         )}
                     </button>

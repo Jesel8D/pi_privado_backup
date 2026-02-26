@@ -59,6 +59,20 @@ export const authService = {
     },
 
     /**
+     * Iniciar sesión / Registro Automático con Google OAuth2
+     */
+    async loginWithGoogle(token: string): Promise<AuthResponse> {
+        const response = await api.post<AuthResponse>('/auth/google', { token }, {
+            requiresAuth: false,
+        });
+
+        // Guardar en store
+        useAuthStore.getState().login(response.accessToken, response.user);
+
+        return response;
+    },
+
+    /**
      * Registrarse y guardar estado (auto-login)
      */
     async register(data: RegisterDto): Promise<AuthResponse> {

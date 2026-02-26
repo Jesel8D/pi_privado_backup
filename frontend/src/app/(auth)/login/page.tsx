@@ -11,7 +11,8 @@ import { authService } from '../../../services/auth.service';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
-import { Loader2, ShieldCheck, ArrowRight, Lock, Mail } from 'lucide-react';
+import { Loader2, ShieldCheck, ArrowRight, Lock, Mail, Globe } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
 
 // Esquema de validación
 const loginSchema = z.object({
@@ -24,6 +25,30 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setIsGoogleLoading(true);
+            try {
+                const response = await authService.loginWithGoogle(tokenResponse.access_token);
+                toast.success('¡Bienvenido con Google!');
+                if (response.user.role === 'buyer') {
+                    router.push('/buyer/dashboard');
+                } else {
+                    router.push('/dashboard');
+                }
+            } catch (error: any) {
+                toast.error(error.message || 'Error al iniciar sesión con Google');
+            } finally {
+                setIsGoogleLoading(false);
+            }
+        },
+        onError: () => {
+            toast.error('Ocurrió un error con el proveedor de Google');
+        },
+        scope: 'email profile'
+    });
 
     const {
         register,
@@ -132,6 +157,28 @@ export default function LoginPage() {
                             <>
                                 ENTRAR AHORA
                                 <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                            </>
+                        )}
+                    </button>
+
+                    <div className="relative flex items-center py-2">
+                        <div className="flex-grow border-t-2 border-slate-200"></div>
+                        <span className="flex-shrink-0 mx-4 text-xs font-black text-slate-400 uppercase tracking-widest">O</span>
+                        <div className="flex-grow border-t-2 border-slate-200"></div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => googleLogin()}
+                        disabled={isLoading || isGoogleLoading}
+                        className="group w-full h-16 bg-white text-black text-lg font-black uppercase tracking-widest border-4 border-black shadow-[6px_6px_0_0_#94A3B8] hover:bg-slate-50 active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                    >
+                        {isGoogleLoading ? (
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                        ) : (
+                            <>
+                                <Globe size={24} className="text-black group-hover:-rotate-12 transition-transform" />
+                                INICIAR CON GOOGLE
                             </>
                         )}
                     </button>

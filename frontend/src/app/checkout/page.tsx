@@ -4,7 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { productsService, Product } from '@/services/products.service';
 import { ordersService } from '@/services/orders.service';
-import { ArrowLeft, CheckCircle, Package, Zap, MessageSquare, ShieldCheck, MapPin, Loader2, DollarSign } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Package, Zap, MessageSquare, ShieldCheck, MapPin, Loader2, DollarSign, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 
 function CheckoutContent() {
@@ -51,9 +51,11 @@ function CheckoutContent() {
                 ],
                 deliveryMessage
             });
+
             toast.success('¡PEDIDO ENVIADO!', {
                 description: 'El vendedor ha sido notificado. Revisa tu panel para ver el estado.',
             });
+
             router.push('/buyer/dashboard');
         } catch (error: any) {
             console.error(error);
@@ -174,7 +176,23 @@ function CheckoutContent() {
                                     </div>
                                     <div className="flex justify-between items-center pt-2">
                                         <span className="font-black text-xl tracking-tighter">${Number(product.salePrice).toFixed(2)}</span>
-                                        <span className="font-black text-xs bg-white border-2 border-black px-2 py-0.5">X {quantity}</span>
+                                        <div className="flex items-center border-2 border-black bg-white select-none">
+                                            <button
+                                                type="button"
+                                                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                                className="w-8 h-8 flex items-center justify-center hover:bg-slate-100 active:bg-slate-200 transition-colors"
+                                            >
+                                                <Minus size={14} className="font-black" />
+                                            </button>
+                                            <span className="w-8 text-center font-black text-sm">{quantity}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setQuantity(Math.min(100, quantity + 1))}
+                                                className="w-8 h-8 flex items-center justify-center hover:bg-slate-100 active:bg-slate-200 transition-colors border-l-2 border-black"
+                                            >
+                                                <Plus size={14} className="font-black" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -207,8 +225,8 @@ function CheckoutContent() {
                                     <Loader2 className="animate-spin" size={32} />
                                 ) : (
                                     <>
-                                        ¡PEDIR AHORA!
-                                        <MessageSquare size={24} className="group-hover:rotate-12 transition-transform" />
+                                        CONFIRMAR PEDIDO
+                                        <CheckCircle size={24} className="group-hover:scale-110 transition-transform" />
                                     </>
                                 )}
                             </button>

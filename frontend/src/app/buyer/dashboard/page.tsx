@@ -45,7 +45,7 @@ export default function BuyerDashboardPage() {
     };
 
     const filteredOrders = orders.filter(order => {
-        if (filter === 'activos') return ['requested', 'accepted'].includes(order.status);
+        if (filter === 'activos') return ['requested', 'accepted', 'pending'].includes(order.status);
         if (filter === 'completados') return ['completed', 'delivered'].includes(order.status);
         if (filter === 'cancelados') return order.status === 'rejected';
         return true;
@@ -54,6 +54,7 @@ export default function BuyerDashboardPage() {
     const getStatusInfo = (status: string) => {
         switch (status) {
             case 'requested': return { bg: 'bg-neo-yellow', text: 'text-black', label: 'PEDIDO', icon: <Clock size={14} /> };
+            case 'pending':
             case 'accepted': return { bg: 'bg-neo-red', text: 'text-white', label: 'PREPARANDO', icon: <Package size={14} /> };
             case 'completed':
             case 'delivered': return { bg: 'bg-neo-green', text: 'text-black', label: 'ENTREGADO', icon: <CheckCircle2 size={14} /> };
@@ -95,14 +96,18 @@ export default function BuyerDashboardPage() {
                         <TrendingUp className="text-neo-red" />
                         <h2 className="text-2xl font-black uppercase tracking-tighter">Resumen Ejecutivo</h2>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div className="bg-white border-4 border-black p-6 shadow-neo hover:translate-y-[-4px] transition-transform">
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Total Pedidos</p>
                             <h4 className="text-4xl font-black">{orders.length}</h4>
                         </div>
                         <div className="bg-white border-4 border-black p-6 shadow-neo hover:translate-y-[-4px] transition-transform">
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">En Camino</p>
-                            <h4 className="text-4xl font-black text-neo-red">{orders.filter(o => o.status === 'requested' || o.status === 'accepted').length}</h4>
+                            <h4 className="text-4xl font-black text-neo-red">{orders.filter(o => ['requested', 'accepted', 'pending'].includes(o.status)).length}</h4>
+                        </div>
+                        <div className="bg-white border-4 border-black p-6 shadow-neo hover:translate-y-[-4px] transition-transform">
+                            <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Completados</p>
+                            <h4 className="text-4xl font-black text-neo-yellow">{orders.filter(o => ['completed', 'delivered'].includes(o.status)).length}</h4>
                         </div>
                         <div className="bg-white border-4 border-black p-6 shadow-neo hover:translate-y-[-4px] transition-transform">
                             <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-1">Inversión Campus</p>

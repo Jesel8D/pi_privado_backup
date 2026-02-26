@@ -15,16 +15,22 @@ import {
     CalendarDays
 } from 'lucide-react';
 import { salesService, RoiStats } from '@/services/sales.service';
+import { ordersService, Order } from '@/services/orders.service';
 
 export default function ReportsPage() {
     const [stats, setStats] = useState<RoiStats | null>(null);
+    const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadStats = async () => {
             try {
-                const data = await salesService.getRoiStats('', '');
+                const [data, ordersData] = await Promise.all([
+                    salesService.getRoiStats('', ''),
+                    ordersService.getIncomingOrders()
+                ]);
                 setStats(data);
+                setOrders(ordersData);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -123,7 +129,7 @@ export default function ReportsPage() {
                     </div>
                     <p className="text-xs font-black uppercase text-slate-400 tracking-widest mb-1">Ventas Exitosas</p>
                     <h3 className="text-4xl font-black tracking-tighter text-black">
-                        {Math.floor((stats?.revenue || 0) / 50) + 5}
+                        {orders.filter(o => ['completed', 'delivered'].includes(o.status)).length}
                     </h3>
                 </div>
             </div>
