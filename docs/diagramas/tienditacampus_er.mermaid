@@ -1,0 +1,118 @@
+erDiagram
+    USERS {
+        uuid id PK
+        string email UK
+        string password "nullable"
+        string firstName
+        string lastName
+        enum role "admin, seller, buyer"
+        boolean isVerified
+        string googleId "nullable"
+        string avatarUrl "nullable"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    PRODUCTS {
+        uuid id PK
+        uuid sellerId FK
+        string name
+        text description
+        decimal price
+        string category
+        boolean isPerishable
+        timestamp targetDate "nullable"
+        int currentStock
+        string imageUrl "nullable"
+        boolean isActive
+    }
+
+    ORDERS {
+        uuid id PK
+        uuid buyerId FK
+        uuid sellerId FK
+        enum status "pending, preparing, ready, assigned, delivered, cancelled"
+        decimal totalAmount
+        string pickupLocation "nullable"
+        timestamp createdAt
+        timestamp updatedAt
+    }
+
+    ORDER_ITEMS {
+        uuid id PK
+        uuid orderId FK
+        uuid productId FK
+        int quantity
+        decimal unitPrice
+        decimal subtotal
+    }
+
+    INVENTORY_RECORDS {
+        uuid id PK
+        uuid productId FK
+        enum type "in, out, loss, adjustment"
+        int quantity
+        string reason
+        timestamp recordedAt
+    }
+
+    DAILY_SALES {
+        uuid id PK
+        uuid sellerId FK
+        date saleDate
+        decimal totalRevenue
+        decimal totalInvestment
+        decimal netProfit
+        int totalOrders
+        timestamp createdAt
+    }
+
+    SALE_DETAILS {
+        uuid id PK
+        uuid dailySaleId FK
+        uuid productId FK
+        int quantitySold
+        decimal totalAmount
+        int mermas "nullable"
+    }
+
+    PROJECTS {
+        uuid id PK
+        string projectId
+        string datasetId
+        string tableId
+        string clientEmail
+        string privateKey
+    }
+
+    QUERIES {
+        uuid id PK
+        string queryName
+        text queryText
+    }
+
+    EXECUTION {
+        uuid id PK
+        uuid queryId FK
+        uuid projectId FK
+        decimal executionTimeMs
+        int bytesBilled
+        timestamp executionDate
+    }
+
+    %% Relaciones
+    USERS ||--o{ PRODUCTS : "sells"
+    USERS ||--o{ ORDERS : "places (buyer)"
+    USERS ||--o{ ORDERS : "receives (seller)"
+    USERS ||--o{ DAILY_SALES : "owns"
+    
+    PRODUCTS ||--o{ ORDER_ITEMS : "included in"
+    PRODUCTS ||--o{ INVENTORY_RECORDS : "tracks"
+    PRODUCTS ||--o{ SALE_DETAILS : "consolidated in"
+
+    ORDERS ||--|{ ORDER_ITEMS : "contains"
+    
+    DAILY_SALES ||--|{ SALE_DETAILS : "records"
+
+    PROJECTS ||--o{ EXECUTION : "hosts"
+    QUERIES ||--o{ EXECUTION : "executed as"

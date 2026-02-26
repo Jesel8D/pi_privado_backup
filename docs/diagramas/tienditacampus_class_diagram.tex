@@ -1,0 +1,127 @@
+\documentclass[a4paper,10pt,landscape]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{tikz}
+\usepackage{pgf-umlcd}
+\usepackage[margin=1in]{geometry}
+
+\title{Diagrama de Clases - TienditaCampus}
+\author{Equipo de Desarrollo}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\begin{tikzpicture}
+
+% -------------------------
+% Entidad User
+% -------------------------
+\begin{class}[text width=4cm]{User}{0,0}
+  \attribute{- id : UUID}
+  \attribute{- email : String}
+  \attribute{- password : String}
+  \attribute{- firstName : String}
+  \attribute{- lastName : String}
+  \attribute{- role : RoleEnum}
+  \attribute{- isVerified : Boolean}
+  \attribute{- googleId : String}
+  \operation{+ hashPassword() : void}
+  \operation{+ validatePassword() : Boolean}
+\end{class}
+
+% -------------------------
+% Entidad Product
+% -------------------------
+\begin{class}[text width=4cm]{Product}{6,0}
+  \attribute{- id : UUID}
+  \attribute{- name : String}
+  \attribute{- description : String}
+  \attribute{- price : Decimal}
+  \attribute{- category : String}
+  \attribute{- isPerishable : Boolean}
+  \attribute{- currentStock : Int}
+  \operation{+ updateStock(amount : Int) : void}
+  \operation{+ checkPerishability() : Boolean}
+\end{class}
+
+% -------------------------
+% Entidad Order
+% -------------------------
+\begin{class}[text width=4.5cm]{Order}{0,-6}
+  \attribute{- id : UUID}
+  \attribute{- status : OrderStatusEnum}
+  \attribute{- totalAmount : Decimal}
+  \attribute{- pickupLocation : String}
+  \attribute{- createdAt : Date}
+  \operation{+ calculateTotal() : void}
+  \operation{+ updateStatus(newStatus : OrderStatusEnum) : void}
+\end{class}
+
+% -------------------------
+% Entidad OrderItem
+% -------------------------
+\begin{class}[text width=4cm]{OrderItem}{6,-6}
+  \attribute{- id : UUID}
+  \attribute{- quantity : Int}
+  \attribute{- unitPrice : Decimal}
+  \attribute{- subtotal : Decimal}
+  \operation{+ calculateSubtotal() : Decimal}
+\end{class}
+
+% -------------------------
+% Entidad InventoryRecord
+% -------------------------
+\begin{class}[text width=4.5cm]{InventoryRecord}{12,0}
+  \attribute{- id : UUID}
+  \attribute{- type : InventoryTypeEnum}
+  \attribute{- quantity : Int}
+  \attribute{- reason : String}
+  \attribute{- recordedAt : Date}
+  \operation{+ applyToProduct() : void}
+\end{class}
+
+% -------------------------
+% Entidades Benchmarking
+% -------------------------
+\begin{class}[text width=4.5cm]{DailySale}{0,-12}
+  \attribute{- id : UUID}
+  \attribute{- saleDate : Date}
+  \attribute{- totalRevenue : Decimal}
+  \attribute{- totalInvestment : Decimal}
+  \attribute{- netProfit : Decimal}
+  \operation{+ calculateDailyMetrics() : void}
+\end{class}
+
+\begin{class}[text width=4.5cm]{Project}{6,-12}
+  \attribute{- id : UUID}
+  \attribute{- datasetId : String}
+  \attribute{- tableId : String}
+  \attribute{- clientEmail : String}
+  \operation{+ getCredentials() : JSON}
+\end{class}
+
+\begin{class}[text width=4.5cm]{Execution}{12,-12}
+  \attribute{- id : UUID}
+  \attribute{- executionTimeMs : Decimal}
+  \attribute{- bytesBilled : Int}
+  \attribute{- executionDate : Date}
+  \operation{+ logToBigQuery() : void}
+\end{class}
+
+% -------------------------
+% Relaciones
+% -------------------------
+\association{User}{sells}{0..*}{Product}{1}{seller}
+\association{User}{places}{0..*}{Order}{1}{buyer}
+\association{Order}{contains}{1..*}{OrderItem}{1}{order}
+\association{Product}{included in}{0..*}{OrderItem}{1}{product}
+\association{Product}{tracks}{1..*}{InventoryRecord}{1}{product}
+\association{User}{owns}{1}{DailySale}{0..*}{seller}
+\association{Project}{hosts}{1..*}{Execution}{1}{project}
+
+\end{tikzpicture}
+\end{center}
+
+\end{document}
