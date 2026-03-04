@@ -43,6 +43,11 @@ self.addEventListener('fetch', (event) => {
 
     // API calls: Network First
     if (url.pathname.startsWith('/api/')) {
+        if (request.method !== 'GET') {
+            event.respondWith(fetch(request));
+            return;
+        }
+
         event.respondWith(
             fetch(request)
                 .then((response) => {
