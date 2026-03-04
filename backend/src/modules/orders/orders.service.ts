@@ -217,12 +217,10 @@ export class OrdersService {
                     saleDetail.quantityLost = 0;
                     saleDetail.unitCost = await this.getUnitCost(queryRunner, orderItem.productId);
                     saleDetail.unitPrice = orderItem.unitPrice;
-                    saleDetail.subtotal = 0;
                     isNewDetail = true;
                 }
 
                 saleDetail.quantitySold += orderItem.quantity;
-                saleDetail.subtotal = saleDetail.quantitySold * Number(saleDetail.unitPrice);
 
                 // Add to array if new so cascade handles it, else save directly
                 if (isNewDetail) {
