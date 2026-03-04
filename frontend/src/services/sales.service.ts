@@ -37,6 +37,15 @@ export interface DailySale {
     details: SaleDetail[];
 }
 
+export interface WeekdayAnalyticsItem {
+    weekday: number;
+    weekdayName: string;
+    daysCount: number;
+    revenueSum: string;
+    unitsSoldSum: number;
+    revenueAvg: string;
+}
+
 export interface PrepareSaleItem {
     productId: string;
     quantityPrepared: number;
@@ -74,6 +83,14 @@ export const salesService = {
      */
     async getPrediction(): Promise<{ productName: string; suggested: number; confidence: number } | null> {
         return api.get<{ productName: string; suggested: number; confidence: number } | null>('/sales/prediction');
+    },
+
+    async getWeekdayAnalytics(startDate?: string, endDate?: string): Promise<WeekdayAnalyticsItem[]> {
+        const params: Record<string, string> = {};
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+
+        return api.get<WeekdayAnalyticsItem[]>('/sales/analytics/by-weekday', { params });
     },
 
     /**
