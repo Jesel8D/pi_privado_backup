@@ -252,7 +252,17 @@ export class OrdersService {
             const profit = totalRevenue - totalInvestment;
             dailySale.profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
 
+            // Save the daily sale to handle cascade inserts of details
             await queryRunner.manager.save(DailySale, dailySale);
+
+            // Force explicit update of the aggregates to bypass TypeORM diffing bugs
+            await queryRunner.manager.update(DailySale, dailySale.id, {
+                totalRevenue: dailySale.totalRevenue,
+                totalInvestment: dailySale.totalInvestment,
+                unitsSold: dailySale.unitsSold,
+                totalWasteCost: dailySale.totalWasteCost,
+                profitMargin: dailySale.profitMargin
+            });
 
             await queryRunner.commitTransaction();
 
