@@ -101,6 +101,8 @@ services:
       - FLYWAY_URL=jdbc:postgresql://database:5432/${POSTGRES_DB}
       - FLYWAY_USER=${POSTGRES_USER}
       - FLYWAY_PASSWORD=${POSTGRES_PASSWORD}
+      - FLYWAY_BASELINE_ON_MIGRATE=true
+      - FLYWAY_BASELINE_VERSION=0
     command: migrate
     volumes:
       # Conecta tu carpeta local a la carpeta mágica de Flyway

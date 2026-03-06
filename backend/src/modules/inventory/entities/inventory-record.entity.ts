@@ -42,8 +42,8 @@ export class InventoryRecord {
     investmentAmount: number;
 
     @Column({
-        type: 'enum',
-        enum: ['active', 'sold_out', 'expired', 'closed'],
+        type: 'varchar',
+        length: 20,
         default: 'active',
     })
     status: 'active' | 'sold_out' | 'expired' | 'closed';

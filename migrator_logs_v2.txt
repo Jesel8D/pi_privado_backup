@@ -1,0 +1,19 @@
+WARNING: Storing migrations in 'sql' is not recommended and default scanning of this location may be deprecated in a future release
+Flyway OSS Edition 12.0.3 by Redgate
+
+See release notes here: https://rd.gt/416ObMi
+Database: jdbc:postgresql://database:5432/tienditacampus (PostgreSQL 16.11)
+Schema history table "public"."flyway_schema_history" does not exist yet
+Successfully validated 12 migrations (execution time 00:00.060s)
+Creating Schema History table "public"."flyway_schema_history" with baseline ...
+Successfully baselined schema with version: 0
+Current version of schema "public": 0
+Migrating schema "public" to version "001 - create users table"
+Migrating schema "public" to version "002 - create products table"
+Migrating schema "public" to version "003 - create sales table"
+Migrating schema "public" to version "003.1 - create audit logs"
+Migrating schema "public" to version "004 - create inventory table"
+Migrating schema "public" to version "005 - create reports table"
+Migrating schema "public" to version "006 - document role defaults"
+Migrating schema "public" to version "007 - add buyer fields"
+Migrating schema "public" to version "008 - add order fields"

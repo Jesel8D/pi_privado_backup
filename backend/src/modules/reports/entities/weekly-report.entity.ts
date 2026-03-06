@@ -28,16 +28,16 @@ export class WeeklyReport {
     weekEnd: string;
 
     @Column({ type: 'decimal', precision: 10, scale: 2, name: 'total_investment', default: 0 })
-    totalInvestment: string;
+    totalInvestment: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2, name: 'total_revenue', default: 0 })
-    totalRevenue: string;
+    totalRevenue: number;
 
     @Column({ type: 'decimal', precision: 10, scale: 2, name: 'total_profit', default: 0 })
-    totalProfit: string;
+    totalProfit: number;
 
     @Column({ type: 'decimal', precision: 5, scale: 2, name: 'avg_profit_margin', default: 0 })
-    avgProfitMargin: string;
+    avgProfitMargin: number;
 
     @Column({ type: 'int', name: 'total_units_sold', default: 0 })
     totalUnitsSold: number;
@@ -46,7 +46,7 @@ export class WeeklyReport {
     totalUnitsLost: number;
 
     @Column({ type: 'decimal', precision: 5, scale: 2, name: 'loss_percentage', default: 0 })
-    lossPercentage: string;
+    lossPercentage: number;
 
     @Column({ type: 'uuid', name: 'best_selling_product', nullable: true })
     bestSellingProductId: string | null;
