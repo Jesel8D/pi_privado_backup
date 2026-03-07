@@ -1,0 +1,3 @@
+08c0206b0b38 | tc-database | Up 3 minutes (unhealthy)
+80a937be2b85 | tc_stack_dev-mongodb-1 | Up 3 minutes (healthy)
+674683997bac | cafeteria_db_container | Up 5 hours

@@ -267,6 +267,23 @@ export class SalesService {
         const profit = totalRevenue - Number(sale.totalInvestment);
         sale.profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
 
+        // Calculate break_even_units (INC-05 / GAP-03)
+        // avgSalePrice = totalRevenue / unitsSold
+        // avgUnitCost = totalInvestment / (unitsSold + unitsLost)
+        // margin = avgSalePrice - avgUnitCost
+        if (sale.unitsSold > 0) {
+            const avgSalePrice = totalRevenue / sale.unitsSold;
+            const unitsPrepared = sale.unitsSold + sale.unitsLost;
+            const avgUnitCost = unitsPrepared > 0 ? Number(sale.totalInvestment) / unitsPrepared : 0;
+            const unitMargin = avgSalePrice - avgUnitCost;
+
+            if (unitMargin > 0) {
+                sale.breakEvenUnits = Number(sale.totalInvestment) / unitMargin;
+            } else {
+                sale.breakEvenUnits = null; // Cannot break even if margin is non-positive
+            }
+        }
+
         await this.dailySaleRepository.save(sale);
 
         await this.dailySaleRepository.update(sale.id, {
@@ -274,7 +291,8 @@ export class SalesService {
             unitsSold: sale.unitsSold,
             unitsLost: sale.unitsLost,
             totalWasteCost: sale.totalWasteCost,
-            profitMargin: sale.profitMargin
+            profitMargin: sale.profitMargin,
+            breakEvenUnits: sale.breakEvenUnits
         });
 
         return sale;

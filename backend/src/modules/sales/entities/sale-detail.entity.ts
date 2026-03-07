@@ -39,6 +39,7 @@ export class SaleDetail {
 
     @Column({
         type: 'enum',
+        enumName: 'waste_reason_type',
         enum: ['expired', 'damaged', 'other'],
         nullable: true,
         name: 'waste_reason',

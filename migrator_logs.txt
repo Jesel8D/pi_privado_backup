@@ -1,0 +1,13 @@
+WARNING: Storing migrations in 'sql' is not recommended and default scanning of this location may be deprecated in a future release
+Flyway OSS Edition 12.0.3 by Redgate
+
+See release notes here: https://rd.gt/416ObMi
+Database: jdbc:postgresql://database:5432/tienditacampus (PostgreSQL 16.11)
+1 SQL migrations were detected but not run because they did not follow the filename convention.
+Set 'validateMigrationNaming' to true to fail fast and see a list of the invalid file names.
+Schema history table "public"."flyway_schema_history" does not exist yet
+Successfully validated 11 migrations (execution time 00:00.051s)
+Creating Schema History table "public"."flyway_schema_history" with baseline ...
+Successfully baselined schema with version: 1
+Current version of schema "public": 1
+Migrating schema "public" to version "002 - create products table"

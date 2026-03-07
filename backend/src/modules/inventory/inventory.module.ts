@@ -3,9 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { InventoryService } from './inventory.service';
 import { InventoryController } from './inventory.controller';
 import { InventoryRecord } from './entities/inventory-record.entity';
+import { DailyInventorySnapshot } from './entities/daily-inventory-snapshot.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([InventoryRecord])],
+    imports: [TypeOrmModule.forFeature([InventoryRecord, DailyInventorySnapshot])],
     controllers: [InventoryController],
     providers: [InventoryService],
     exports: [InventoryService],
