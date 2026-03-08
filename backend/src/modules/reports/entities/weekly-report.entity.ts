@@ -39,6 +39,9 @@ export class WeeklyReport {
     @Column({ type: 'decimal', precision: 5, scale: 2, name: 'avg_profit_margin', default: 0 })
     avgProfitMargin: number;
 
+    @Column({ type: 'numeric', precision: 10, scale: 2, default: 0, name: 'total_waste_cost' })
+    totalWasteCost: number;
+
     @Column({ type: 'int', name: 'total_units_sold', default: 0 })
     totalUnitsSold: number;
 

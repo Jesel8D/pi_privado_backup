@@ -1,0 +1,3 @@
+ALTER TABLE weekly_reports ADD COLUMN IF NOT EXISTS total_waste_cost NUMERIC(10,2) DEFAULT 0;
+ALTER TABLE weekly_reports ADD COLUMN IF NOT EXISTS total_units_lost INT DEFAULT 0;
+ALTER TABLE weekly_reports ADD COLUMN IF NOT EXISTS loss_percentage NUMERIC(5,2) DEFAULT 0;
