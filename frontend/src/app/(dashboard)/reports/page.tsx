@@ -203,8 +203,8 @@ export default function ReportsPage() {
                                     <p>${toMoney(report.totalProfit)}</p>
                                 </div>
                                 <div>
-                                    <p className="text-black">Pérdida</p>
-                                    <p>{toMoney(report.lossPercentage)}%</p>
+                                    <p className="text-black">U. Perdidas (%)</p>
+                                    <p>{report.totalUnitsLost} ({toMoney(report.lossPercentage)}%)</p>
                                 </div>
                                 <div>
                                     <p className="text-black">Inv vs Ingreso</p>
@@ -229,25 +229,37 @@ export default function ReportsPage() {
                     </h3>
                     <div className="space-y-6">
                         <div className="space-y-2">
-                            <p className="text-xs font-black uppercase text-black">Semana (utilidad)</p>
-                            <div className="flex justify-between text-sm font-black uppercase">
+                            <p className="text-xs font-black uppercase text-black">Semana (Utilidad vs Merma)</p>
+                            <div className="flex justify-between text-sm font-black uppercase border-b-2 border-black/10 pb-1">
                                 <span>Actual</span>
-                                <span>${toMoney(comparison?.weekComparison?.current_profit)}</span>
+                                <div>
+                                    <span className="text-black mr-4" title="Utilidad">${toMoney(comparison?.weekComparison?.current_profit)}</span>
+                                    <span className="text-neo-red" title="Merma">-${toMoney(comparison?.weekComparison?.current_waste_cost)}</span>
+                                </div>
                             </div>
                             <div className="flex justify-between text-sm font-black uppercase">
                                 <span>Anterior</span>
-                                <span>${toMoney(comparison?.weekComparison?.previous_profit)}</span>
+                                <div>
+                                    <span className="text-black mr-4" title="Utilidad">${toMoney(comparison?.weekComparison?.previous_profit)}</span>
+                                    <span className="text-neo-red" title="Merma">-${toMoney(comparison?.weekComparison?.previous_waste_cost)}</span>
+                                </div>
                             </div>
                         </div>
                         <div className="space-y-2 border-t-2 border-dashed border-black pt-4">
-                            <p className="text-xs font-black uppercase text-black">Mes (utilidad)</p>
-                            <div className="flex justify-between text-sm font-black uppercase">
+                            <p className="text-xs font-black uppercase text-black">Mes (Utilidad vs Merma)</p>
+                            <div className="flex justify-between text-sm font-black uppercase border-b-2 border-black/10 pb-1">
                                 <span>Actual</span>
-                                <span>${toMoney(comparison?.monthComparison?.current_profit)}</span>
+                                <div>
+                                    <span className="text-black mr-4" title="Utilidad">${toMoney(comparison?.monthComparison?.current_profit)}</span>
+                                    <span className="text-neo-red" title="Merma">-${toMoney(comparison?.monthComparison?.current_waste_cost)}</span>
+                                </div>
                             </div>
                             <div className="flex justify-between text-sm font-black uppercase">
                                 <span>Anterior</span>
-                                <span>${toMoney(comparison?.monthComparison?.previous_profit)}</span>
+                                <div>
+                                    <span className="text-black mr-4" title="Utilidad">${toMoney(comparison?.monthComparison?.previous_profit)}</span>
+                                    <span className="text-neo-red" title="Merma">-${toMoney(comparison?.monthComparison?.previous_waste_cost)}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -257,7 +269,10 @@ export default function ReportsPage() {
                         {comparison?.profitabilityByProduct?.slice(0, 3).map((item) => (
                             <div key={item.product_id} className="flex justify-between text-xs font-black uppercase py-1 text-black">
                                 <span className="truncate mr-2">{item.product_name}</span>
-                                <span className="text-neo-red">{Number(item.margin_pct || 0).toFixed(2)}%</span>
+                                <div>
+                                    <span className="text-neo-red mr-3" title="Merma">-${toMoney(item.total_waste_cost)}</span>
+                                    <span className="text-black" title="Margen">{Number(item.margin_pct || 0).toFixed(2)}%</span>
+                                </div>
                             </div>
                         ))}
                         {(!comparison?.profitabilityByProduct || comparison.profitabilityByProduct.length === 0) && (
