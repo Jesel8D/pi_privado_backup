@@ -9,12 +9,14 @@ import { Product } from '../products/entities/product.entity';
 import { InventoryRecord } from '../inventory/entities/inventory-record.entity';
 import { DailySale } from '../sales/entities/daily-sale.entity';
 import { SaleDetail } from '../sales/entities/sale-detail.entity';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Injectable()
 export class OrdersService {
     constructor(
         @InjectRepository(Order) private readonly orderRepo: Repository<Order>,
         private readonly dataSource: DataSource,
+        private readonly inventoryService: InventoryService,
     ) { }
 
     async createOrder(dto: CreateOrderDto, buyer: User): Promise<Order> {
@@ -117,21 +119,14 @@ export class OrdersService {
         await queryRunner.startTransaction();
 
         try {
-            // Deduct stock
+            // FIFO: Consumir inventario de lotes más viejos primero
             for (const item of order.items) {
-                const activeInventory = await queryRunner.manager.findOne(InventoryRecord, {
-                    where: { productId: item.productId, status: 'active' }
-                });
-
-                if (!activeInventory || activeInventory.quantityRemaining < item.quantity) {
-                    throw new BadRequestException(`Sin stock suficiente para completar la orden del producto: ${item.product?.name}`);
-                }
-
-                activeInventory.quantityRemaining -= item.quantity;
-                if (activeInventory.quantityRemaining === 0) {
-                    activeInventory.status = item.product?.isPerishable ? 'expired' : 'sold_out';
-                }
-                await queryRunner.manager.save(InventoryRecord, activeInventory);
+                await this.inventoryService.consumeFIFO(
+                    item.productId,
+                    seller.id,
+                    item.quantity,
+                    queryRunner.manager,
+                );
             }
 
             order.status = 'accepted'; // Aceptado, listo para entregar

@@ -8,6 +8,7 @@ import { PrepareDailySaleDto } from './dto/prepare-daily-sale.dto';
 import { TrackSaleDto } from './dto/track-sale.dto';
 import { User } from '../users/entities/user.entity';
 import { InventoryRecord } from '../inventory/entities/inventory-record.entity';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Injectable()
 export class SalesService {
@@ -19,6 +20,7 @@ export class SalesService {
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
         private readonly dataSource: DataSource,
+        private readonly inventoryService: InventoryService,
     ) { }
 
     // ── HU-03: Sugerencia Estadística (IQR) ─────────────────────
@@ -83,47 +85,53 @@ export class SalesService {
     }
 
     // ── HU-04: Cierre de Día ─────────────────────────────
-    async closeDay(user: User, wastes: { productId: string; waste: number }[]) {
+    async closeDay(user: User, wastes: { productId: string; waste: number; wasteReason?: 'expired' | 'damaged' | 'other' }[]) {
         const dailySale = await this.findToday(user);
         if (!dailySale) throw new NotFoundException('No hay venta abierta hoy');
         if (dailySale.isClosed) throw new BadRequestException('El día ya está cerrado');
 
-        for (const item of wastes) {
-            const detail = dailySale.details.find(d => d.productId === item.productId);
-            if (detail) {
-                const waste = Number(item.waste);
-                if (waste > detail.quantityPrepared) {
-                    throw new BadRequestException(`Merma (${waste}) no puede exceder preparado (${detail.quantityPrepared}) para ${detail.product.name}`);
-                }
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
 
-                detail.quantityLost = waste;
-                detail.quantitySold = detail.quantityPrepared - waste;
-                await this.saleDetailRepository.save(detail);
-
-                // Update inventory record (HU-04 fix)
-                const activeInventory = await this.dataSource.getRepository(InventoryRecord).findOne({
-                    where: {
-                        productId: item.productId,
-                        sellerId: user.id,
-                        status: 'active'
+        try {
+            for (const item of wastes) {
+                const detail = dailySale.details.find(d => d.productId === item.productId);
+                if (detail) {
+                    const waste = Number(item.waste);
+                    if (waste > detail.quantityPrepared) {
+                        throw new BadRequestException(`Merma (${waste}) no puede exceder preparado (${detail.quantityPrepared}) para ${detail.product.name}`);
                     }
-                });
 
-                if (activeInventory) {
-                    activeInventory.quantityRemaining = 0;
-                    if (detail.product.isPerishable) {
-                        activeInventory.status = 'expired';
-                    } else {
-                        // Or 'closed' to signify end of day regardless 
-                        activeInventory.status = 'closed';
+                    detail.quantityLost = waste;
+                    detail.quantitySold = detail.quantityPrepared - waste;
+                    detail.wasteReason = item.wasteReason || null;
+                    detail.wasteCost = Number(detail.unitCost) * waste;
+                    await queryRunner.manager.save(detail);
+
+                    // FIFO: Consumir las unidades vendidas del inventario (lotes más viejos primero)
+                    const unitsSold = detail.quantitySold;
+                    if (unitsSold > 0) {
+                        await this.inventoryService.consumeFIFO(
+                            item.productId,
+                            user.id,
+                            unitsSold,
+                            queryRunner.manager,
+                        );
                     }
-                    await this.dataSource.getRepository(InventoryRecord).save(activeInventory);
                 }
             }
-        }
 
-        dailySale.isClosed = true;
-        await this.dailySaleRepository.save(dailySale);
+            dailySale.isClosed = true;
+            await queryRunner.manager.save(dailySale);
+
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            await queryRunner.release();
+        }
 
         return this.recalculateHeader(dailySale.id);
     }
@@ -267,24 +275,26 @@ export class SalesService {
         const profit = totalRevenue - Number(sale.totalInvestment);
         sale.profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
 
-        // Calculate break_even_units (INC-05 / GAP-03)
-        // avgSalePrice = totalRevenue / unitsSold
-        // avgUnitCost = totalInvestment / (unitsSold + unitsLost)
-        // margin = avgSalePrice - avgUnitCost
+        // Calculate break_even_units adjusted by waste rate
         if (sale.unitsSold > 0) {
             const avgSalePrice = totalRevenue / sale.unitsSold;
             const unitsPrepared = sale.unitsSold + sale.unitsLost;
             const avgUnitCost = unitsPrepared > 0 ? Number(sale.totalInvestment) / unitsPrepared : 0;
-            const unitMargin = avgSalePrice - avgUnitCost;
+
+            // Tasa de merma del día: unidades perdidas / total manejado
+            const wasteRate = unitsPrepared > 0 ? sale.unitsLost / unitsPrepared : 0;
+            // Costo unitario efectivo = costo base × (1 + tasa de merma)
+            const effectiveUnitCost = avgUnitCost * (1 + wasteRate);
+            const unitMargin = avgSalePrice - effectiveUnitCost;
 
             if (unitMargin > 0) {
-                sale.breakEvenUnits = Number(sale.totalInvestment) / unitMargin;
+                sale.breakEvenUnits = Number((Number(sale.totalInvestment) / unitMargin).toFixed(2));
             } else {
                 sale.breakEvenUnits = null; // Cannot break even if margin is non-positive
             }
+        } else {
+            sale.breakEvenUnits = null;
         }
-
-        await this.dailySaleRepository.save(sale);
 
         await this.dailySaleRepository.update(sale.id, {
             totalRevenue: sale.totalRevenue,

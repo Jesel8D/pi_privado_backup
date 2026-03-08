@@ -9,6 +9,7 @@ import { SaleDetail } from '../sales/entities/sale-detail.entity';
 import { InventoryRecord } from '../inventory/entities/inventory-record.entity';
 import { Product } from '../products/entities/product.entity';
 import { User } from '../users/entities/user.entity';
+import { InventoryModule } from '../inventory/inventory.module';
 
 @Module({
     imports: [
@@ -20,7 +21,8 @@ import { User } from '../users/entities/user.entity';
             InventoryRecord,
             Product,
             User,
-        ])
+        ]),
+        InventoryModule,
     ],
     controllers: [OrdersController],
     providers: [OrdersService],

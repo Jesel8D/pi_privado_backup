@@ -4,9 +4,10 @@ import { InventoryService } from './inventory.service';
 import { InventoryController } from './inventory.controller';
 import { InventoryRecord } from './entities/inventory-record.entity';
 import { DailyInventorySnapshot } from './entities/daily-inventory-snapshot.entity';
+import { Product } from '../products/entities/product.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([InventoryRecord, DailyInventorySnapshot])],
+    imports: [TypeOrmModule.forFeature([InventoryRecord, DailyInventorySnapshot, Product])],
     controllers: [InventoryController],
     providers: [InventoryService],
     exports: [InventoryService],
