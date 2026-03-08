@@ -92,15 +92,20 @@ export default function ProductsPage() {
                     </div>
                 ) : filteredProducts.length === 0 ? (
                     <div className="col-span-full py-20 border-4 border-black border-dashed bg-white text-center">
-                        <AlertCircle className="w-16 h-16 mx-auto mb-4 text-slate-300" />
-                        <h3 className="text-2xl font-black uppercase text-slate-400">Sin existencias registradas</h3>
-                        <p className="font-bold text-slate-400 uppercase text-xs mt-2">Empieza agregando tu primer producto estrella</p>
+                        <AlertCircle className="w-16 h-16 mx-auto mb-4 text-black" />
+                        <h3 className="text-2xl font-black uppercase text-black">Sin existencias registradas</h3>
+                        <p className="font-bold text-black uppercase text-xs mt-2">Empieza agregando tu primer producto estrella</p>
                     </div>
                 ) : (
                     filteredProducts.map((product) => {
                         const margin = product.salePrice - product.unitCost;
                         const marginPercent = ((margin / product.salePrice) * 100).toFixed(0);
                         const isStockLow = (product.stock || 0) <= 5;
+
+                        const totalInvestment = (product.stock || 0) * product.unitCost;
+                        const breakEvenUnits = margin > 0 && totalInvestment > 0
+                            ? Math.ceil(totalInvestment / margin)
+                            : 0;
 
                         return (
                             <div key={product.id} className="bg-white border-4 border-black shadow-neo hover:-translate-y-2 transition-all group flex flex-col relative overflow-hidden">
@@ -117,42 +122,55 @@ export default function ProductsPage() {
                                             <Package className="w-8 h-8 text-black" />
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Precio Venta</p>
+                                            <p className="text-[10px] font-black text-black uppercase mb-1">Precio Venta</p>
                                             <p className="text-3xl font-black text-black tracking-tighter">${Number(product.salePrice).toFixed(2)}</p>
                                         </div>
                                     </div>
 
-                                    <h3 className="text-xl font-black uppercase leading-none mb-2 line-clamp-1" title={product.name}>
+                                    <h3 className="text-xl font-black text-black uppercase leading-none mb-2 line-clamp-1" title={product.name}>
                                         {product.name}
                                     </h3>
 
                                     <div className="flex items-center gap-4 py-3 border-y-2 border-black border-dashed my-4">
                                         <div className="flex-1">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase">Costo</p>
+                                            <p className="text-[10px] font-black text-black uppercase">Costo</p>
                                             <p className="font-black text-black">${Number(product.unitCost).toFixed(2)}</p>
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-[10px] font-black text-slate-400 uppercase">Margen</p>
+                                            <p className="text-[10px] font-black text-black uppercase">Margen</p>
                                             <p className={`font-black uppercase flex items-center gap-1 ${Number(marginPercent) > 30 ? 'text-neo-green' : 'text-neo-red'}`}>
                                                 <TrendingUp size={12} /> {marginPercent}%
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className={`p-3 border-2 border-black font-black uppercase text-sm flex justify-between items-center ${isStockLow ? 'bg-neo-red text-white' : 'bg-slate-50'}`}>
+                                    <div className={`p-3 border-2 border-black font-black uppercase text-sm flex justify-between items-center mb-3 ${isStockLow ? 'bg-neo-red text-white' : 'bg-slate-50 text-black'}`}>
                                         <span>Stock Actual</span>
-                                        <span className="text-2xl tracking-tighter">{product.stock || 0}</span>
+                                        <span className="text-2xl tracking-tighter text-black">{product.stock || 0}</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 text-xs uppercase font-black text-center">
+                                        <div className="border-2 border-black p-2">
+                                            <span className="block text-[9px] text-black tracking-widest mb-1">Inv. Retenida</span>
+                                            <span className="text-lg text-black">${totalInvestment.toFixed(2)}</span>
+                                        </div>
+                                        <div className="border-2 border-black p-2 bg-neo-yellow/10">
+                                            <span className="block text-[9px] text-black tracking-widest mb-1">Pto. Equilibrio</span>
+                                            <span className={`text-lg ${margin <= 0 ? 'text-neo-red' : 'text-black'}`}>
+                                                {margin <= 0 ? 'N/A' : `${breakEvenUnits} ud.`}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div className="mt-auto border-t-4 border-black flex divide-x-4 divide-black">
                                     <Link href={`/products/${product.id}/stock`} className="flex-1">
-                                        <button className="w-full py-4 font-black uppercase text-[10px] tracking-widest hover:bg-neo-yellow transition-colors flex items-center justify-center gap-2">
+                                        <button className="w-full py-4 font-black text-black uppercase text-[10px] tracking-widest hover:bg-neo-yellow transition-colors flex items-center justify-center gap-2">
                                             <Package size={14} /> Stock
                                         </button>
                                     </Link>
                                     <Link href={`/products/${product.id}`} className="flex-1">
-                                        <button className="w-full py-4 font-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
+                                        <button className="w-full py-4 font-black text-black uppercase text-[10px] tracking-widest hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2">
                                             <Edit size={14} /> Editar
                                         </button>
                                     </Link>
