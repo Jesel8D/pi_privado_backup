@@ -70,7 +70,7 @@ export class SalesController {
     }
 
     @Post('close-day')
-    closeDay(@Body() body: { items: { productId: string; waste: number }[] }, @Req() req: any) {
+    closeDay(@Body() body: { items: { productId: string; waste: number; wasteReason?: 'expired' | 'damaged' | 'other' }[] }, @Req() req: any) {
         return this.salesService.closeDay(req.user as User, body.items);
     }
 }

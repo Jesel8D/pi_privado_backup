@@ -27,7 +27,8 @@ export class ReportsService {
                     COALESCE(SUM(ds.total_investment), 0)::numeric(10,2) AS total_investment,
                     COALESCE(AVG(ds.profit_margin), 0)::numeric(5,2) AS avg_profit_margin,
                     COALESCE(SUM(ds.units_sold), 0)::int AS total_units_sold,
-                    COALESCE(SUM(ds.units_lost), 0)::int AS total_units_lost
+                    COALESCE(SUM(ds.units_lost), 0)::int AS total_units_lost,
+                    COALESCE(SUM(ds.total_waste_cost), 0)::numeric(10,2) AS total_waste_cost
                 FROM target_week tw
                 LEFT JOIN daily_sales ds
                     ON ds.seller_id = $1
@@ -56,6 +57,7 @@ export class ReportsService {
                 avg_profit_margin,
                 total_units_sold,
                 total_units_lost,
+                total_waste_cost,
                 loss_percentage,
                 best_selling_product
             )
@@ -69,6 +71,7 @@ export class ReportsService {
                 wb.avg_profit_margin,
                 wb.total_units_sold,
                 wb.total_units_lost,
+                wb.total_waste_cost,
                 CASE
                     WHEN (wb.total_units_sold + wb.total_units_lost) > 0
                         THEN ROUND((wb.total_units_lost::numeric * 100) / (wb.total_units_sold + wb.total_units_lost), 2)
@@ -85,6 +88,7 @@ export class ReportsService {
                 avg_profit_margin = EXCLUDED.avg_profit_margin,
                 total_units_sold = EXCLUDED.total_units_sold,
                 total_units_lost = EXCLUDED.total_units_lost,
+                total_waste_cost = EXCLUDED.total_waste_cost,
                 loss_percentage = EXCLUDED.loss_percentage,
                 best_selling_product = EXCLUDED.best_selling_product
             `,
