@@ -21,7 +21,7 @@ const productSchema = z.object({
     salePrice: z.coerce.number().min(0, 'El precio no puede ser negativo'),
     isPerishable: z.boolean().default(false),
     shelfLifeDays: z.coerce.number().optional(),
-    imageUrl: z.string().optional().or(z.literal('')),
+    imageUrl: z.string().optional().default(''),
 });
 
 type ProductFormValues = z.infer<typeof productSchema>;
@@ -108,9 +108,11 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
             });
             toast.success('Producto actualizado exitosamente');
             router.push('/products');
-        } catch (error) {
-            toast.error('Error al actualizar el producto');
-            console.error(error);
+        } catch (error: any) {
+            toast.error('Error al actualizar el producto', {
+                description: error.message || 'Se produjo un error crítico al guardar'
+            });
+            console.error('Submit Error:', error);
         } finally {
             setIsSubmitting(false);
         }

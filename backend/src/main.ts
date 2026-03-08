@@ -13,7 +13,9 @@ function getAllowedOrigins(configService: ConfigService): string[] {
 }
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    // Al setear bodyParser: false, deshabilitamos el parseador nativo de NestJS (100kb lim) 
+    // y damos paso al nuestro (10mb).
+    const app = await NestFactory.create(AppModule, { bodyParser: false });
 
     // Aumentar el límite de tamaño para JSON (Base64 images)
     app.use(express.json({ limit: '10mb' }));
