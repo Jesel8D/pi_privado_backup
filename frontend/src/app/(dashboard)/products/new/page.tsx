@@ -85,7 +85,7 @@ export default function NewProductPage() {
                 unitCost: Number(data.unitCost),
                 salePrice: Number(data.salePrice),
                 isPerishable: data.isPerishable,
-                shelfLifeDays: data.shelfLifeDays || undefined,
+                shelfLifeDays: data.isPerishable ? (data.shelfLifeDays || undefined) : undefined,
                 imageUrl: data.imageUrl || undefined,
             });
             toast.success('¡PRODUCTO CREADO!', {

@@ -7,7 +7,6 @@ import {
     Package,
     ShoppingCart,
     BarChart3,
-    Settings,
     LogOut,
     ShoppingBag,
     ShoppingBasket,
@@ -53,13 +52,6 @@ const routes = [
         icon: BarChart3,
         href: '/reports',
         color: 'bg-blue-400',
-        roles: ['seller', 'admin'],
-    },
-    {
-        label: 'Configuración',
-        icon: Settings,
-        href: '/settings',
-        color: 'bg-slate-300',
         roles: ['seller', 'admin'],
     },
     {

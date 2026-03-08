@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Package, TrendingUp, CheckCircle2, ChevronRight, AlertCircle, Loader2, DollarSign, Users, ShoppingBasket, Rocket, Plus } from "lucide-react";
-import { salesService, RoiStats } from '@/services/sales.service';
+import { Package, TrendingUp, CheckCircle2, ChevronRight, AlertCircle, Loader2, DollarSign, Users, ShoppingBasket, Rocket, Plus, Target, Trash2 } from "lucide-react";
+import { salesService, RoiStats, DailySale } from '@/services/sales.service';
 import { ordersService, Order } from '@/services/orders.service';
 import { financeService, DashboardComparisonResponse } from '@/services/finance.service';
 import { useAuthStore } from '@/store/auth.store';
@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 export default function DashboardPage() {
     const { user } = useAuthStore();
     const [stats, setStats] = useState<RoiStats | null>(null);
+    const [todaySale, setTodaySale] = useState<DailySale | null>(null);
     const [orders, setOrders] = useState<Order[]>([]);
     const [comparison, setComparison] = useState<DashboardComparisonResponse | null>(null);
     const [loading, setLoading] = useState(true);
@@ -23,14 +24,16 @@ export default function DashboardPage() {
     const loadDashboardData = async () => {
         setLoading(true);
         try {
-            const [statsData, ordersData] = await Promise.all([
+            const [statsData, ordersData, todayData] = await Promise.all([
                 salesService.getRoiStats('', ''),
                 ordersService.getIncomingOrders(),
+                salesService.getToday()
             ]);
 
             const comparisonData = await financeService.getDashboardComparison();
             setStats(statsData);
             setOrders(ordersData);
+            setTodaySale(todayData);
             setComparison(comparisonData);
         } catch (error) {
             console.error("Error loading dashboard:", error);
@@ -100,7 +103,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Main Stats Grid */}
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-8">
                 {/* Pending Orders Card */}
                 <article className="bg-neo-yellow border-4 border-black p-8 shadow-neo-lg hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all group flex flex-col justify-between min-h-[220px]">
                     <div className="flex justify-between items-start">
@@ -118,13 +121,13 @@ export default function DashboardPage() {
                 </article>
 
                 {/* Revenue Card */}
-                <article className="bg-white border-4 border-black p-8 shadow-neo-lg hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex flex-col justify-between min-h-[220px]">
+                <article className="bg-white text-black border-4 border-black p-8 shadow-neo-lg hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex flex-col justify-between min-h-[220px]">
                     <div className="flex justify-between items-start">
-                        <h3 className="font-black uppercase tracking-[0.2em] text-xs text-slate-400">Ingresos Totales</h3>
+                        <h3 className="font-black uppercase tracking-[0.2em] text-xs">Ingresos Totales</h3>
                         <DollarSign className="w-10 h-10 text-neo-green" />
                     </div>
                     <div>
-                        <div className="text-7xl font-black tracking-tighter leading-none mb-2">
+                        <div className="text-7xl font-black tracking-tighter leading-none text-black mb-2">
                             ${stats?.revenue?.toFixed(0) || '0'}
                         </div>
                         <p className="font-extrabold uppercase text-[10px] text-slate-400">Sincronizado hace 1 min</p>
@@ -147,12 +150,39 @@ export default function DashboardPage() {
                         </p>
                     </div>
                 </article>
+
+                {/* Break Even Card */}
+                <article className="bg-white border-4 border-black p-8 shadow-neo-lg hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex flex-col justify-between min-h-[220px]">
+                    <div className="flex justify-between items-start">
+                        <h3 className="font-black uppercase tracking-[0.2em] text-xs text-slate-400">Punto de Equilibrio</h3>
+                        <Target className="w-10 h-10 text-neo-yellow" />
+                    </div>
+                    <div>
+                        <div className={`text-3xl lg:text-5xl font-black tracking-tighter leading-none mb-2 ${!todaySale?.breakEvenUnits ? 'text-neo-red w-full text-balance' : 'text-black'}`}>
+                            {todaySale?.breakEvenUnits ? Math.ceil(todaySale.breakEvenUnits) : 'Margen negativo / Sin datos'}
+                        </div>
+                        <p className="font-extrabold uppercase text-[10px] text-slate-400">Unidades a vender para cubrir costos</p>
+                    </div>
+                </article>
+
+                {/* Waste Cost Card */}
+                <article className="bg-white border-4 border-black p-8 shadow-neo-lg hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all flex flex-col justify-between min-h-[220px]">
+                    <div className="flex justify-between items-start">
+                        <h3 className="font-black uppercase tracking-[0.2em] text-xs text-slate-400">Costo de Merma</h3>
+                        <Trash2 className="w-10 h-10 text-neo-red" />
+                    </div>
+                    <div>
+                        <div className="text-5xl lg:text-6xl font-black tracking-tighter leading-none mb-2 text-neo-red">
+                            ${toMoney(todaySale?.totalWasteCost?.toString())}
+                        </div>
+                        <p className="font-extrabold uppercase text-[10px] text-slate-400">Dinero perdido en merma hoy</p>
+                    </div>
+                </article>
             </section>
 
             {/* Quick Content Section */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-                {/* Active Orders List */}
-                <section className="lg:col-span-3 space-y-6">
+                <section className="lg:col-span-5 space-y-6">
                     <div className="flex items-center justify-between border-b-4 border-black pb-4">
                         <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
                             <Rocket className="text-neo-red" /> Pedidos Recientes
@@ -208,52 +238,7 @@ export default function DashboardPage() {
                         )}
                     </div>
                 </section>
-
-                {/* Quick Shortcuts */}
-                <section className="lg:col-span-2 space-y-6">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter border-b-4 border-black pb-4">Accesos Rápidos</h2>
-                    <div className="grid grid-cols-1 gap-4">
-                        <Link href="/products/new" className="group">
-                            <div className="bg-black text-white p-6 border-4 border-black shadow-[6px_6px_0_0_#FFC72C] group-hover:shadow-none group-hover:translate-x-[6px] group-hover:translate-y-[6px] transition-all flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-neo-yellow border-2 border-white flex items-center justify-center -rotate-6 group-hover:rotate-0 transition-transform">
-                                        <Plus className="text-black" />
-                                    </div>
-                                    <span className="font-black uppercase tracking-widest text-sm">Lanzar Producto</span>
-                                </div>
-                                <ChevronRight className="group-hover:translate-x-2 transition-transform" />
-                            </div>
-                        </Link>
-
-                        <Link href="/reports" className="group">
-                            <div className="bg-white text-black p-6 border-4 border-black shadow-[6px_6px_0_0_#E31837] group-hover:shadow-none group-hover:translate-x-[6px] group-hover:translate-y-[6px] transition-all flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-blue-400 border-2 border-black flex items-center justify-center rotate-3 group-hover:rotate-0 transition-transform">
-                                        <TrendingUp className="text-white" />
-                                    </div>
-                                    <span className="font-black uppercase tracking-widest text-sm">Ver Auditoría</span>
-                                </div>
-                                <ChevronRight className="group-hover:translate-x-2 transition-transform" />
-                            </div>
-                        </Link>
-                    </div>
-
-                    <div className="p-8 border-4 border-black bg-neo-green/10 relative overflow-hidden flex items-center justify-center min-h-[160px]">
-                        <div className="absolute inset-0 opacity-10 font-black text-8xl flex items-center justify-center select-none pointer-events-none uppercase rotate-12">
-                            PRO
-                        </div>
-                        <div className="text-center relative z-10">
-                            <p className="font-black uppercase text-lg text-black leading-tight">¿Alguna duda, {user?.firstName}?</p>
-                            <p className="text-xs font-bold uppercase text-slate-500 mt-2">Estamos aquí para ayudarte a escalar.</p>
-                            <button className="mt-4 px-6 py-2 bg-black text-white font-black uppercase text-[10px] tracking-widest hover:bg-neo-red transition-colors">
-                                Soporte VIP
-                            </button>
-                        </div>
-                    </div>
-                </section>
             </div>
-
-            {/* Comparative Snapshot */}
             <section className="space-y-6">
                 <div className="flex items-center justify-between border-b-4 border-black pb-4">
                     <h2 className="text-3xl font-black uppercase tracking-tighter">Comparativo Operativo</h2>
@@ -262,42 +247,42 @@ export default function DashboardPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <article className="bg-white border-4 border-black p-6 shadow-neo-lg">
-                        <h3 className="font-black uppercase text-sm tracking-widest mb-4">Semana Actual vs Anterior</h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm font-bold">
+                        <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Semana Actual vs Anterior</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm font-bold text-black">
                             <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-slate-400">Actual (Utilidad)</p>
-                                <p>${toMoney(comparison?.weekComparison?.current_profit)}</p>
+                                <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
+                                <p className="text-black">${toMoney(comparison?.weekComparison?.current_profit)}</p>
                             </div>
                             <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-slate-400">Anterior (Utilidad)</p>
-                                <p>${toMoney(comparison?.weekComparison?.previous_profit)}</p>
+                                <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
+                                <p className="text-black">${toMoney(comparison?.weekComparison?.previous_profit)}</p>
                             </div>
                         </div>
                     </article>
 
-                    <article className="bg-white border-4 border-black p-6 shadow-neo-lg">
-                        <h3 className="font-black uppercase text-sm tracking-widest mb-4">Mes Actual vs Anterior</h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm font-bold">
+                    <article className="bg-white border-4 border-black p-6 shadow-neo-lg text-black">
+                        <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Mes Actual vs Anterior</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm font-bold text-black">
                             <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-slate-400">Actual (Utilidad)</p>
-                                <p>${toMoney(comparison?.monthComparison?.current_profit)}</p>
+                                <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
+                                <p className="text-black">${toMoney(comparison?.monthComparison?.current_profit)}</p>
                             </div>
                             <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-slate-400">Anterior (Utilidad)</p>
-                                <p>${toMoney(comparison?.monthComparison?.previous_profit)}</p>
+                                <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
+                                <p className="text-black">${toMoney(comparison?.monthComparison?.previous_profit)}</p>
                             </div>
                         </div>
                     </article>
                 </div>
 
-                <article className="bg-white border-4 border-black p-6 shadow-neo-lg">
-                    <h3 className="font-black uppercase text-sm tracking-widest mb-4">Rentabilidad por Producto</h3>
+                <article className="bg-white border-4 border-black p-6 shadow-neo-lg text-black">
+                    <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Rentabilidad por Producto</h3>
                     <div className="space-y-2">
                         {(comparison?.profitabilityByProduct || []).slice(0, 5).map((item) => (
-                            <div key={item.product_id} className="grid grid-cols-[1fr_auto_auto] gap-3 border-2 border-black p-2 text-sm">
-                                <span className="font-black uppercase truncate">{item.product_name}</span>
-                                <span className="font-bold">${toMoney(item.profit)}</span>
-                                <span className="font-bold text-neo-red">{Number(item.margin_pct || 0).toFixed(2)}%</span>
+                            <div key={item.product_id} className="grid grid-cols-[1fr_auto_auto] gap-3 border-2 border-black p-2 text-sm text-black">
+                                <span className="font-black uppercase truncate text-black">{item.product_name}</span>
+                                <span className="font-bold text-black">${toMoney(item.profit)}</span>
+                                <span className="font-bold text-black">{Number(item.margin_pct || 0).toFixed(2)}%</span>
                             </div>
                         ))}
                         {(!comparison?.profitabilityByProduct || comparison.profitabilityByProduct.length === 0) && (

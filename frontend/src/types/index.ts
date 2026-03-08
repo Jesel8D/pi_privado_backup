@@ -41,6 +41,7 @@ export interface Product {
 }
 
 // ── Sales ───────────────────────────────────
+export type WasteReason = 'expired' | 'damaged' | 'other';
 export interface DailySale {
     id: string;
     sellerId: string;
@@ -51,6 +52,8 @@ export interface DailySale {
     profitMargin?: number;
     unitsSold: number;
     unitsLost: number;
+    totalWasteCost?: number;
+    breakEvenUnits?: number | null;
     notes?: string;
 }
 
@@ -64,6 +67,38 @@ export interface SaleDetail {
     unitCost: number;
     unitPrice: number;
     subtotal: number;
+    wasteReason?: WasteReason | null;
+    wasteCost?: number;
+}
+
+// ── Inventory ───────────────────────────────
+export interface InventoryRecord {
+    id: string;
+    sellerId: string;
+    productId: string;
+    recordDate: string;
+    quantityInitial: number;
+    quantityRemaining: number;
+    investmentAmount: number;
+    status: 'active' | 'sold_out' | 'expired' | 'closed';
+    createdAt: string;
+    updatedAt: string;
+    product?: Product; // Relation
+}
+
+export interface DailyInventorySnapshot {
+    id: string;
+    sellerId: string;
+    productId: string;
+    snapshotDate: string;
+    openingStock: number;
+    unitsSold: number;
+    unitsWasted: number;
+    closingStock: number;
+    wasteValue: number;
+    wastePercentage: number;
+    createdAt: string;
+    product?: Product; // Relation
 }
 
 // ── Reports ─────────────────────────────────
@@ -78,6 +113,7 @@ export interface WeeklyReport {
     avgProfitMargin: number;
     totalUnitsSold: number;
     totalUnitsLost: number;
+    totalWasteCost?: number;
     lossPercentage: number;
 }
 

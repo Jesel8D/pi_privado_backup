@@ -21,7 +21,7 @@ export function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     // No mostrar la Navbar en el Dashboard de Seller (usa Sidebar propia)
-    if (pathname.startsWith('/dashboard') || pathname.startsWith('/products') || pathname.startsWith('/sales') || pathname.startsWith('/reports') || pathname.startsWith('/settings') || pathname.startsWith('/audit')) return null;
+    if (pathname.startsWith('/dashboard') || pathname.startsWith('/products') || pathname.startsWith('/sales') || pathname.startsWith('/reports') || pathname.startsWith('/audit')) return null;
 
     const isBuyer = user?.role === 'buyer';
     const isSeller = user?.role === 'seller' || user?.role === 'admin';

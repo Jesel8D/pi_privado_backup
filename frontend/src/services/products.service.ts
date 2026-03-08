@@ -7,14 +7,15 @@ export interface Product {
     unitCost: number;
     salePrice: number;
     isPerishable: boolean;
-    shelfLifeDays?: number;
+    shelfLifeDays?: number | null;
     imageUrl?: string;
     isActive: boolean;
     createdAt: string;
     updatedAt: string;
     seller?: {
         id: string;
-        fullName: string;
+        firstName: string;
+        lastName: string;
         email: string;
         phone?: string;
     };
@@ -27,7 +28,7 @@ export interface CreateProductDto {
     unitCost: number;
     salePrice: number;
     isPerishable?: boolean;
-    shelfLifeDays?: number;
+    shelfLifeDays?: number | null;
     imageUrl?: string;
 }
 

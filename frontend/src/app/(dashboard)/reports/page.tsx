@@ -11,6 +11,7 @@ import {
     Loader2,
     CalendarDays,
     RefreshCw,
+    Trash2,
 } from 'lucide-react';
 import { salesService, RoiStats } from '@/services/sales.service';
 import { ordersService, Order } from '@/services/orders.service';
@@ -157,6 +158,19 @@ export default function ReportsPage() {
                         {orders.filter(o => ['completed', 'delivered'].includes(o.status)).length}
                     </h3>
                 </div>
+
+                {/* Costo de Merma */}
+                <div className="bg-white border-4 border-black p-8 shadow-neo-lg group hover:-translate-y-2 transition-transform">
+                    <div className="flex justify-between items-start mb-6">
+                        <div className="w-12 h-12 bg-black border-2 border-black flex items-center justify-center -rotate-3 group-hover:rotate-0 transition-transform">
+                            <Trash2 size={24} className="text-neo-red" />
+                        </div>
+                    </div>
+                    <p className="text-xs font-black uppercase text-slate-400 tracking-widest mb-1">Costo de Merma Semanal</p>
+                    <h3 className="text-4xl font-black tracking-tighter text-neo-red w-full truncate">
+                        ${weeklyReports[0] ? toMoney(weeklyReports[0].totalWasteCost) : '0.00'}
+                    </h3>
+                </div>
             </div>
 
             {/* Visual Charts Simulation */}
@@ -179,7 +193,7 @@ export default function ReportsPage() {
 
                     <div className="space-y-3">
                         {weeklyReports.slice(0, 4).map((report) => (
-                            <div key={report.id} className="grid grid-cols-2 md:grid-cols-4 gap-3 border-2 border-black p-3 text-xs font-black uppercase text-black">
+                            <div key={report.id} className="grid grid-cols-2 md:grid-cols-5 gap-3 border-2 border-black p-3 text-xs font-black uppercase text-black">
                                 <div>
                                     <p className="text-black">Semana</p>
                                     <p>{report.weekStart} a {report.weekEnd}</p>
@@ -195,6 +209,10 @@ export default function ReportsPage() {
                                 <div>
                                     <p className="text-black">Inv vs Ingreso</p>
                                     <p>${toMoney(report.totalInvestment)} / ${toMoney(report.totalRevenue)}</p>
+                                </div>
+                                <div className="text-neo-red">
+                                    <p>Merma ($)</p>
+                                    <p>${toMoney(report.totalWasteCost)}</p>
                                 </div>
                             </div>
                         ))}

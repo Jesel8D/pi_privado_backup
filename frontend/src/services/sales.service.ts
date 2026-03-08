@@ -24,6 +24,8 @@ export interface SaleDetail {
         id: string;
         name: string;
     };
+    wasteReason?: 'expired' | 'damaged' | 'other' | null;
+    wasteCost?: number;
 }
 
 export interface DailySale {
@@ -33,6 +35,8 @@ export interface DailySale {
     totalInvestment: number | string;
     unitsSold: number;
     unitsLost: number;
+    totalWasteCost?: number;
+    breakEvenUnits?: number | null;
     isClosed: boolean;
     details: SaleDetail[];
 }
@@ -110,7 +114,7 @@ export const salesService = {
     /**
      * Cerrar el día registrando mermas
      */
-    async closeDay(items: { productId: string; waste: number }[]): Promise<void> {
+    async closeDay(items: { productId: string; waste: number; wasteReason?: 'expired' | 'damaged' | 'other' }[]): Promise<void> {
         return api.post('/sales/close-day', { items });
     },
 };

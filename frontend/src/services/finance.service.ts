@@ -28,6 +28,7 @@ export interface WeeklyReport {
     avgProfitMargin: string;
     totalUnitsSold: number;
     totalUnitsLost: number;
+    totalWasteCost: string;
     lossPercentage: string;
     bestSellingProduct?: {
         id: string;

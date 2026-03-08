@@ -139,10 +139,10 @@ export default function MarketplacePage() {
 
                                     <div className="flex items-center gap-2 mb-6">
                                         <div className="w-6 h-6 border-2 border-black bg-black text-white flex items-center justify-center font-black text-[10px] uppercase">
-                                            {product.seller?.fullName?.charAt(0) || 'V'}
+                                            {product.seller?.firstName?.charAt(0) || 'V'}
                                         </div>
                                         <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest truncate">
-                                            @{product.seller?.fullName?.replace(/\s/g, '').toLowerCase() || 'vendedor'}
+                                            @{(product.seller?.firstName || 'vendedor').replace(/\s/g, '').toLowerCase()}
                                         </span>
                                     </div>
 

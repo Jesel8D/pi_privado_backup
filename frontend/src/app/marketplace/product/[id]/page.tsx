@@ -118,11 +118,11 @@ export default function ProductDetailPage() {
                             <div className="p-6 border-4 border-black bg-slate-50 flex items-center justify-between group hover:bg-neo-yellow/10 transition-colors">
                                 <div className="flex items-center gap-4">
                                     <div className="w-16 h-16 border-4 border-black bg-black text-white flex items-center justify-center font-black text-2xl group-hover:rotate-6 transition-transform">
-                                        {product.seller?.fullName?.charAt(0).toUpperCase() || 'V'}
+                                        {product.seller?.firstName?.charAt(0).toUpperCase() || 'V'}
                                     </div>
                                     <div>
                                         <p className="text-[10px] font-black text-black/60 uppercase tracking-widest">Vendedor Verificado</p>
-                                        <p className="font-black text-xl uppercase tracking-tighter text-black">@{product.seller?.fullName?.replace(/\s/g, '').toLowerCase() || 'vendedor'}</p>
+                                        <p className="font-black text-xl uppercase tracking-tighter text-black">@{((product.seller?.firstName || '') + (product.seller?.lastName || '')).replace(/\s/g, '').toLowerCase() || 'vendedor'}</p>
                                     </div>
                                 </div>
                                 <button className="h-12 w-12 border-2 border-slate-300 hover:border-black flex items-center justify-center transition-colors">

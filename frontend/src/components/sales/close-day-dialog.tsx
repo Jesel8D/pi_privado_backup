@@ -24,6 +24,7 @@ interface CloseDayForm {
         productName: string;
         prepared: number;
         waste: number;
+        wasteReason?: 'expired' | 'damaged' | 'other' | '';
     }[];
 }
 
@@ -70,7 +71,8 @@ export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
                     productId: d.product.id,
                     productName: d.product.name,
                     prepared: d.quantityPrepared,
-                    waste: 0
+                    waste: 0,
+                    wasteReason: ''
                 }));
 
                 setValue('items', formItems);
@@ -94,7 +96,8 @@ export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
         try {
             await salesService.closeDay(data.items.map(i => ({
                 productId: i.productId,
-                waste: Number(i.waste)
+                waste: Number(i.waste),
+                wasteReason: Number(i.waste) > 0 && i.wasteReason ? (i.wasteReason as any) : undefined
             })));
 
             setStep('success');
@@ -151,22 +154,41 @@ export function CloseDayDialog({ onClosed }: { onClosed?: () => void }) {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-3">
                             {fields.map((field, index) => (
-                                <div key={field.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                    <div className="flex-1">
-                                        <p className="font-medium text-sm text-gray-900">{items[index]?.productName}</p>
-                                        <p className="text-xs text-gray-500">Preparado: {items[index]?.prepared}</p>
+                                <div key={field.id} className="flex flex-col gap-2 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <p className="font-medium text-sm text-gray-900">{items[index]?.productName}</p>
+                                            <p className="text-xs text-gray-500">Preparado: {items[index]?.prepared}</p>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <Label htmlFor={`waste-${index}`} className="text-xs text-gray-500">Merma:</Label>
+                                            <Input
+                                                id={`waste-${index}`}
+                                                type="number"
+                                                min="0"
+                                                max={items[index]?.prepared}
+                                                className="w-20 h-9 text-right font-mono text-sm leading-none"
+                                                {...register(`items.${index}.waste` as const, { valueAsNumber: true })}
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <Label htmlFor={`waste-${index}`} className="text-xs text-gray-500">Merma:</Label>
-                                        <Input
-                                            id={`waste-${index}`}
-                                            type="number"
-                                            min="0"
-                                            max={items[index]?.prepared}
-                                            className="w-20 h-9 text-right font-mono"
-                                            {...register(`items.${index}.waste` as const)}
-                                        />
-                                    </div>
+
+                                    {Number(items[index]?.waste) > 0 && (
+                                        <div className="flex items-center justify-end gap-3 mt-1 pt-2 border-t border-gray-200">
+                                            <Label htmlFor={`reason-${index}`} className="text-xs text-red-600 font-medium">Motivo:</Label>
+                                            <select
+                                                id={`reason-${index}`}
+                                                className="h-8 w-40 rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                                                required
+                                                {...register(`items.${index}.wasteReason` as const)}
+                                            >
+                                                <option value="" disabled>Selecciona...</option>
+                                                <option value="expired">Caducidad</option>
+                                                <option value="damaged">Daño físico</option>
+                                                <option value="other">Otro</option>
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
