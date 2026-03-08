@@ -1,0 +1,355 @@
+{
+  "version": "2.0",
+  "systemName": "SOA Auto-Healing System",
+  "description": "Autonomous system for downloading repos, running tests, analyzing failures with AI, applying fixes, and saving project history",
+
+  "environment": {
+    "ollama": {
+      "url": "http://localhost:11434",
+      "port": 11434,
+      "statusEndpoint": "/api/tags",
+      "generateEndpoint": "/api/generate",
+      "psEndpoint": "/api/ps"
+    },
+    "nodejs": {
+      "minVersion": "18",
+      "required": true
+    },
+    "python": {
+      "minVersion": "3.9",
+      "required": false
+    },
+    "git": {
+      "required": true,
+      "minVersion": "2.0"
+    },
+    "workspace": {
+      "basePath": "/tmp/soa-workspace",
+      "cleanupAfter": true,
+      "maxSize": "100GB"
+    }
+  },
+
+  "models": {
+    "available": [
+      {
+        "id": "deepseek-coder:6.7b",
+        "name": "DeepSeek-Coder 6.7B",
+        "type": "code-specialized",
+        "ramRequired": "5GB",
+        "speed": "fast",
+        "quality": "excellent",
+        "recommended": true,
+        "description": "Best for code analysis and fixing - RECOMMENDED",
+        "downloadSize": "3.5GB"
+      },
+      {
+        "id": "qwen2.5-coder:7b",
+        "name": "Qwen2.5-Coder 7B",
+        "type": "versatile",
+        "ramRequired": "6GB",
+        "speed": "medium",
+        "quality": "very-good",
+        "recommended": false,
+        "description": "Good balance, speaks multiple languages",
+        "downloadSize": "4.2GB"
+      },
+      {
+        "id": "mistral:7b",
+        "name": "Mistral 7B",
+        "type": "fast",
+        "ramRequired": "4GB",
+        "speed": "very-fast",
+        "quality": "good",
+        "recommended": false,
+        "description": "Fastest option for low-resource systems",
+        "downloadSize": "3GB"
+      },
+      {
+        "id": "llama3:8b",
+        "name": "Llama 3 8B",
+        "type": "general",
+        "ramRequired": "6GB",
+        "speed": "medium",
+        "quality": "very-good",
+        "recommended": false,
+        "description": "Great all-around model",
+        "downloadSize": "4.5GB"
+      }
+    ],
+    "default": "deepseek-coder:6.7b",
+    "fallback": "mistral:7b",
+    "generation": {
+      "temperature": 0.3,
+      "topP": 0.9,
+      "topK": 40,
+      "maxTokens": 4096,
+      "repeatPenalty": 1.05
+    }
+  },
+
+  "projectDefaults": {
+    "maxIterations": 5,
+    "autoFix": true,
+    "timeout": 300,
+    "schedule": "daily",
+    "notifyOnComplete": true,
+    "saveResults": true
+  },
+
+  "languages": {
+    "nodejs": {
+      "enabled": true,
+      "packageManager": "npm",
+      "setupCommand": "npm install",
+      "testCommand": "npm test",
+      "testFrameworks": ["jest", "mocha", "vitest", "ava"],
+      "fileExtensions": [".js", ".ts", ".jsx", ".tsx"],
+      "mainFiles": ["index.js", "app.js", "main.js", "server.js"]
+    },
+    "python": {
+      "enabled": true,
+      "packageManager": "pip",
+      "setupCommand": "pip install -r requirements.txt",
+      "testCommand": "pytest -v --tb=short",
+      "testFrameworks": ["pytest", "unittest", "nose2", "nose"],
+      "fileExtensions": [".py"],
+      "mainFiles": ["main.py", "app.py", "run.py"]
+    },
+    "java": {
+      "enabled": true,
+      "packageManager": "maven",
+      "setupCommand": "mvn install",
+      "testCommand": "mvn test",
+      "testFrameworks": ["junit", "testng"],
+      "fileExtensions": [".java"],
+      "buildFiles": ["pom.xml", "build.gradle"]
+    },
+    "go": {
+      "enabled": true,
+      "packageManager": "go",
+      "setupCommand": "go mod download",
+      "testCommand": "go test ./...",
+      "testFrameworks": ["testing"],
+      "fileExtensions": [".go"],
+      "mainFiles": ["main.go"]
+    }
+  },
+
+  "testing": {
+    "unitTests": {
+      "enabled": true,
+      "patterns": ["**/*.test.js", "**/*_test.py", "**/Test*.java"]
+    },
+    "integrationTests": {
+      "enabled": true,
+      "patterns": ["**/*.integration.js", "**/*integration*.py"]
+    },
+    "apiTests": {
+      "enabled": true,
+      "patterns": ["**/*.api.test.js", "**/*api*test*.py"]
+    },
+    "timeout": 300,
+    "retryOnFailure": 1
+  },
+
+  "aiAnalysis": {
+    "errorPatterns": [
+      {
+        "pattern": "undefined|not defined",
+        "type": "variable_error",
+        "severity": "high"
+      },
+      {
+        "pattern": "import|require|ImportError",
+        "type": "import_error",
+        "severity": "high"
+      },
+      {
+        "pattern": "Connection refused|ECONNREFUSED",
+        "type": "connection_error",
+        "severity": "medium"
+      },
+      {
+        "pattern": "timeout|TIMEOUT|Timeout",
+        "type": "timeout_error",
+        "severity": "medium"
+      },
+      {
+        "pattern": "assert|AssertionError|failed",
+        "type": "assertion_failure",
+        "severity": "high"
+      }
+    ],
+    "fixStrategies": {
+      "import_error": "Add missing import statement",
+      "variable_error": "Define missing variable or function",
+      "connection_error": "Verify database/service connection",
+      "timeout_error": "Increase timeout or optimize code",
+      "assertion_failure": "Fix logic or test expectation"
+    }
+  },
+
+  "notifications": {
+    "email": {
+      "enabled": false,
+      "smtpServer": "",
+      "recipients": [],
+      "notifyOnSuccess": true,
+      "notifyOnFailure": true
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "method": "POST",
+      "retries": 3
+    },
+    "slack": {
+      "enabled": false,
+      "webhookUrl": "",
+      "channel": "#deployments"
+    },
+    "github": {
+      "enabled": false,
+      "token": "",
+      "createComments": false,
+      "updateStatus": false
+    }
+  },
+
+  "github": {
+    "enabled": false,
+    "authentication": {
+      "type": "token",
+      "token": ""
+    },
+    "actions": {
+      "pushChanges": false,
+      "pushBranch": "ai-fixes",
+      "createPullRequests": false,
+      "prTitle": "[AI-HEALING] Auto-fixes by SOA System",
+      "prDescription": "Automated fixes generated by SOA Auto-Healing System"
+    },
+    "supportedPlatforms": [
+      "github.com",
+      "gitlab.com",
+      "bitbucket.org",
+      "gitea",
+      "gitlab-self-hosted"
+    ]
+  },
+
+  "persistence": {
+    "database": {
+      "type": "json",
+      "filename": "projects-db.json",
+      "backupEnabled": true,
+      "backupLocation": ".backups",
+      "maxBackups": 10
+    },
+    "config": {
+      "filename": "soa-config.json",
+      "autosave": true
+    },
+    "logs": {
+      "enabled": true,
+      "directory": "logs",
+      "maxFileSize": "100MB",
+      "retentionDays": 30
+    }
+  },
+
+  "scheduling": {
+    "enabled": true,
+    "types": {
+      "daily": "0 2 * * *",
+      "hourly": "0 * * * *",
+      "weekly": "0 3 * * 0",
+      "monthly": "0 3 1 * *"
+    },
+    "timezone": "UTC"
+  },
+
+  "performance": {
+    "parallelRepos": 1,
+    "cachingEnabled": true,
+    "maxCacheAge": 3600,
+    "memoryLimit": "8GB"
+  },
+
+  "security": {
+    "validateSSL": true,
+    "sanitizeInput": true,
+    "rateLimit": {
+      "enabled": false,
+      "requestsPerMinute": 60
+    }
+  },
+
+  "aws": {
+    "enabled": true,
+    "region": "us-east-1",
+    "s3": {
+      "bucketName": "mi-proyecto-ollama-deploy"
+    },
+    "ec2": {
+      "instanceId": "i-0123456789abcdef0"
+    },
+    "elasticIP": {
+      "enabled": true,
+      "domain": "midominio.com",
+      "hostedZoneId": "Z123456789ABCDEF",
+      "databaseFile": "elastic-ips.json"
+    },
+    "autoDeployOnSuccess": true
+  },
+
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "outputs": [
+      {
+        "type": "console",
+        "level": "info"
+      },
+      {
+        "type": "file",
+        "level": "debug",
+        "path": "logs/soa.log"
+      }
+    ]
+  },
+
+  "prompts": {
+    "systemPrompt": "You are an autonomous SOA auto-healing system. Read soa-config.json for all configuration. Load projects-db.json to remember project history. Execute healing autonomously without asking permission. Always save results immediately. Never hardcode values - use configuration files.",
+    "analysisPrompt": "Analyze this test failure and identify the root cause. Be concise and actionable.",
+    "fixPrompt": "Generate a fix for this code issue. Provide ONLY the corrected code with same structure and style.",
+    "intentPrompt": "What is this code trying to do? How does the error prevent it from working?"
+  },
+
+  "outputFormats": {
+    "healingResult": {
+      "status": "healed|partial|failed",
+      "projectId": "string",
+      "iterations": "number",
+      "fixesApplied": "number",
+      "testResults": {
+        "total": "number",
+        "passed": "number",
+        "failed": "number"
+      },
+      "duration": "number (seconds)",
+      "timestamp": "ISO8601",
+      "details": {
+        "issues": [
+          {
+            "service": "string",
+            "error": "string",
+            "fix": "string",
+            "fixed": "boolean"
+          }
+        ]
+      }
+    }
+  }
+}

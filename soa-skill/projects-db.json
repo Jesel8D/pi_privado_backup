@@ -1,0 +1,72 @@
+{
+  "version": "1.0",
+  "description": "Project persistence database - NEVER FORGET project history",
+  "lastUpdated": "2026-03-08T00:00:00Z",
+  "createdAt": "2026-03-08T00:00:00Z",
+
+  "projects": [],
+
+  "schedules": [],
+
+  "statistics": {
+    "summary": {
+      "totalProjects": 0,
+      "activeProjects": 0,
+      "archivedProjects": 0,
+      "healthyProjects": 0,
+      "projectsNeedingAttention": 0
+    },
+    "healing": {
+      "totalHealings": 0,
+      "successfulHealings": 0,
+      "failedHealings": 0,
+      "partialHealings": 0,
+      "averageSuccess": 0,
+      "averageIterations": 0
+    },
+    "fixes": {
+      "totalFixes": 0,
+      "fixedIssues": 0,
+      "failedFixes": 0,
+      "successRate": 0,
+      "mostCommonIssueType": "none"
+    },
+    "time": {
+      "totalTimeSpent": "0 minutes",
+      "totalTimeSaved": "0 hours",
+      "roi": "0x"
+    },
+    "languages": {
+      "nodejs": {
+        "projects": 0,
+        "healings": 0,
+        "successRate": 0
+      },
+      "python": {
+        "projects": 0,
+        "healings": 0,
+        "successRate": 0
+      }
+    }
+  },
+
+  "metadata": {
+    "version": "1.0",
+    "schemaVersion": "1.0",
+    "backupEnabled": true,
+    "lastBackup": null,
+    "backupCount": 0,
+    "integrity": {
+      "checksumEnabled": true,
+      "checksum": null,
+      "validated": true
+    }
+  },
+
+  "instructions": {
+    "forAI": "This database stores the history of all projects. When you load this file: 1) Check each project's lastHealed timestamp 2) If a project needs healing, check the healing history to understand patterns 3) Always UPDATE this file after running a healing operation 4) NEVER lose this data - it's your memory",
+    "importanceLevel": "CRITICAL",
+    "requiredFields": ["projects", "schedules", "statistics", "lastUpdated"],
+    "updateFrequency": "After every healing operation"
+  }
+}
