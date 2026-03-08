@@ -48,6 +48,14 @@ export class InventoryRecord {
     })
     status: 'active' | 'sold_out' | 'expired' | 'closed';
 
+    @Column({
+        type: 'date',
+        nullable: true,
+        name: 'expires_at',
+        comment: 'Fecha de caducidad del lote = record_date + product.shelf_life_days',
+    })
+    expiresAt: string | null;
+
     @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
     createdAt: Date;
 
