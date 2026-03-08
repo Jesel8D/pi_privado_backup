@@ -26,7 +26,10 @@ export class ProductsService {
         const qb = this.productRepository.createQueryBuilder('product')
             .where('product.sellerId = :sellerId', { sellerId: user.id })
             .andWhere('product.isActive = :isActive', { isActive: true })
-            .leftJoin('inventory_records', 'inventory', 'inventory.product_id = product.id AND inventory.status = \'active\'')
+            .leftJoin(
+                'inventory_records', 'inventory',
+                `inventory.product_id = product.id AND inventory.status = 'active' AND (inventory.expires_at IS NULL OR inventory.expires_at >= CURRENT_DATE)`
+            )
             .addSelect('COALESCE(SUM(inventory.quantity_remaining), 0)', 'totalStock')
             .groupBy('product.id')
             .orderBy('product.createdAt', 'DESC');
@@ -44,7 +47,10 @@ export class ProductsService {
     async findMarketplace(query?: string, sellerId?: string): Promise<any[]> {
         const qb = this.productRepository.createQueryBuilder('product')
             .leftJoinAndSelect('product.seller', 'seller')
-            .innerJoin('inventory_records', 'inventory', 'inventory.product_id = product.id AND inventory.status = \'active\'')
+            .innerJoin(
+                'inventory_records', 'inventory',
+                `inventory.product_id = product.id AND inventory.status = 'active' AND (inventory.expires_at IS NULL OR inventory.expires_at >= CURRENT_DATE)`
+            )
             .addSelect('inventory.quantity_remaining', 'quantityRemaining')
             .where('product.isActive = :isActive', { isActive: true })
             .andWhere('inventory.quantity_remaining > 0');
