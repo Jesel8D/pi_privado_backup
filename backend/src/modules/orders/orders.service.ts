@@ -225,15 +225,16 @@ export class OrdersService {
                 }
             }
 
-            // Recalculate DailySale Aggregates from memory to include newly pushed details
             let totalRevenue = 0;
             let unitsSold = 0;
+            let unitsLost = 0;
             let totalInvestment = 0;
             let totalWasteCost = 0;
 
             for (const d of dailySale.details) {
                 totalRevenue += Number(d.unitPrice) * d.quantitySold;
                 unitsSold += d.quantitySold;
+                unitsLost += d.quantityLost;
                 const investmentContrib = d.quantityPrepared > 0 ? d.quantityPrepared : d.quantitySold;
                 totalInvestment += Number(d.unitCost) * investmentContrib;
                 totalWasteCost += Number(d.wasteCost || 0);
@@ -242,10 +243,27 @@ export class OrdersService {
             dailySale.totalRevenue = totalRevenue;
             dailySale.totalInvestment = totalInvestment;
             dailySale.unitsSold = unitsSold;
+            dailySale.unitsLost = unitsLost;
             dailySale.totalWasteCost = totalWasteCost;
 
             const profit = totalRevenue - totalInvestment;
             dailySale.profitMargin = totalRevenue > 0 ? (profit / totalRevenue) * 100 : 0;
+
+            // Calculate break_even_units
+            let breakEvenUnits: number | null = null;
+            if (unitsSold > 0) {
+                const avgSalePrice = totalRevenue / unitsSold;
+                const unitsPrepared = unitsSold + unitsLost;
+                const avgUnitCost = unitsPrepared > 0 ? totalInvestment / unitsPrepared : 0;
+                const wasteRate = unitsPrepared > 0 ? unitsLost / unitsPrepared : 0;
+                const effectiveUnitCost = avgUnitCost * (1 + wasteRate);
+                const unitMargin = avgSalePrice - effectiveUnitCost;
+
+                if (unitMargin > 0) {
+                    breakEvenUnits = Number((totalInvestment / unitMargin).toFixed(2));
+                }
+            }
+            dailySale.breakEvenUnits = breakEvenUnits;
 
             // Save the daily sale to handle cascade inserts of details
             await queryRunner.manager.save(DailySale, dailySale);
@@ -255,8 +273,10 @@ export class OrdersService {
                 totalRevenue: dailySale.totalRevenue,
                 totalInvestment: dailySale.totalInvestment,
                 unitsSold: dailySale.unitsSold,
+                unitsLost: dailySale.unitsLost,
                 totalWasteCost: dailySale.totalWasteCost,
-                profitMargin: dailySale.profitMargin
+                profitMargin: dailySale.profitMargin,
+                breakEvenUnits: dailySale.breakEvenUnits
             });
 
             await queryRunner.commitTransaction();
