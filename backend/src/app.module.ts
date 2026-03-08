@@ -21,6 +21,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { BreakEvenModule } from './modules/break-even/break-even.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ForecastModule } from './modules/forecast/forecast.module'; // <-- Added here
+import { ExpirationModule } from './modules/expiration/expiration.module';
 
 @Module({
     imports: [
@@ -63,7 +64,8 @@ import { ForecastModule } from './modules/forecast/forecast.module'; // <-- Adde
         ReportsModule,
         BreakEvenModule,
         DashboardModule,
-        ForecastModule, // <-- Added here
+        ForecastModule,
+        ExpirationModule,
     ],
     controllers: [HealthController],
 })
