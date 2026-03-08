@@ -13,8 +13,8 @@ export interface Order {
     updatedAt: string;
     items: OrderItem[];
     // Expand based on backend entity relations
-    buyer?: { fullName: string; email: string };
-    seller?: { fullName: string; email: string };
+    buyer?: { firstName: string; lastName: string; email: string };
+    seller?: { firstName: string; lastName: string; email: string };
 }
 
 export interface OrderItem {

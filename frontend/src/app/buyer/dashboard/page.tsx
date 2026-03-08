@@ -180,9 +180,9 @@ export default function BuyerDashboardPage() {
                                                 <div className="flex items-center gap-4 py-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-6 h-6 bg-neo-red border border-black flex items-center justify-center text-white font-black text-[10px]">
-                                                            {order.seller?.fullName?.charAt(0) || 'V'}
+                                                            {order.seller?.firstName?.charAt(0) || 'V'}
                                                         </div>
-                                                        <span className="text-[10px] font-black uppercase text-slate-600">@{order.seller?.fullName?.replace(/\s/g, '').toLowerCase() || 'vendedor'}</span>
+                                                        <span className="text-[10px] font-black uppercase text-slate-600">@{((order.seller?.firstName || '') + (order.seller?.lastName || '')).replace(/\s/g, '').toLowerCase() || 'vendedor'}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 text-slate-400">
                                                         <MapPin size={12} />

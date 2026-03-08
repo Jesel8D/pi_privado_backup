@@ -208,9 +208,9 @@ export default function DashboardPage() {
                                     </h4>
                                     <div className="flex items-center gap-2 mt-2">
                                         <div className="w-6 h-6 bg-black text-white text-[10px] flex items-center justify-center font-black rounded-sm uppercase">
-                                            {order.buyer?.fullName?.charAt(0) || 'C'}
+                                            {order.buyer?.firstName?.charAt(0) || 'C'}
                                         </div>
-                                        <p className="text-xs font-black uppercase text-slate-600">{order.buyer?.fullName || 'CLIENTE ANÓNIMO'}</p>
+                                        <p className="text-xs font-black uppercase text-slate-600">{order.buyer?.firstName ? `${order.buyer.firstName} ${order.buyer.lastName || ''}` : 'CLIENTE ANÓNIMO'}</p>
                                     </div>
                                 </div>
 
@@ -249,13 +249,25 @@ export default function DashboardPage() {
                     <article className="bg-white border-4 border-black p-6 shadow-neo-lg">
                         <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Semana Actual vs Anterior</h3>
                         <div className="grid grid-cols-2 gap-4 text-sm font-bold text-black">
-                            <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
-                                <p className="text-black">${toMoney(comparison?.weekComparison?.current_profit)}</p>
+                            <div className="border-2 border-black p-3 space-y-2">
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
+                                    <p className="text-black">${toMoney(comparison?.weekComparison?.current_profit)}</p>
+                                </div>
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Actual (Merma)</p>
+                                    <p className="text-neo-red">${toMoney(comparison?.weekComparison?.current_waste_cost)}</p>
+                                </div>
                             </div>
-                            <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
-                                <p className="text-black">${toMoney(comparison?.weekComparison?.previous_profit)}</p>
+                            <div className="border-2 border-black p-3 space-y-2">
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
+                                    <p className="text-black">${toMoney(comparison?.weekComparison?.previous_profit)}</p>
+                                </div>
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Anterior (Merma)</p>
+                                    <p className="text-neo-red">${toMoney(comparison?.weekComparison?.previous_waste_cost)}</p>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -263,13 +275,25 @@ export default function DashboardPage() {
                     <article className="bg-white border-4 border-black p-6 shadow-neo-lg text-black">
                         <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Mes Actual vs Anterior</h3>
                         <div className="grid grid-cols-2 gap-4 text-sm font-bold text-black">
-                            <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
-                                <p className="text-black">${toMoney(comparison?.monthComparison?.current_profit)}</p>
+                            <div className="border-2 border-black p-3 space-y-2">
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Actual (Utilidad)</p>
+                                    <p className="text-black">${toMoney(comparison?.monthComparison?.current_profit)}</p>
+                                </div>
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Actual (Merma)</p>
+                                    <p className="text-neo-red">${toMoney(comparison?.monthComparison?.current_waste_cost)}</p>
+                                </div>
                             </div>
-                            <div className="border-2 border-black p-3">
-                                <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
-                                <p className="text-black">${toMoney(comparison?.monthComparison?.previous_profit)}</p>
+                            <div className="border-2 border-black p-3 space-y-2">
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Anterior (Utilidad)</p>
+                                    <p className="text-black">${toMoney(comparison?.monthComparison?.previous_profit)}</p>
+                                </div>
+                                <div>
+                                    <p className="uppercase text-[10px] text-black font-black">Anterior (Merma)</p>
+                                    <p className="text-neo-red">${toMoney(comparison?.monthComparison?.previous_waste_cost)}</p>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -279,10 +303,11 @@ export default function DashboardPage() {
                     <h3 className="font-black uppercase text-sm tracking-widest mb-4 text-black">Rentabilidad por Producto</h3>
                     <div className="space-y-2">
                         {(comparison?.profitabilityByProduct || []).slice(0, 5).map((item) => (
-                            <div key={item.product_id} className="grid grid-cols-[1fr_auto_auto] gap-3 border-2 border-black p-2 text-sm text-black">
+                            <div key={item.product_id} className="grid grid-cols-[1fr_auto_auto_auto] gap-3 border-2 border-black p-2 text-sm text-black items-center">
                                 <span className="font-black uppercase truncate text-black">{item.product_name}</span>
-                                <span className="font-bold text-black">${toMoney(item.profit)}</span>
-                                <span className="font-bold text-black">{Number(item.margin_pct || 0).toFixed(2)}%</span>
+                                <span className="font-bold text-black" title="Ganancia Neta">${toMoney(item.profit)}</span>
+                                <span className="font-bold text-neo-red" title="Merma">-${toMoney(item.total_waste_cost)}</span>
+                                <span className="font-bold text-black" title="Margen">{Number(item.margin_pct || 0).toFixed(2)}%</span>
                             </div>
                         ))}
                         {(!comparison?.profitabilityByProduct || comparison.profitabilityByProduct.length === 0) && (

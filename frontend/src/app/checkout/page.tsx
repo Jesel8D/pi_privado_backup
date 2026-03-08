@@ -168,10 +168,10 @@ function CheckoutContent() {
                                     <h3 className="font-black uppercase text-lg leading-none tracking-tight line-clamp-2">{product.name}</h3>
                                     <div className="flex items-center gap-2">
                                         <div className="w-5 h-5 bg-black text-white text-[10px] flex items-center justify-center font-black">
-                                            {product.seller?.fullName?.charAt(0) || 'V'}
+                                            {product.seller?.firstName?.charAt(0) || 'V'}
                                         </div>
                                         <span className="text-[10px] font-black text-black/50 uppercase tracking-widest truncate">
-                                            {product.seller?.fullName || 'Campus Store'}
+                                            {product.seller?.firstName ? `${product.seller.firstName} ${product.seller.lastName || ''}` : 'Campus Store'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center pt-2">

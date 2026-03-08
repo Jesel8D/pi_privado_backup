@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ordersService, Order } from '@/services/orders.service';
 import { Package, Clock, CheckCircle2, RefreshCw, HandPlatter, AlertTriangle, User, MessageCircle, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
+import { CloseDayDialog } from '@/components/sales/close-day-dialog';
 
 export default function ManageOrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
@@ -92,18 +93,21 @@ export default function ManageOrdersPage() {
                     <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none text-black">
                         GESTIÓN <span className="text-neo-red">VENTAS</span>
                     </h1>
-                    <p className="text-lg font-bold text-slate-500 uppercase tracking-tight max-w-md border-l-4 border-black pl-4">
+                    <p className="text-lg font-bold text-black uppercase tracking-tight max-w-md border-l-4 border-black pl-4">
                         Controla el flujo de tus pedidos en tiempo real.
                     </p>
                 </div>
-                <button
-                    onClick={loadOrders}
-                    disabled={loading}
-                    className="group bg-white border-4 border-black px-8 py-4 font-black uppercase flex items-center justify-center gap-3 hover:bg-neo-yellow shadow-[6px_6px_0px_0px_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all disabled:opacity-50"
-                >
-                    <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin' : ''}`} />
-                    {loading ? 'ACTUALIZANDO...' : 'REFRESCAR LISTA'}
-                </button>
+                <div className="flex items-center gap-4">
+                    <CloseDayDialog onClosed={loadOrders} />
+                    <button
+                        onClick={loadOrders}
+                        disabled={loading}
+                        className="group bg-white border-4 border-black px-8 py-4 font-black uppercase flex items-center justify-center gap-3 hover:bg-neo-yellow shadow-[6px_6px_0px_0px_#000] hover:shadow-none hover:translate-x-[6px] hover:translate-y-[6px] transition-all disabled:opacity-50"
+                    >
+                        <RefreshCw className={`w-6 h-6 ${loading ? 'animate-spin' : ''}`} />
+                        {loading ? 'ACTUALIZANDO...' : 'REFRESCAR'}
+                    </button>
+                </div>
             </div>
 
             {/* Quick Stats Tabs */}
@@ -119,7 +123,7 @@ export default function ManageOrdersPage() {
                         onClick={() => setActiveTab(tab.id as any)}
                         className={`p-6 border-4 border-black flex flex-col items-center justify-center text-center transition-all ${activeTab === tab.id
                             ? `${tab.color} ${tab.text || 'text-black'} shadow-[6px_6px_0_0_#000] translate-x-[-4px] translate-y-[-4px]`
-                            : 'bg-white text-slate-400 border-slate-200 opacity-60 hover:opacity-100 hover:border-black'
+                            : 'bg-white text-black border-slate-200 opacity-60 hover:opacity-100 hover:border-black'
                             }`}
                     >
                         <span className={`text-4xl font-black tracking-tighter mb-1`}>{tab.count}</span>
@@ -131,15 +135,15 @@ export default function ManageOrdersPage() {
             {/* Orders Feed */}
             <div className="space-y-8">
                 {loading ? (
-                    <div className="py-20 text-center uppercase font-black text-slate-300 tracking-[0.3em] animate-pulse">
-                        <Package className="w-16 h-16 mx-auto mb-4 opacity-10" />
+                    <div className="py-20 text-center uppercase font-black text-black tracking-[0.3em] animate-pulse">
+                        <Package className="w-16 h-16 mx-auto mb-4 opacity-20 text-black" />
                         Sincronizando con el servidor...
                     </div>
                 ) : filteredOrders.length === 0 ? (
                     <div className="border-4 border-black border-dashed p-20 text-center bg-white">
-                        <Package className="w-20 h-20 mx-auto mb-6 text-slate-100" />
-                        <h3 className="text-3xl font-black uppercase text-slate-300">Sin pedidos por ahora</h3>
-                        <p className="font-bold text-slate-300 uppercase mt-2 italic shadow-white text-sm">Pronto llegarán clientes hambrientos</p>
+                        <Package className="w-20 h-20 mx-auto mb-6 text-black/20" />
+                        <h3 className="text-3xl font-black uppercase text-black">Sin pedidos por ahora</h3>
+                        <p className="font-bold text-black uppercase mt-2 italic shadow-white text-sm">Pronto llegarán clientes hambrientos</p>
                     </div>
                 ) : (
                     filteredOrders.map(order => {
@@ -180,7 +184,7 @@ export default function ManageOrdersPage() {
                                                 <User size={14} className="text-neo-red" />
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Cliente</span>
                                             </div>
-                                            <p className="font-black uppercase text-sm text-black">{order.buyer?.fullName || 'ANÓNIMO'}</p>
+                                            <p className="font-black uppercase text-sm text-black">{order.buyer?.firstName ? `${order.buyer.firstName} ${order.buyer.lastName || ''}` : 'ANÓNIMO'}</p>
                                         </div>
                                     </div>
 
