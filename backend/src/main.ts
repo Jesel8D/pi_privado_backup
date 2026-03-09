@@ -38,17 +38,10 @@ async function bootstrap() {
 
     // CORS
     app.enableCors({
-        origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
-                callback(null, true);
-                return;
-            }
-            callback(new Error(`CORS blocked for origin: ${origin}`));
-        },
+        origin: true, 
         credentials: true,
         methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-        preflightContinue: false,
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
         optionsSuccessStatus: 204,
     });
 
