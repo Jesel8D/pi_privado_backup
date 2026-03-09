@@ -1,0 +1,44 @@
+name: Deploy to EC2 Production
+
+on:
+  push:
+    branches:
+      - pruebas
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy application via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            echo "Conectado a la instancia EC2 exitosamente"
+            
+            # 1. Crear el directorio si no existe y entrar
+            mkdir -p ~/tienditacampus
+            cd ~/tienditacampus
+
+            # 2. Clonar el repositorio si está vacío, o actualizar si ya existe
+            if [ ! -d ".git" ]; then
+              echo "Clonando el repositorio por primera vez..."
+              git clone -b pruebas https://github.com/${{ github.repository }}.git .
+            else
+              echo "Actualizando el repositorio (Git Pull)..."
+              git fetch origin pruebas
+              git reset --hard origin/pruebas
+            fi
+
+            # 3. Lanzar contenedores con Docker Compose
+            echo "Desplegando infraestructura con Docker Compose V2..."
+            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+            echo "Limpiando imágenes sin usar (dangling)..."
+            docker image prune -f
+
+            echo "🎉 Despliegue finalizado exitosamente."
