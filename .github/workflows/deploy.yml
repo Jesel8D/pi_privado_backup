@@ -18,6 +18,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            set -e
             echo "Conectado a la instancia EC2 exitosamente"
             
             # 1. Crear el directorio si no existe y entrar
@@ -36,7 +37,7 @@ jobs:
 
             # 3. Lanzar contenedores con Docker Compose
             echo "Desplegando infraestructura con Docker Compose V2..."
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+            docker compose up -d --build
 
             echo "Limpiando imágenes sin usar (dangling)..."
             docker image prune -f
