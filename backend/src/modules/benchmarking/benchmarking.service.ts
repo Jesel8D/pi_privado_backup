@@ -23,16 +23,28 @@ export class BenchmarkingService {
      * Obtiene el ID del proyecto actual o crea uno por defecto si no existe.
      */
     async getCurrentProjectId(): Promise<number> {
-        let project = await this.projectRepository.findOne({ where: {} });
-        if (!project) {
-            project = this.projectRepository.create({
-                project_type: 'ECOMMERCE' as any,
-                description: 'TienditaCampus - Sistema de Comercio Electrónico Universitario',
-                db_engine: 'POSTGRESQL' as any,
-            });
-            project = await this.projectRepository.save(project);
+        const requiredProjectId = 2;
+
+        // Requerimiento del profesor: el sistema debe reportar con project_id = 2
+        // Se asegura que exista el registro, y se retorna siempre 2.
+        try {
+            await this.entityManager.query(
+                `INSERT INTO projects (project_id, project_type, description, db_engine)
+                 VALUES ($1, 'ECOMMERCE', $2, 'POSTGRESQL')
+                 ON CONFLICT (project_id) DO NOTHING`,
+                [
+                    requiredProjectId,
+                    'TienditaCampus - Sistema de Comercio Electrónico Universitario',
+                ],
+            );
+        } catch (error) {
+            // Si el schema aún no está creado, se manejará en el controller con 500.
+            // Dejamos el log explícito para depuración.
+            this.logger.error(`Benchmarking schema not ready (projects missing?): ${error.message}`);
+            throw error;
         }
-        return project.project_id;
+
+        return requiredProjectId;
     }
 
     /**

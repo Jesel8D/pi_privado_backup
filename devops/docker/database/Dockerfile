@@ -12,6 +12,9 @@ FROM postgres:16-alpine
 # en orden alfabético al crear la base de datos por primera vez
 COPY init/ /docker-entrypoint-initdb.d/
 
+# Hacer ejecutables los scripts
+RUN chmod +x /docker-entrypoint-initdb.d/*.sh
+
 # Configuración de PostgreSQL optimizada
 # COPY postgresql.conf /etc/postgresql/postgresql.conf
 

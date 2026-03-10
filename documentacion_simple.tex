@@ -1,0 +1,158 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{Estructura del Proyecto TienditaCampus}}
+\fancyhead[R]{\thepage\ de \pageref{LastPage}}
+\fancyfoot[C]{\textit{Documentaci\'on T\'ecnica - SOA Architecture}}
+
+\title{\textbf{Estructura del Proyecto TienditaCampus}}
+\author{Equipo de Desarrollo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Estructura del Proyecto}
+
+\subsection{Carpetas Principales}
+/pi\_privado\_backup/ \\
+├── backend/ .................... (API REST - NestJS) \\
+├── frontend/ ................... (PWA - Next.js) \\
+├── database/ .................. (PostgreSQL + MongoDB) \\
+├── devops/ ..................... (CI/CD y Docker) \\
+├── docs/ ....................... (Documentaci\'on) \\
+└── soa-skill/ .................. (IA Auto-Healing)
+
+\subsection{Backend (API REST - NestJS)}
+backend/ \\
+├── dist/ ....................... (Archivos compilados) \\
+├── node\_modules/ .............. (Dependencias) \\
+└── src/ \\
+    ├── app.module.ts ........... (M\'odulo ra\'iz) \\
+    ├── main.ts ................. (Punto de entrada) \\
+    ├── config/ ................. (Configuraciones) \\
+    └── modules/ ................ (M\'odulos de negocio) \\
+        ├── audit/ .............. (Auditor\'ia) \\
+        ├── auth/ ............... (Autenticaci\'on JWT) \\
+        ├── benchmark/ .......... (Benchmarking) \\
+        ├── break-even/ ......... (An\'alisis break-even) \\
+        ├── dashboard/ .......... (Panel de control) \\
+        ├── expiration/ ......... (Alertas de expiraci\'on) \\
+        ├── forecast/ ........... (Pron\'osticos) \\
+        ├── inventory/ .......... (Gesti\'on de inventario) \\
+        ├── orders/ ............. (Pedidos) \\
+        ├── products/ ........... (Productos) \\
+        ├── reports/ ............ (Reportes) \\
+        ├── sales/ .............. (Ventas) \\
+        └── users/ .............. (Usuarios)
+
+\subsection{Frontend (PWA - Next.js)}
+frontend/ \\
+├── .next/ ...................... (Build de Next.js) \\
+├── node\_modules/ .............. (Dependencias) \\
+├── public/ ..................... (Archivos est\'aticos) \\
+└── src/ \\
+    ├── app/ .................... (App Router) \\
+    ├── components/ ............. (Componentes React) \\
+    ├── lib/ .................... (Utilidades) \\
+    ├── styles/ ................. (CSS y Tailwind) \\
+    └── types/ .................. (TypeScript types)
+
+\subsection{Base de Datos (PostgreSQL + MongoDB)}
+database/ \\
+├── init/ ....................... (Scripts de inicializaci\'on) \\
+│   ├── 01-init-extensions.sql \\
+│   ├── 02-init-roles.sql \\
+│   └── 03-run-all-migrations.sh \\
+├── migrations/ ................. (Migraciones SQL) \\
+│   ├── V001\_\_create\_users.sql \\
+│   ├── V002\_\_create\_products.sql \\
+│   └── V009\_\_align\_financial\_domain.sql \\
+└── scripts/ .................... (Scripts de utilidad) \\
+    ├── backup-db.sh \\
+    ├── restore-db.sh \\
+    └── run-migrations.sh
+
+\subsection{DevOps y Docker}
+devops/ \\
+├── docker/ \\
+│   ├── backend/ \\
+│   │   └── Dockerfile .......... (Dockerfile backend) \\
+│   ├── database/ \\
+│   │   └── Dockerfile .......... (Dockerfile PostgreSQL) \\
+│   ├── frontend/ \\
+│   │   └── Dockerfile .......... (Dockerfile frontend) \\
+│   └── nginx/ \\
+│       ├── Dockerfile .......... (Configuraci\'on proxy) \\
+│       └── nginx.conf \\
+└── scripts/ \\
+    ├── backup-db.sh \\
+    ├── deploy.sh \\
+    ├── generate-secrets.sh \\
+    ├── health-check.sh \\
+    ├── restore-db.sh \\
+    └── setup-env.sh
+
+\subsection{Documentaci\'on}
+docs/ \\
+├── BENCHMARKING\_REQUIREMENTS.md \\
+├── BREAK\_EVEN\_ANALYSIS.md \\
+├── DASHBOARD\_REQUIREMENTS.md \\
+├── EXPIRATION\_ALERTS.md \\
+├── FORECAST\_REQUIREMENTS.md \\
+├── INVENTORY\_MANAGEMENT.md \\
+├── REPORTS\_REQUIREMENTS.md \\
+└── USER\_MANAGEMENT.md
+
+\subsection{SOA Skill (IA Auto-Healing)}
+soa-skill/ \\
+├── node\_modules/ .............. (Dependencias) \\
+├── src/ ........................ (C\'odigo fuente) \\
+│   ├── agents/ ................. (Agentes IA) \\
+│   ├── tools/ .................. (Herramientas) \\
+│   └── utils/ .................. (Utilidades) \\
+├── soa-config.json ............. (Configuraci\'on) \\
+└── package.json ................ (Dependencias)
+
+\section{Servicios y Puertos}
+\textbf{Servicios Docker y Puertos:} \\
+Frontend (Next.js) → Puerto 8080 \\
+Backend (NestJS) → Puerto 3001 \\
+PostgreSQL → Puerto 5432 \\
+MongoDB → Puerto 27017 \\
+Nginx (Proxy) → Puerto 80
+
+\section{M\'odulos Backend Implementados}
+\begin{enumerate}
+\item Auth: Autenticaci\'on JWT con Google OAuth
+\item Users: Gesti\'on de usuarios y roles
+\item Products: Cat\'alogo de productos
+\item Inventory: Control de inventario y lotes
+\item Sales: Registro de ventas diarias
+\item Orders: Sistema de pedidos
+\item Dashboard: Panel de control con m\'etricas
+\item Reports: Reportes semanales
+\item Break-even: An\'alisis de punto de equilibrio
+\item Forecast: Pron\'osticos de demanda
+\item Expiration: Alertas de productos pr\'oximos a vencer
+\item Audit: Sistema de auditor\'ia con MongoDB
+\item Benchmarking: M\'etricas de rendimiento con BigQuery
+\end{enumerate}
+
+\section{Tecnolog\'ias Utilizadas}
+\textbf{Frontend:} Next.js 14, React 18, TailwindCSS, TypeScript \\
+\textbf{Backend:} NestJS, TypeORM, PostgreSQL, MongoDB \\
+\textbf{DevOps:} Docker, Docker Compose, Nginx \\
+\textbf{Cloud:} Google BigQuery, Google Cloud Storage \\
+\textbf{IA:} Sistema SOA Auto-Healing con Ollama
+
+\end{document}

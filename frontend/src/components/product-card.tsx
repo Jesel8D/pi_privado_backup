@@ -35,6 +35,7 @@ export function ProductCard({ product }: { product: Product }) {
     const [deliveryMessage, setDeliveryMessage] = useState('');
     const [isPurchasing, setIsPurchasing] = useState(false);
     const [imageFailed, setImageFailed] = useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
 
     const handlePurchase = async () => {
         if (!isAuthenticated) {
@@ -76,20 +77,53 @@ export function ProductCard({ product }: { product: Product }) {
         }
     };
 
+    // Mejorar validación de URL de imagen
+    const isValidImageUrl = (url: string | undefined): boolean => {
+        if (!url) return false;
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
+    const hasValidImage = isValidImageUrl(product.imageUrl) && !imageFailed;
+
     return (
         <div className="bg-white border-2 border-slate-900 dark:border-white shadow-[6px_6px_0px_0px_#E31837] overflow-hidden transition-transform group flex flex-col h-full hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none">
-            <div className="aspect-square bg-[#f1f1f1] relative overflow-hidden border-b-2 border-slate-900 dark:border-white">
-                {product.imageUrl && !imageFailed ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        onError={() => setImageFailed(true)}
-                    />
+            <div className="aspect-square bg-[#f1f1f1] relative overflow-hidden border-b-2 border-slate-900 dark:border-white flex items-center justify-center">
+                {hasValidImage ? (
+                    // ✅ MEJORADO: Imagen con mejor manejo de carga y CORS
+                    <>
+                        {imageLoading && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-[#f1f1f1]">
+                                <Loader2 className="animate-spin text-slate-400" size={32} />
+                            </div>
+                        )}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={product.imageUrl || ''}
+                            alt={product.name}
+                            className="w-full h-full object-cover"
+                            onLoad={() => setImageLoading(false)}
+                            onError={() => {
+                                setImageFailed(true);
+                                setImageLoading(false);
+                            }}
+                            crossOrigin="anonymous"
+                            loading="lazy"
+                        />
+                    </>
                 ) : (
-                    <div className="flex items-center justify-center w-full h-full text-slate-900 text-5xl font-black bg-[#FFC72C] uppercase">
-                        {product.name.charAt(0)}
+                    // ✅ MEJORADO: Placeholder mejor diseñado
+                    <div className="flex flex-col items-center justify-center w-full h-full text-slate-900 bg-[#FFC72C]">
+                        <div className="text-5xl font-black uppercase">
+                            {product.name.charAt(0)}
+                        </div>
+                        <div className="text-xs font-bold mt-2 text-slate-700">
+                            Sin imagen
+                        </div>
                     </div>
                 )}
                 {product.isPerishable && (

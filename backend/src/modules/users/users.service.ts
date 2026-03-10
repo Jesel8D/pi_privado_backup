@@ -6,10 +6,10 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
+import { hash } from '@node-rs/argon2';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { hash } from '@node-rs/argon2';
 import { Product } from '../products/entities/product.entity';
 
 @Injectable()
@@ -81,11 +81,14 @@ export class UsersService {
             throw new ConflictException('El email ya está registrado');
         }
 
-        // Hashear contraseña con Argon2id
+        const memoryCost = this.configService.get<number>('ARGON2_MEMORY_COST', 65536);
+        const timeCost = this.configService.get<number>('ARGON2_TIME_COST', 3);
+        const parallelism = this.configService.get<number>('ARGON2_PARALLELISM', 4);
+
         const passwordHash = await hash(dto.password, {
-            memoryCost: this.configService.get<number>('ARGON2_MEMORY_COST', 65536),
-            timeCost: this.configService.get<number>('ARGON2_TIME_COST', 3),
-            parallelism: this.configService.get<number>('ARGON2_PARALLELISM', 4),
+            memoryCost,
+            timeCost,
+            parallelism,
         });
 
         const user = this.usersRepository.create({

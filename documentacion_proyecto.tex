@@ -1,0 +1,432 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{Estructura del Proyecto TienditaCampus}}
+\fancyhead[R]{\thepage\ de \pageref{LastPage}}
+\fancyfoot[C]{\textit{Documentaci\'on T\'ecnica - SOA Architecture}}
+
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    captionpos=b,
+    numbers=left,
+    numberstyle=\tiny,
+    frame=single,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{\textbf{Estructura del Proyecto TienditaCampus} \\ \large{Documentaci\'on T\'ecnica para Evidencias}}
+\author{Equipo de Desarrollo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta la estructura completa del proyecto TienditaCampus, una aplicaci\'on PWA de arquitectura SOA (Service-Oriented Architecture) para la gesti\'on de tiendas universitarias. Se detalla la organizaci\'on de carpetas, archivos de configuraci\'on y componentes principales del sistema.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducci\'on}
+
+El proyecto TienditaCampus es una aplicaci\'on web progresiva (PWA) desarrollada con arquitectura de microservicios (SOA) que permite la gesti\'on integral de tiendas universitarias. El sistema est\'a compuesto por m\'ultiples servicios independientes que se comunican entre s\'i.
+
+\subsection{Arquitectura General}
+\begin{itemize}
+\item \textbf{Frontend:} Next.js 14 con React 18 y TailwindCSS
+\item \textbf{Backend:} NestJS con TypeORM y autenticaci\'on JWT
+\item \textbf{Base de Datos:} PostgreSQL 16 + MongoDB
+\item \textbf{Orquestaci\'on:} Docker Compose
+\item \textbf{Proxy Inverso:} Nginx
+\end{itemize}
+
+\section{Estructura del Proyecto}
+
+\subsection{Diagrama de Carpetas Principales}
+
+\begin{figure}[h]
+\centering
+\begin{verbatim}
+/pi_privado_backup
+├── backend .................... (API REST - NestJS)
+├── database .................. (PostgreSQL + MongoDB)
+├── devops ...................... (CI/CD y Docker)
+├── docs ........................ (Documentación)
+├── frontend .................... (PWA - Next.js)
+└── soa-skill .................. (IA Auto-Healing)
+\end{verbatim}
+\caption{Estructura de carpetas principales del proyecto}
+\end{figure}
+
+\subsection{Backend (API REST - NestJS)}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+backend/
+├── dist/ ...................... (Archivos compilados)
+├── node_modules/ .............. (Dependencias)
+└── src/
+    ├── app.module.ts .......... (Módulo raíz)
+    ├── main.ts ................ (Punto de entrada)
+    ├── config/ ................ (Configuraciones)
+    └── modules/ ............... (Módulos de negocio)
+        ├── audit/ ............. (Auditoría)
+        ├── auth/ .............. (Autenticación JWT)
+        ├── benchmark/ ......... (Benchmarking)
+        ├── break-even/ ........ (Análisis break-even)
+        ├── dashboard/ ......... (Panel de control)
+        ├── expiration/ ........ (Alertas de expiración)
+        ├── forecast/ .......... (Pronósticos)
+        ├── inventory/ ......... (Gestión de inventario)
+        ├── orders/ ............ (Pedidos)
+        ├── products/ .......... (Productos)
+        ├── reports/ ........... (Reportes)
+        ├── sales/ ............. (Ventas)
+        └── users/ ............. (Usuarios)
+\end{verbatim}
+
+\subsubsection{Archivos de Configuración}
+\begin{lstlisting}[caption=package.json - Dependencias Backend]
+{
+  "name": "tienditacampus-backend",
+  "version": "0.1.0",
+  "dependencies": {
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/typeorm": "^10.0.0",
+    "@nestjs/jwt": "^10.0.0",
+    "@nestjs/mongoose": "^11.0.4",
+    "@google-cloud/bigquery": "^8.1.1",
+    "pg": "^8.11.0",
+    "mongoose": "^9.2.1",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1"
+  }
+}
+\end{lstlisting}
+
+\subsection{Frontend (PWA - Next.js)}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+frontend/
+├── .next/ ..................... (Build de Next.js)
+├── node_modules/ .............. (Dependencias)
+├── public/ .................... (Archivos estáticos)
+└── src/
+    ├── app/ ................... (App Router)
+    ├── components/ ............ (Componentes React)
+    ├── lib/ ................... (Utilidades)
+    ├── styles/ ................ (CSS y Tailwind)
+    └── types/ ................. (TypeScript types)
+\end{verbatim}
+
+\subsubsection{Archivos de Configuración}
+\begin{lstlisting}[caption=package.json - Dependencias Frontend]
+{
+  "name": "tienditacampus-frontend",
+  "version": "0.1.0",
+  "dependencies": {
+    "next": "^14.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "tailwindcss": "^3.3.0",
+    "@radix-ui/react-dialog": "^1.0.0",
+    "lucide-react": "^0.294.0",
+    "zustand": "^4.4.0",
+    "react-hook-form": "^7.48.0",
+    "recharts": "^2.8.0"
+  }
+}
+\end{lstlisting}
+
+\subsection{Base de Datos}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+database/
+├── init/ ...................... (Scripts de inicialización)
+│   ├── 01-init-extensions.sql
+│   ├── 02-init-roles.sql
+│   └── 03-run-all-migrations.sh
+├── migrations/ ................ (Migraciones SQL)
+│   ├── V001__create_users.sql
+│   ├── V002__create_products.sql
+│   └── V009__align_financial_domain.sql
+└── scripts/ ................... (Scripts de utilidad)
+    ├── backup-db.sh
+    ├── restore-db.sh
+    └── run-migrations.sh
+\end{verbatim}
+
+\subsection{DevOps y Docker}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+devops/
+├── docker/
+│   ├── backend/
+│   │   └── Dockerfile .......... (Dockerfile backend)
+│   ├── database/
+│   │   └── Dockerfile .......... (Dockerfile PostgreSQL)
+│   ├── frontend/
+│   │   └── Dockerfile .......... (Dockerfile frontend)
+│   └── nginx/
+│       ├── Dockerfile .......... (Configuración proxy)
+│       └── nginx.conf
+└── scripts/
+    ├── backup-db.sh
+    ├── deploy.sh
+    ├── generate-secrets.sh
+    ├── health-check.sh
+    ├── restore-db.sh
+    └── setup-env.sh
+\end{verbatim}
+
+\subsubsection{Docker Compose Principal}
+\begin{lstlisting}[caption=docker-compose.yml - Orquestación de Servicios]
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../devops/docker/frontend/Dockerfile
+    ports:
+      - "8080:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: ../devops/docker/backend/Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    build:
+      context: ./database
+      dockerfile: ../devops/docker/database/Dockerfile
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tienditacampus_user -d tienditacampus"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+
+  nginx:
+    build:
+      context: ./devops/docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+\end{lstlisting}
+
+\subsection{Documentación}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+docs/
+├── BENCHMARKING_REQUIREMENTS.md
+├── BREAK_EVEN_ANALYSIS.md
+├── DASHBOARD_REQUIREMENTS.md
+├── EXPIRATION_ALERTS.md
+├── FORECAST_REQUIREMENTS.md
+├── INVENTORY_MANAGEMENT.md
+├── REPORTS_REQUIREMENTS.md
+└── USER_MANAGEMENT.md
+\end{verbatim}
+
+\subsection{SOA Skill (IA Auto-Healing)}
+
+\subsubsection{Estructura de Carpetas}
+
+\begin{verbatim}
+soa-skill/
+├── node_modules/ .............. (Dependencias)
+├── src/ ....................... (Código fuente)
+│   ├── agents/ ................ (Agentes IA)
+│   ├── tools/ ................. (Herramientas)
+│   └── utils/ ................. (Utilidades)
+├── soa-config.json ............ (Configuración)
+└── package.json ............... (Dependencias)
+\end{verbatim}
+
+\section{Flujo de Datos y Arquitectura}
+
+\subsection{Diagrama de Arquitectura}
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.8\textwidth}
+\textbf{Flujo de Datos TienditaCampus}
+
+\textit{Usuario} $\rightarrow$ \textbf{Frontend (Next.js)} $\rightarrow$ \textbf{Nginx} $\rightarrow$ \textbf{Backend (NestJS)}
+
+\textbf{Backend} $\leftrightarrow$ \textbf{PostgreSQL} (Datos relacionales)
+
+\textbf{Backend} $\leftrightarrow$ \textbf{MongoDB} (Logs y auditoría)
+
+\textbf{Backend} $\leftrightarrow$ \textbf{Google BigQuery} (Analytics)
+\end{minipage}
+\end{figure}
+
+\subsection{Servicios y Puertos}
+
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Servicio} & \textbf{Puerto} & \textbf{Descripción} \\
+\hline
+Frontend (Next.js) & 8080 & Interfaz de usuario PWA \\
+Backend (NestJS) & 3001 & API REST con autenticación JWT \\
+PostgreSQL & 5432 & Base de datos principal relacional \\
+MongoDB & 27017 & Base de datos NoSQL para logs \\
+Nginx & 80 & Proxy inverso y balanceo de carga \\
+\hline
+\end{tabular}
+
+\section{Configuración de Variables de Entorno}
+
+\subsection{Archivo .env}
+\begin{lstlisting}[caption=.env - Variables de Entorno]
+# General
+COMPOSE_PROJECT_NAME=tc_stack_dev
+NODE_ENV=production
+TZ=America/Mexico_City
+
+# PostgreSQL
+POSTGRES_HOST=database
+POSTGRES_PORT=5432
+POSTGRES_DB=tienditacampus
+POSTGRES_USER=tienditacampus_user
+POSTGRES_PASSWORD=tienditacampus_pass123
+
+# Backend (NestJS)
+BACKEND_PORT=3001
+JWT_SECRET=tu_jwt_secret_muy_seguro_aqui_123456789
+JWT_EXPIRATION=7d
+
+# Frontend (Next.js)
+NEXT_PUBLIC_API_URL=http://backend:3001/api
+FRONTEND_PORT=3000
+
+# Nginx
+NGINX_HTTP_PORT=80
+NGINX_HTTPS_PORT=443
+\end{lstlisting}
+
+\section{Comandos de Desarrollo}
+
+\subsection{Docker Compose}
+\begin{lstlisting}[language=bash,caption=Comandos principales de Docker]
+# Construir y levantar todos los servicios
+docker compose up -d --build
+
+# Detener y eliminar contenedores y volúmenes
+docker compose down -v
+
+# Ver logs de un servicio específico
+docker compose logs backend
+docker compose logs database
+
+# Reiniciar un servicio específico
+docker compose restart backend
+
+# Acceder a un contenedor
+docker compose exec backend sh
+\end{lstlisting}
+
+\subsection{NPM Scripts}
+\begin{lstlisting}[language=bash,caption=Scripts disponibles en backend]
+# Desarrollo
+npm run start:dev
+
+# Producción
+npm run build
+npm run start:prod
+
+# Testing
+npm run test
+npm run test:cov
+
+# Linting
+npm run lint
+\end{lstlisting}
+
+\section{Módulos del Sistema}
+
+\subsection{Módulos Backend Implementados}
+\begin{enumerate}
+\item \textbf{Auth:} Autenticación JWT con Google OAuth
+\item \textbf{Users:} Gestión de usuarios y roles
+\item \textbf{Products:} Catálogo de productos
+\item \textbf{Inventory:} Control de inventario y lotes
+\item \textbf{Sales:} Registro de ventas diarias
+\item \textbf{Orders:} Sistema de pedidos
+\item \textbf{Dashboard:} Panel de control con métricas
+\item \textbf{Reports:} Reportes semanales
+\item \textbf{Break-even:} Análisis de punto de equilibrio
+\item \textbf{Forecast:} Pronósticos de demanda
+\item \textbf{Expiration:} Alertas de productos próximos a vencer
+\item \textbf{Audit:} Sistema de auditoría con MongoDB
+\item \textbf{Benchmarking:} Métricas de rendimiento con BigQuery
+\end{enumerate}
+
+\section{Conclusión}
+
+El proyecto TienditaCampus presenta una arquitectura SOA bien estructurada con separación clara de responsabilidades. La organización de carpetas sigue las mejores prácticas de desarrollo, facilitando el mantenimiento y escalabilidad del sistema.
+
+\subsection{Puntos Fuertes de la Arquitectura}
+\begin{itemize}
+\item Separación clara entre frontend y backend
+\item Microservicios independientes
+\item Configuración completa con Docker
+\item Documentación técnica detallada
+\item Sistema de migraciones robusto
+\item Autenticación y autorización seguras
+\end{itemize}
+
+\subsection{Tecnologías Utilizadas}
+\begin{itemize}
+\item \textbf{Frontend:} Next.js 14, React 18, TailwindCSS, TypeScript
+\item \textbf{Backend:} NestJS, TypeORM, PostgreSQL, MongoDB
+\item \textbf{DevOps:} Docker, Docker Compose, Nginx
+\item \textbf{Cloud:} Google BigQuery, Google Cloud Storage
+\item \textbf{IA:} Sistema SOA Auto-Healing con Ollama
+\end{itemize}
+
+\end{document}

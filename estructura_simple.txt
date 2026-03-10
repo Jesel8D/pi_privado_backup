@@ -1,0 +1,192 @@
+ESTRUCTURA DEL PROYECTO TIENDITACAMPUS
+
+================================================================================
+CARPETAS PRINCIPALES
+================================================================================
+
+/pi_privado_backup/
+├── backend/ .................... (API REST - NestJS)
+├── frontend/ ................... (PWA - Next.js)
+├── database/ .................. (PostgreSQL + MongoDB)
+├── devops/ ..................... (CI/CD y Docker)
+├── docs/ ....................... (Documentación)
+└── soa-skill/ .................. (IA Auto-Healing)
+
+================================================================================
+BACKEND (API REST - NESTJS)
+================================================================================
+
+backend/
+├── dist/ ....................... (Archivos compilados)
+├── node_modules/ ............... (Dependencias)
+└── src/
+    ├── app.module.ts ........... (Módulo raíz)
+    ├── main.ts ................. (Punto de entrada)
+    ├── config/ ................. (Configuraciones)
+    └── modules/ ................ (Módulos de negocio)
+        ├── audit/ .............. (Auditoría)
+        ├── auth/ ............... (Autenticación JWT)
+        ├── benchmark/ .......... (Benchmarking)
+        ├── break-even/ ......... (Análisis break-even)
+        ├── dashboard/ .......... (Panel de control)
+        ├── expiration/ ......... (Alertas de expiración)
+        ├── forecast/ ........... (Pronósticos)
+        ├── inventory/ .......... (Gestión de inventario)
+        ├── orders/ ............. (Pedidos)
+        ├── products/ ........... (Productos)
+        ├── reports/ ............ (Reportes)
+        ├── sales/ .............. (Ventas)
+        └── users/ .............. (Usuarios)
+
+================================================================================
+FRONTEND (PWA - NEXT.JS)
+================================================================================
+
+frontend/
+├── .next/ ...................... (Build de Next.js)
+├── node_modules/ ............... (Dependencias)
+├── public/ ..................... (Archivos estáticos)
+└── src/
+    ├── app/ .................... (App Router)
+    ├── components/ ............. (Componentes React)
+    ├── lib/ .................... (Utilidades)
+    ├── styles/ .................. (CSS y Tailwind)
+    └── types/ ................... (TypeScript types)
+
+================================================================================
+BASE DE DATOS (POSTGRESQL + MONGODB)
+================================================================================
+
+database/
+├── init/ ....................... (Scripts de inicialización)
+│   ├── 01-init-extensions.sql
+│   ├── 02-init-roles.sql
+│   └── 03-run-all-migrations.sh
+├── migrations/ ................. (Migraciones SQL)
+│   ├── V001__create_users.sql
+│   ├── V002__create_products.sql
+│   └── V009__align_financial_domain.sql
+└── scripts/ .................... (Scripts de utilidad)
+    ├── backup-db.sh
+    ├── restore-db.sh
+    └── run-migrations.sh
+
+================================================================================
+DEVOPS Y DOCKER
+================================================================================
+
+devops/
+├── docker/
+│   ├── backend/
+│   │   └── Dockerfile .......... (Dockerfile backend)
+│   ├── database/
+│   │   └── Dockerfile .......... (Dockerfile PostgreSQL)
+│   ├── frontend/
+│   │   └── Dockerfile .......... (Dockerfile frontend)
+│   └── nginx/
+│       ├── Dockerfile .......... (Configuración proxy)
+│       └── nginx.conf
+└── scripts/
+    ├── backup-db.sh
+    ├── deploy.sh
+    ├── generate-secrets.sh
+    ├── health-check.sh
+    ├── restore-db.sh
+    └── setup-env.sh
+
+================================================================================
+DOCUMENTACIÓN
+================================================================================
+
+docs/
+├── BENCHMARKING_REQUIREMENTS.md
+├── BREAK_EVEN_ANALYSIS.md
+├── DASHBOARD_REQUIREMENTS.md
+├── EXPIRATION_ALERTS.md
+├── FORECAST_REQUIREMENTS.md
+├── INVENTORY_MANAGEMENT.md
+├── REPORTS_REQUIREMENTS.md
+└── USER_MANAGEMENT.md
+
+================================================================================
+SOA SKILL (IA AUTO-HEALING)
+================================================================================
+
+soa-skill/
+├── node_modules/ ............... (Dependencias)
+├── src/ ........................ (Código fuente)
+│   ├── agents/ ................. (Agentes IA)
+│   ├── tools/ .................. (Herramientas)
+│   └── utils/ .................. (Utilidades)
+├── soa-config.json ............. (Configuración)
+└── package.json ................ (Dependencias)
+
+================================================================================
+ARCHIVOS DE CONFIGURACIÓN PRINCIPALES
+================================================================================
+
+├── docker-compose.yml .......... (Orquestación de servicios Docker)
+├── .env ........................ (Variables de entorno)
+├── .gitignore .................. (Archivos ignorados por Git)
+└── README.md ................... (Documentación del proyecto)
+
+================================================================================
+SERVICIOS DOCKER Y PUERTOS
+================================================================================
+
+Frontend (Next.js)     → Puerto 8080
+Backend (NestJS)       → Puerto 3001
+PostgreSQL            → Puerto 5432
+MongoDB               → Puerto 27017
+Nginx (Proxy)         → Puerto 80
+
+================================================================================
+TECNOLOGÍAS UTILIZADAS
+================================================================================
+
+FRONTEND:
+- Next.js 14
+- React 18
+- TypeScript
+- TailwindCSS
+- Radix UI
+- Zustand
+- React Hook Form
+- Recharts
+
+BACKEND:
+- NestJS
+- TypeORM
+- PostgreSQL
+- MongoDB
+- JWT Authentication
+- Class Validator
+- Google BigQuery
+
+DEVOPS:
+- Docker
+- Docker Compose
+- Nginx
+- Flyway (Migraciones)
+
+IA:
+- SOA Auto-Healing Skill
+- Ollama
+
+================================================================================
+MÓDULOS DEL BACKEND IMPLEMENTADOS
+================================================================================
+
+1. Auth ............... (Autenticación JWT con Google OAuth)
+2. Users .............. (Gestión de usuarios y roles)
+3. Products ........... (Catálogo de productos)
+4. Inventory .......... (Control de inventario y lotes)
+5. Sales .............. (Registro de ventas diarias)
+6. Orders ............. (Sistema de pedidos)
+7. Dashboard .......... (Panel de control con métricas)
+8. Reports ............ (Reportes semanales)
+9. Break-even ......... (Análisis de punto de equilibrio)
+10. Forecast .......... (Pronósticos de demanda)
+11. Expiration ........ (Alertas de productos próximos a vencer)
+12. Audit ............. (Sistema de auditoría con MongoDB)
+13. Benchmarking ...... (Métricas de rendimiento con BigQuery)

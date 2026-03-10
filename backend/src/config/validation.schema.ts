@@ -33,6 +33,10 @@ export const validationSchema = Joi.object({
     ARGON2_TIME_COST: Joi.number().default(3),
     ARGON2_PARALLELISM: Joi.number().default(4),
 
+    // Default admin seed (optional)
+    DEFAULT_ADMIN_EMAIL: Joi.string().allow('').optional(),
+    DEFAULT_ADMIN_PASSWORD: Joi.string().allow('').optional(),
+
     // Security
     MAX_FAILED_LOGIN_ATTEMPTS: Joi.number().default(5),
     LOCKOUT_DURATION_MINUTES: Joi.number().default(15),

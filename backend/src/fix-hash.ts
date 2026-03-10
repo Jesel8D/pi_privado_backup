@@ -21,9 +21,9 @@ async function bootstrap() {
         console.log("=== NEW HASH CREATED ===");
         console.log(tempUser.passwordHash);
 
-        // Optional: save it to isaac and isaa directly
+        // Optional: save it to jarassanchezl@gmail.com
         await app.get('DataSource').query(
-            `UPDATE users SET password_hash = $1 WHERE email IN ('isaa@gmail.com', 'isaac@gmail.com')`,
+            `UPDATE users SET password_hash = $1 WHERE email IN ('jarassanchezl@gmail.com')`,
             [tempUser.passwordHash]
         );
         // Clean up

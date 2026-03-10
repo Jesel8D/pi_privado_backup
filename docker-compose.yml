@@ -16,6 +16,8 @@ services:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
         - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
     restart: unless-stopped
+    ports:
+      - "8080:3000"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
       - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
@@ -34,6 +36,8 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       - BACKEND_PORT=${BACKEND_PORT}
+      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
+      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
       - POSTGRES_HOST=${POSTGRES_HOST}
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
@@ -45,6 +49,7 @@ services:
       - ARGON2_TIME_COST=${ARGON2_TIME_COST}
       - ARGON2_PARALLELISM=${ARGON2_PARALLELISM}
       - MONGO_URI=mongodb://mongodb:27017/tienditacampus_logs
+      - CORS_ORIGIN=http://localhost:80,http://localhost:8080
     expose:
       - "${BACKEND_PORT:-3001}"
     ports:
@@ -85,7 +90,7 @@ services:
     networks:
       - tc-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test: [ "CMD-SHELL", "pg_isready -U tienditacampus_user -d tienditacampus" ]
       interval: 10s
       timeout: 5s
       retries: 5

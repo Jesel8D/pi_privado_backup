@@ -9,7 +9,6 @@ async function run() {
     });
     console.log("HASH:", h);
 
-    // just to be sure it verifies
     const v = await argon2.verify(h, p);
     console.log("VERIFIES:", v);
 }

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 # ============================================================
 # Hook de Inicialización Automática de Migraciones
 # ============================================================
@@ -8,7 +8,7 @@
 # Lee el contenido del script original de migraciones y lo ejecuta 
 # localmente en vez de via docker exec (porque YA estamos en el contenedor)
 
-set -euo pipefail
+set -eu
 
 echo "Levantando migraciones automáticas..."
 

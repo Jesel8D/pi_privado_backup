@@ -1,8 +1,3 @@
-// ============================================================
-// TienditaCampus - Service Worker (PWA)
-// ============================================================
-// Estrategia: Cache First para assets, Network First para API
-// ============================================================
 
 const CACHE_NAME = 'tienditacampus-v1';
 const STATIC_ASSETS = [
@@ -12,7 +7,6 @@ const STATIC_ASSETS = [
     '/icons/icon-512x512.svg',
 ];
 
-// Instalación: cachear assets estáticos
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -22,7 +16,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Activación: limpiar caches antiguos
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -36,12 +29,10 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch: Network First para API, Cache First para assets
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // API calls: Network First
     if (url.pathname.startsWith('/api/')) {
         if (request.method !== 'GET') {
             event.respondWith(fetch(request));
@@ -62,7 +53,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Static assets: Cache First
     event.respondWith(
         caches.match(request).then((cachedResponse) => {
             return cachedResponse || fetch(request);

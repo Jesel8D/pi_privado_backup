@@ -66,7 +66,7 @@ const routes = [
         icon: TrendingUp,
         href: '/benchmarking',
         color: 'bg-neo-yellow',
-        roles: ['admin', 'seller', 'buyer'],
+        roles: ['admin'],
     },
 ];
 

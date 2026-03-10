@@ -21,5 +21,10 @@ INSERT INTO users (email, password_hash, first_name, last_name, phone, role, is_
         'comprador1@test.com',
         '$argon2id$v=19$m=19456,t=2,p=1$XRUuqE0ogWq63N7OoWvWQw$DQu0wlT3bAhcnr5NF8TjXkgSP4xOrb/O2YhdV24GNLE',
         'Ana', 'Hernández', '9619876543', 'buyer', true
+    ),
+    (
+        'jarassanchezl@gmail.com',
+        '$argon2id$v=19$m=19456,t=2,p=1$XRUuqE0ogWq63N7OoWvWQw$DQu0wlT3bAhcnr5NF8TjXkgSP4xOrb/O2YhdV24GNLE',
+        'Jara', 'Sánchez', '9619999999', 'admin', true
     )
 ON CONFLICT (email) DO NOTHING;

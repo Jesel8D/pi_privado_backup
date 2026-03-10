@@ -30,7 +30,6 @@ async function fixPasswords() {
         );
         console.log("UPDATED ROWS:", res.rowCount);
 
-        // Let's verify it got saved correctly
         const check = await pool.query("SELECT email, password_hash FROM users WHERE email = 'isaac@gmail.com'");
         if (check.rows.length > 0) {
             console.log("SAVED IN DB:", check.rows[0].password_hash);
