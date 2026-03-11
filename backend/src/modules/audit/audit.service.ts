@@ -3,16 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { AuditLog } from './schemas/audit-log.schema';
 
-/**
- * AuditService — Servicio de auditoría usando MongoDB (NoSQL).
- *
- * Este servicio se conecta a MongoDB (base de datos NO relacional)
- * para almacenar logs de actividad como documentos JSON flexibles.
- *
- * Diferencia clave vs PostgreSQL:
- *   - PostgreSQL: tablas con columnas fijas, relaciones, JOINs
- *   - MongoDB: documentos JSON sin esquema fijo, cada documento puede ser diferente
- */
+
 @Injectable()
 export class AuditService {
     constructor(
@@ -20,10 +11,7 @@ export class AuditService {
         private readonly auditModel: Model<AuditLog>,
     ) { }
 
-    /**
-     * Registra un evento de auditoría en MongoDB.
-     * El campo `metadata` puede contener cualquier estructura JSON.
-     */
+    
     async log(params: {
         action: string;
         entityType?: string;
@@ -47,9 +35,6 @@ export class AuditService {
         return entry.save();
     }
 
-    /**
-     * Busca logs por acción.
-     */
     async findByAction(action: string): Promise<AuditLog[]> {
         return this.auditModel
             .find({ action })
@@ -58,9 +43,6 @@ export class AuditService {
             .exec();
     }
 
-    /**
-     * Busca logs de un usuario específico.
-     */
     async findByUser(userId: string): Promise<AuditLog[]> {
         return this.auditModel
             .find({ userId })
@@ -69,9 +51,6 @@ export class AuditService {
             .exec();
     }
 
-    /**
-     * Busca logs de una entidad específica.
-     */
     async findByEntity(entityType: string, entityId: string): Promise<AuditLog[]> {
         return this.auditModel
             .find({ entityType, entityId })
@@ -80,15 +59,6 @@ export class AuditService {
             .exec();
     }
 
-    /**
-     * ════════════════════════════════════════════
-     *  Consulta NoSQL — Buscar dentro del JSON
-     * ════════════════════════════════════════════
-     *
-     * En MongoDB, buscar dentro de documentos anidados
-     * es nativo. No necesitas operadores especiales como
-     * en PostgreSQL (->>, @>). Simplemente usas dot notation.
-     */
     async findByMetadataKey(key: string, value: string): Promise<AuditLog[]> {
         return this.auditModel
             .find({ [`metadata.${key}`]: value })
@@ -97,9 +67,6 @@ export class AuditService {
             .exec();
     }
 
-    /**
-     * Obtiene los últimos N logs del sistema.
-     */
     async getRecent(limit = 50): Promise<AuditLog[]> {
         return this.auditModel
             .find()
