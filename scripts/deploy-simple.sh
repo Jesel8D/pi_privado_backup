@@ -9,8 +9,8 @@ BACKEND_IP="98.92.47.235"
 FRONTEND_IP="98.82.69.208"
 DATABASE_IP="54.157.136.124"
 
-# Clave PEM (usaremos la que ya tienes)
-PEM_KEY="nueva-pem"
+# Clave PEM (usaremos la clave correcta que me diste)
+PEM_KEY="tienditacampus.pem"
 
 echo "📦 Paso 1: Deploy Backend API ($BACKEND_IP)"
 
