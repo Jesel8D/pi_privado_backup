@@ -19,14 +19,9 @@ export class BenchmarkingService {
         private readonly queryRepository: Repository<Query>,
     ) { }
 
-    /**
-     * Obtiene el ID del proyecto actual o crea uno por defecto si no existe.
-     */
     async getCurrentProjectId(): Promise<number> {
         const requiredProjectId = 2;
 
-        // Requerimiento del profesor: el sistema debe reportar con project_id = 2
-        // Se asegura que exista el registro, y se retorna siempre 2.
         try {
             await this.entityManager.query(
                 `INSERT INTO projects (project_id, project_type, description, db_engine)
@@ -38,8 +33,6 @@ export class BenchmarkingService {
                 ],
             );
         } catch (error) {
-            // Si el schema aún no está creado, se manejará en el controller con 500.
-            // Dejamos el log explícito para depuración.
             this.logger.error(`Benchmarking schema not ready (projects missing?): ${error.message}`);
             throw error;
         }
@@ -47,9 +40,6 @@ export class BenchmarkingService {
         return requiredProjectId;
     }
 
-    /**
-     * Ejecuta todas las consultas registradas para generar métricas.
-     */
     async runRegisteredQueries(): Promise<void> {
         const queries = await this.queryRepository.find();
         for (const q of queries) {
@@ -62,21 +52,16 @@ export class BenchmarkingService {
         }
     }
 
-    /**
-     * Captura el snapshot actual de pg_stat_statements y lo envía a BigQuery.
-     */
     async processDailySnapshot(authHeader: string): Promise<any> {
         const accessToken = authHeader.replace('Bearer ', '');
         if (!accessToken) throw new BadRequestException('OAuth token is required');
 
-        // 1. Obtener datos desde la VISTA v_daily_export (Requerimiento del profesor)
         const metrics = await this.entityManager.query('SELECT * FROM v_daily_export');
 
         if (metrics.length === 0) {
             throw new BadRequestException('No hay métricas acumuladas (calls > 0) para exportar.');
         }
 
-        // 2. Enviar a BigQuery usando el token del usuario
         try {
             const oauth2Client = new OAuth2Client();
             oauth2Client.setCredentials({ access_token: accessToken });
@@ -89,15 +74,13 @@ export class BenchmarkingService {
             const datasetId = 'benchmarking_warehouse';
             const tableId = 'daily_query_metrics';
 
-            // Insertar rows directamente
             const rows = metrics.map((m: any) => ({
                 ...m,
-                snapshot_date: m.snapshot_date.toISOString().split('T')[0] // Asegurar formato YYYY-MM-DD
+                snapshot_date: m.snapshot_date.toISOString().split('T')[0]
             }));
 
             await bigquery.dataset(datasetId).table(tableId).insert(rows);
 
-            // 3. Solo si el envío es exitoso, reiniciar estadísticas (Requerimiento del profesor)
             await this.entityManager.query('SELECT pg_stat_statements_reset()');
 
             return {
@@ -110,9 +93,6 @@ export class BenchmarkingService {
         }
     }
 
-    /**
-     * Obtiene métricas reales directamente de pg_stat_statements.
-     */
     async getQueryMetrics(limit = 20): Promise<any[]> {
         try {
             const metrics = await this.entityManager.query(`
