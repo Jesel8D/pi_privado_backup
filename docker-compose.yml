@@ -62,7 +62,7 @@ services:
       mongodb:
         condition: service_started
     healthcheck:
-      test: [ "CMD-SHELL", "wget --spider -q http://localhost:${BACKEND_PORT}/api/health || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost:${BACKEND_PORT}/api/health || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -147,6 +147,12 @@ services:
     depends_on:
       - frontend
       - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 networks:
   tc-network:
