@@ -11,16 +11,6 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { GoogleLoginDto } from './dto/google-login.dto';
 
-/**
- * AuthService — Lógica de autenticación
- *
- * Flujo de login:
- *  1. Buscar usuario por email
- *  2. Verificar que la cuenta no esté bloqueada
- *  3. Verificar contraseña con Argon2
- *  4. Si falla: incrementar intentos fallidos (y posiblemente bloquear)
- *  5. Si acierta: resetear intentos, actualizar trazabilidad, generar JWT
- */
 @Injectable()
 export class AuthService {
     constructor(
@@ -29,10 +19,6 @@ export class AuthService {
         private readonly auditService: AuditService,
     ) { }
 
-    /**
-     * Registrar un usuario nuevo.
-     * El hashing de contraseña ocurre dentro de UsersService.create()
-     */
     async register(dto: RegisterDto) {
         const user = await this.usersService.create({
             email: dto.email,
@@ -43,11 +29,9 @@ export class AuthService {
             role: dto.role,
         });
 
-        // Generar token para auto-login después del registro
         const payload = { sub: user.id, email: user.email, role: user.role };
         const accessToken = this.jwtService.sign(payload);
 
-        // ── Audit Log (JSONB) ──────────────────────────────
         await this.auditService.log({
             action: 'user.register',
             entityType: 'user',
@@ -73,10 +57,6 @@ export class AuthService {
         };
     }
 
-    /**
-     * Iniciar sesión con email y contraseña.
-     * Implementa account lockout y trazabilidad UX.
-     */
     async login(dto: LoginDto) {
         const user = await this.usersService.findByEmail(dto.email.toLowerCase());
 
@@ -84,8 +64,6 @@ export class AuthService {
             throw new UnauthorizedException('Credenciales inválidas');
         }
 
-        // ── Verificar bloqueo de cuenta ──────────────────────
-        // ── Verificar bloqueo de cuenta ──────────────────────
         if (user.isLocked && user.lockedUntil) {
             const remainingMinutes = Math.ceil(
                 (user.lockedUntil.getTime() - Date.now()) / 60000,
@@ -95,14 +73,11 @@ export class AuthService {
             );
         }
 
-        // ── Verificar contraseña con Argon2 ──────────────────
         const isPasswordValid = await verify(user.passwordHash, dto.password);
 
         if (!isPasswordValid) {
-            // Registrar intento fallido (puede bloquear la cuenta)
             await this.usersService.recordFailedLogin(user.id);
 
-            // ── Audit Log: Login fallido (JSONB) ──────────────
             await this.auditService.log({
                 action: 'user.login_failed',
                 entityType: 'user',
@@ -120,14 +95,11 @@ export class AuthService {
             throw new UnauthorizedException('Credenciales inválidas');
         }
 
-        // ── Login exitoso: actualizar trazabilidad ───────────
         await this.usersService.recordSuccessfulLogin(user.id);
 
-        // ── Generar JWT ──────────────────────────────────────
         const payload = { sub: user.id, email: user.email, role: user.role };
         const accessToken = this.jwtService.sign(payload);
 
-        // ── Audit Log: Login exitoso (JSONB) ──────────────
         await this.auditService.log({
             action: 'user.login',
             entityType: 'user',
@@ -156,9 +128,6 @@ export class AuthService {
         };
     }
 
-    /**
-     * Iniciar sesión / Registro Automático usando Google OAuth2 SSO.
-     */
     async loginWithGoogle(dto: GoogleLoginDto) {
         try {
             const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -175,24 +144,21 @@ export class AuthService {
             let user = await this.usersService.findByEmail(email);
 
             if (!user) {
-                // Auto-registro (SSO) silently
-                // El dto de UsersService exige constraseña estricta, enviamos una aleatoria muy fuerte
                 const randomPassword = `Gg#${Math.random().toString(36).slice(-8)}A1!x`;
                 await this.usersService.create({
                     email: email,
                     password: randomPassword,
                     firstName: data.given_name || 'Usuario',
                     lastName: data.family_name || 'Google',
-                    role: 'buyer' // Rol por defecto, un admin lo puede subir a 'seller'
+                    role: 'buyer'
                 });
-                user = await this.usersService.findByEmail(email); // Cargar datos completos
+                user = await this.usersService.findByEmail(email);
             }
 
             if (!user) {
                 throw new Error('Fallo crítico al auto-registrar usuario con Google SSO');
             }
 
-            // Ya sea nuevo o existente, registramos el login exitoso
             await this.usersService.recordSuccessfulLogin(user.id);
 
             const payload = { sub: user.id, email: user.email, role: user.role };
@@ -232,9 +198,6 @@ export class AuthService {
         }
     }
 
-    /**
-     * Retorna los datos del usuario autenticado (para GET /auth/profile).
-     */
     async getProfile(userId: string) {
         const user = await this.usersService.findById(userId);
         if (!user) {

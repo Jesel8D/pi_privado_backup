@@ -15,10 +15,6 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../users/entities/user.entity';
 
-/**
- * SalesController — Solo accesible para sellers y admins.
- * El guard a nivel de clase aplica JWT + Roles a todos los endpoints.
- */
 @Controller('sales')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('seller', 'admin')

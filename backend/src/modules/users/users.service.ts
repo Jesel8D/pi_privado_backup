@@ -22,19 +22,12 @@ export class UsersService {
         private readonly configService: ConfigService,
     ) { }
 
-    /**
-     * Busca un usuario activo por email.
-     * Incluye password_hash para verificación en auth.
-     */
     async findByEmail(email: string): Promise<User | null> {
         return this.usersRepository.findOne({
             where: { email: email.toLowerCase(), isActive: true },
         });
     }
 
-    /**
-     * Busca un usuario por ID.
-     */
     async findById(id: string): Promise<User | null> {
         return this.usersRepository.findOne({
             where: { id, isActive: true },
@@ -69,11 +62,7 @@ export class UsersService {
         };
     }
 
-    /**
-     * Crea un nuevo usuario con contraseña hasheada con Argon2.
-     */
     async create(dto: CreateUserDto): Promise<User> {
-        // Verificar que el email no exista
         const existing = await this.usersRepository.findOne({
             where: { email: dto.email.toLowerCase() },
         });
@@ -118,12 +107,6 @@ export class UsersService {
         return this.usersRepository.save(user);
     }
 
-    // ── Trazabilidad UX ───────────────────────────────────
-
-    /**
-     * Registra un login exitoso: incrementa login_count,
-     * actualiza last_login_at, resetea intentos fallidos.
-     */
     async recordSuccessfulLogin(id: string): Promise<void> {
         await this.usersRepository.update(id, {
             lastLoginAt: new Date(),
@@ -133,10 +116,6 @@ export class UsersService {
         } as any);
     }
 
-    /**
-     * Registra un intento de login fallido.
-     * Bloquea la cuenta si supera el umbral configurado.
-     */
     async recordFailedLogin(id: string): Promise<void> {
         const user = await this.findById(id);
         if (!user) return;
@@ -151,7 +130,6 @@ export class UsersService {
             failedLoginAttempts: newAttempts,
         };
 
-        // Bloquear cuenta si supera el máximo
         if (newAttempts >= maxAttempts) {
             const lockoutMinutes = this.configService.get<number>(
                 'LOCKOUT_DURATION_MINUTES',
