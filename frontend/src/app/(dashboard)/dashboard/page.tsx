@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import { Package, TrendingUp, CheckCircle2, ChevronRight, AlertCircle, Loader2, DollarSign, Users, ShoppingBasket, Rocket, Plus, Target, Trash2 } from "lucide-react";
@@ -45,7 +45,7 @@ export default function DashboardPage() {
     const handleAccept = async (orderId: string) => {
         try {
             await ordersService.acceptOrder(orderId);
-            toast.success('¡Aceptado! Manos a la obra.');
+            toast.success('Â¡Aceptado! Manos a la obra.');
             loadDashboardData();
         } catch (e) {
             toast.error('Error al aceptar');
@@ -90,7 +90,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
                     <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-[0.8]">
-                        ¡HOLA, <br />
+                        Â¡HOLA, <br />
                         <span className="text-neo-red drop-shadow-[4px_4px_0_#000]">{user?.firstName?.toUpperCase() || 'BOSS'}!</span>
                     </h1>
                 </div>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
                     <p className="font-black text-black uppercase tracking-widest text-sm bg-neo-yellow border-2 border-black px-4 py-1">
                         {new Date().toLocaleDateString('es-MX', { weekday: 'short', month: 'short', day: '2-digit' }).toUpperCase()}
                     </p>
-                    <p className="text-xs font-bold text-slate-400 uppercase italic">Tu imperio del campus está creciendo.</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase italic">Tu imperio del campus estÃ¡ creciendo.</p>
                 </div>
             </header>
 
@@ -158,7 +158,7 @@ export default function DashboardPage() {
                         <Target className="w-10 h-10 text-neo-yellow" />
                     </div>
                     <div>
-                        <div className={`text-3xl lg:text-5xl font-black tracking-tighter leading-none mb-2 ${!todaySale?.breakEvenUnits ? 'text-neo-red w-full text-balance' : 'text-black'}`}>
+                        <div className={`text-2xl sm:text-3xl lg:text-5xl font-black tracking-tighter leading-none mb-2 overflow-hidden break-words hyphens-auto whitespace-normal ${!todaySale?.breakEvenUnits ? 'text-neo-red w-full' : 'text-black'}`}>
                             {todaySale?.breakEvenUnits ? Math.ceil(todaySale.breakEvenUnits) : 'Margen negativo / Sin datos'}
                         </div>
                         <p className="font-extrabold uppercase text-[10px] text-slate-400">Unidades a vender para cubrir costos</p>
@@ -187,7 +187,7 @@ export default function DashboardPage() {
                         <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
                             <Rocket className="text-neo-red" /> Pedidos Recientes
                         </h2>
-                        <Link href="/sales" className="text-xs font-black uppercase border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all">
+                        <Link href="/sales" className="text-xs font-black uppercase text-black border-2 border-black px-4 py-2 hover:bg-black hover:text-white transition-all">
                             Ver Todo
                         </Link>
                     </div>
@@ -223,7 +223,7 @@ export default function DashboardPage() {
                                     </button>
                                     <button
                                         onClick={() => handleReject(order.id)}
-                                        className="flex-1 sm:flex-none h-12 px-4 bg-white border-4 border-black font-black uppercase text-xs text-slate-400 hover:text-neo-red hover:bg-slate-50 transition-all"
+                                        className="flex-1 sm:flex-none h-12 px-4 bg-white border-4 border-black font-black uppercase text-xs text-slate-700 hover:text-neo-red hover:bg-slate-50 transition-all"
                                     >
                                         IGNORAR
                                     </button>
