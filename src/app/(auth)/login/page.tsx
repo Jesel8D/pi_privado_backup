@@ -64,7 +64,7 @@ export default function LoginPage() {
             const response = await authService.login(data);
             toast.success('¡Bienvenido de nuevo!');
             if (response.user.role === 'buyer') {
-                router.push('/buyer/dashboard');
+                router.push('/dashboard');
             } else {
                 router.push('/dashboard');
             }
