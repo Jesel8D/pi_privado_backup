@@ -7,6 +7,22 @@
 	},
 	"item": [
 		{
+			"name": "General",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
 			"name": "Auth",
 			"item": [
 				{
@@ -455,7 +471,9 @@
 		}
 	],
 	"variable": [
-		{ "key": "base_url", "value": "http://localhost:3002/api", "type": "string" },
-		{ "key": "token", "value": "", "type": "string" }
+		{ "key": "base_url", "value": "http://98.88.194.19:3001/api", "type": "string" },
+		{ "key": "token", "value": "", "type": "string" },
+		{ "key": "my_user_id", "value": "", "type": "string" },
+		{ "key": "last_order_id", "value": "", "type": "string" }
 	]
 }
