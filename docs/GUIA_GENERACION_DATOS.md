@@ -21,20 +21,20 @@ npx ts-node scripts/data-factory.ts
 ### 3. ¿Qué hará el script?
 *   **Usuarios**: Revisará cuántos usuarios tienes. Si hay menos de 30, creará nuevos (hasta llegar a 15 vendedores y 15 compradores).
 *   **Productos**: Creará un catálogo base para los nuevos vendedores si no lo tienen.
-*   **Ventas Históricas**: Creará registros de ventas desde hace 30 días hasta hoy.
-    *   **Crecimiento Gradual**: Las ventas serán pocas al inicio del mes y aumentarán al final.
-    *   **Irregularidad**: Algunos días tendrán "caos" (fluctuaciones) y los fines de semana tendrán menos actividad para que se vea real.
+*   **Ventas Históricas**: Creará registros de ventas de los últimos 30 días en PostgreSQL.
 
-## 📈 Verificación en el Sistema
+## 📈 Paso 4: Exportación a BigQuery (Histórica)
 
-### En la Aplicación Web:
-1.  Inicia sesión en el Frontend.
-2.  Ve a la sección de **Dashboard** o **Analíticas**.
-3.  Verás que las gráficas de "Ventas por Día" y "Rentabilidad" ya no están vacías; ahora muestran la curva de los últimos 30 días.
+Una vez que PostgreSQL tiene los datos, debes enviarlos a BigQuery para que tus dashboards en la nube se actualicen.
 
-### En BigQuery:
-1.  Una vez que PostgreSQL tiene los datos, usa el endpoint de **Benchmarking** (disponible en Postman) para enviar el "Daily Snapshot".
-2.  BigQuery recibirá todas las métricas de las consultas que NestJS ejecutó durante el proceso de seeding.
+1.  Abre **Postman**.
+2.  Ve a la carpeta **BigQuery Benchmarking**.
+3.  Ejecuta `1. Get Google Auth URL` y pega el link en tu navegador para obtener tu **Token**.
+4.  Pega el Token en las variables de Postman.
+5.  Ejecuta `2. Run Benchmarking Queries` (para que el sistema registre las métricas base).
+6.  **IMPORTANTE**: Ejecuta el nuevo request `3. Send Historical Snapshot to BigQuery`.
+    *   Este request enviará automáticamente los **30 días de métricas simuladas** a BigQuery en un solo paso.
+    *   Verás que BigQuery ahora tiene datos graduados e irregulares de todo el mes.
 
 ---
 **Nota:** El script respeta los usuarios existentes. Si ya tienes 30 usuarios o más, no creará nuevos, solo generará ventas entre los que ya están registrados.

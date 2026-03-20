@@ -440,6 +440,50 @@
 			]
 		},
 		{
+			"name": "BigQuery Benchmarking",
+			"item": [
+				{
+					"name": "1. Get Google Auth URL",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/benchmarking/auth/google",
+							"host": ["{{base_url}}"],
+							"path": ["benchmarking", "auth", "google"]
+						}
+					}
+				},
+				{
+					"name": "2. Run Benchmarking Queries",
+					"request": {
+						"method": "POST",
+						"url": {
+							"raw": "{{base_url}}/benchmarking/run-queries",
+							"host": ["{{base_url}}"],
+							"path": ["benchmarking", "run-queries"]
+						}
+					}
+				},
+				{
+					"name": "3. Send Historical Snapshot to BigQuery",
+					"request": {
+						"auth": { "type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}] },
+						"method": "POST",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"days\": 30\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": {
+							"raw": "{{base_url}}/benchmarking/snapshot/historical",
+							"host": ["{{base_url}}"],
+							"path": ["benchmarking", "snapshot", "historical"]
+						}
+					}
+				}
+			]
+		},
+		{
 			"name": "System Audit",
 			"item": [
 				{
